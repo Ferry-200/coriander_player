@@ -1,0 +1,35 @@
+name: coriander_player
+description: A new Flutter project.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.1.4 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  go_router: ^13.0.1 
+  material_color_utilities: ^0.5.0
+  window_manager: ^0.3.8
+  provider: ^6.1.1
+  rust_builder:
+    path: rust_builder
+  flutter_rust_bridge: 2.0.0-dev.20
+  path_provider: ^2.0.15
+  flutter_localizations:
+    sdk: flutter
+  ffi: ^2.1.0
+  path: ^1.8.3
+  file_picker: ^6.1.1
+  material_symbols_icons: ^4.2719.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  integration_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
