@@ -229,19 +229,28 @@ class _SortMethodComboBox extends StatelessWidget {
         MenuItemButton(
           style: menuItemStyle,
           onPressed: _sortByName,
-          leadingIcon: const Icon(Symbols.title),
+          leadingIcon: Icon(
+            Symbols.title,
+            color: theme.palette.onSecondaryContainer,
+          ),
           child: const Text("标题"),
         ),
         MenuItemButton(
           style: menuItemStyle,
-          leadingIcon: const Icon(Symbols.artist),
-          onPressed:  _sortByArtist,
+          leadingIcon: Icon(
+            Symbols.artist,
+            color: theme.palette.onSecondaryContainer,
+          ),
+          onPressed: _sortByArtist,
           child: const Text("艺术家"),
         ),
         MenuItemButton(
           style: menuItemStyle,
-          leadingIcon: const Icon(Symbols.filter_list_off),
-          onPressed:  _sortByOrigin,
+          leadingIcon: Icon(
+            Symbols.filter_list_off,
+            color: theme.palette.onSecondaryContainer,
+          ),
+          onPressed: _sortByOrigin,
           child: const Text("默认"),
         ),
       ],

@@ -203,12 +203,18 @@ class _SortMethodComboBox extends StatelessWidget {
         MenuItemButton(
           style: menuItemStyle,
           onPressed: _sortByName,
-          leadingIcon: const Icon(Symbols.title),
+          leadingIcon: Icon(
+            Symbols.title,
+            color: theme.palette.onSecondaryContainer,
+          ),
           child: const Text("名字"),
         ),
         MenuItemButton(
           style: menuItemStyle,
-          leadingIcon: const Icon(Symbols.filter_list_off),
+          leadingIcon: Icon(
+            Symbols.filter_list_off,
+            color: theme.palette.onSecondaryContainer,
+          ),
           onPressed: _sortByOrigin,
           child: const Text("默认"),
         ),

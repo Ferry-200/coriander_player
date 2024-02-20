@@ -433,6 +433,7 @@ class _MoreActions extends StatelessWidget {
                 menuChildren: List.generate(
                   nowPlaying.splitedArtists.length,
                   (i) => MenuItemButton(
+                    style: menuItemStyle,
                     onPressed: () {
                       final Artist artist = AudioLibrary.instance
                           .artistCollection[nowPlaying.splitedArtists[i]]!;
@@ -442,7 +443,10 @@ class _MoreActions extends StatelessWidget {
                         extra: artist,
                       );
                     },
-                    leadingIcon: const Icon(Symbols.people),
+                    leadingIcon: Icon(
+                      Symbols.people,
+                      color: theme.palette.onSurface,
+                    ),
                     child: Text(nowPlaying.splitedArtists[i]),
                   ),
                 ),
@@ -457,7 +461,10 @@ class _MoreActions extends StatelessWidget {
                   context.pushReplacement(app_paths.ALBUM_DETAIL_PAGE,
                       extra: album);
                 },
-                leadingIcon: const Icon(Symbols.album),
+                leadingIcon: Icon(
+                  Symbols.album,
+                  color: theme.palette.onSurface,
+                ),
                 child: Text(nowPlaying.album),
               ),
             ],

@@ -252,30 +252,45 @@ class _SortMethodComboBox extends StatelessWidget {
         MenuItemButton(
           style: menuItemStyle,
           onPressed: () => pageController.setSortMethod(SortBy.title),
-          leadingIcon: const Icon(Symbols.title),
+          leadingIcon: Icon(
+            Symbols.title,
+            color: theme.palette.onSecondaryContainer,
+          ),
           child: const Text("标题"),
         ),
         MenuItemButton(
           style: menuItemStyle,
-          leadingIcon: const Icon(Symbols.artist),
+          leadingIcon: Icon(
+            Symbols.artist,
+            color: theme.palette.onSecondaryContainer,
+          ),
           child: const Text("艺术家"),
           onPressed: () => pageController.setSortMethod(SortBy.artist),
         ),
         MenuItemButton(
           style: menuItemStyle,
-          leadingIcon: const Icon(Symbols.add),
+          leadingIcon: Icon(
+            Symbols.add,
+            color: theme.palette.onSecondaryContainer,
+          ),
           child: const Text("创建时间"),
           onPressed: () => pageController.setSortMethod(SortBy.created),
         ),
         MenuItemButton(
           style: menuItemStyle,
-          leadingIcon: const Icon(Symbols.edit),
+          leadingIcon: Icon(
+            Symbols.edit,
+            color: theme.palette.onSecondaryContainer,
+          ),
           child: const Text("修改时间"),
           onPressed: () => pageController.setSortMethod(SortBy.modified),
         ),
         MenuItemButton(
           style: menuItemStyle,
-          leadingIcon: const Icon(Symbols.filter_list_off),
+          leadingIcon: Icon(
+            Symbols.filter_list_off,
+            color: theme.palette.onSecondaryContainer,
+          ),
           child: const Text("默认"),
           onPressed: () => pageController.setSortMethod(SortBy.origin),
         ),

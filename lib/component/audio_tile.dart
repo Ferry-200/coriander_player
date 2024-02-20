@@ -88,6 +88,7 @@ class AudioTile extends StatelessWidget {
               menuChildren: List.generate(
                 audio.splitedArtists.length,
                 (i) => MenuItemButton(
+                  style: menuItemStyle,
                   onPressed: () {
                     final Artist artist = AudioLibrary
                         .instance.artistCollection[audio.splitedArtists[i]]!;
@@ -96,7 +97,10 @@ class AudioTile extends StatelessWidget {
                       extra: artist,
                     );
                   },
-                  leadingIcon: const Icon(Symbols.artist),
+                  leadingIcon: Icon(
+                    Symbols.artist,
+                    color: theme.palette.onSurface,
+                  ),
                   child: Text(audio.splitedArtists[i]),
                 ),
               ),
@@ -111,7 +115,10 @@ class AudioTile extends StatelessWidget {
                     AudioLibrary.instance.albumCollection[audio.album]!;
                 context.push(app_paths.ALBUM_DETAIL_PAGE, extra: album);
               },
-              leadingIcon: const Icon(Symbols.album),
+              leadingIcon: Icon(
+                Symbols.album,
+                color: theme.palette.onSurface,
+              ),
               child: Text(audio.album),
             ),
 
@@ -152,7 +159,10 @@ class AudioTile extends StatelessWidget {
                       ));
                     }
                   },
-                  leadingIcon: const Icon(Symbols.queue_music),
+                  leadingIcon: Icon(
+                    Symbols.queue_music,
+                    color: theme.palette.onSurface,
+                  ),
                   child: Text(PLAYLISTS[i].name),
                 ),
               ),
