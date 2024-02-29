@@ -59,7 +59,7 @@
       ~~albums page(2)~~, ~~artists page(2)~~, ~~now playing page(2)~~,
       ~~side nav(3)~~, ~~title bar(3)~~, ~~app shell(2)~~, ~~mini now playing(2)~~
       MediaQuery
-- [ ] welcoming
+- [x] welcoming
 
 ### Last.fm
 1. now playing request  

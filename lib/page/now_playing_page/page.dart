@@ -109,11 +109,9 @@ class __NowPlayingBody_SmallState extends State<_NowPlayingBody_Small> {
         break;
       case _ViewMode.withLyric:
         mainWidgets = [
-          Expanded(
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: VerticalLyricView(key: widget.lyricViewKey),
-            ),
+          SizedBox(
+            height: 414.0,
+            child: VerticalLyricView(key: widget.lyricViewKey),
           ),
           const SizedBox(height: 16.0),
           const _CompactAudioInfo(),
@@ -121,11 +119,9 @@ class __NowPlayingBody_SmallState extends State<_NowPlayingBody_Small> {
         break;
       case _ViewMode.withPlaylist:
         mainWidgets = const [
-          Expanded(
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: CurrentPlaylistView(),
-            ),
+          SizedBox(
+            height: 414.0,
+            child: CurrentPlaylistView(),
           ),
           SizedBox(height: 16.0),
           _CompactAudioInfo(),
@@ -138,7 +134,6 @@ class __NowPlayingBody_SmallState extends State<_NowPlayingBody_Small> {
         child: SizedBox(
           width: 350.0,
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
