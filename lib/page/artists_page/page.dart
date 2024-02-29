@@ -1,4 +1,5 @@
 import 'package:coriander_player/audio_library.dart';
+import 'package:coriander_player/page/artists_page/page_controller.dart';
 import 'package:coriander_player/page/page_scaffold.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
@@ -7,145 +8,96 @@ import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
-enum SortBy {
-  name("名字"),
-  origin("默认");
-
-  final String methodName;
-  const SortBy(this.methodName);
-}
-
-enum ListOrder { ascending, decending }
-
-class ArtistsPage extends StatefulWidget {
+class ArtistsPage extends StatelessWidget {
   const ArtistsPage({super.key});
 
   @override
-  State<ArtistsPage> createState() => _ArtistsPageState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => ArtistsPageController(),
+      builder: (context, _) {
+        final pageController = Provider.of<ArtistsPageController>(context);
+        return PageScaffold(
+          title: "艺术家",
+          actions: const [_ToggleListOrder(), _SortMethodComboBox()],
+          body: Material(
+            type: MaterialType.transparency,
+            child: GridView.builder(
+              padding: const EdgeInsets.only(bottom: 96.0),
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 300,
+                mainAxisExtent: 64,
+                mainAxisSpacing: 8.0,
+                crossAxisSpacing: 8.0,
+              ),
+              itemCount: pageController.artistCollection.length,
+              itemBuilder: (context, i) {
+                final artist = pageController.artistCollection[i];
+                return ArtistTile(artist: artist);
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 
-class _ArtistsPageState extends State<ArtistsPage> {
-  List<Artist> artistCollection =
-      AudioLibrary.instance.artistCollection.values.toList();
+class ArtistTile extends StatelessWidget {
+  const ArtistTile({
+    super.key,
+    required this.artist,
+  });
 
-  ListOrder order = ListOrder.ascending;
-  SortBy sortMethod = SortBy.origin;
-
-  void _toggleOrder() {
-    setState(() {
-      artistCollection = artistCollection.reversed.toList();
-      order = order == ListOrder.ascending
-          ? ListOrder.decending
-          : ListOrder.ascending;
-    });
-  }
-
-  void _sortByName() {
-    setState(() {
-      switch (order) {
-        case ListOrder.ascending:
-          artistCollection.sort((a, b) => a.name.compareTo(b.name));
-          break;
-        case ListOrder.decending:
-          artistCollection.sort((a, b) => b.name.compareTo(a.name));
-          break;
-      }
-      sortMethod = SortBy.name;
-    });
-  }
-
-  void _sortByOrigin() {
-    setState(() {
-      switch (order) {
-        case ListOrder.ascending:
-          artistCollection =
-              AudioLibrary.instance.artistCollection.values.toList();
-          break;
-        case ListOrder.decending:
-          artistCollection = AudioLibrary.instance.artistCollection.values
-              .toList()
-              .reversed
-              .toList();
-          break;
-      }
-      sortMethod = SortBy.origin;
-    });
-  }
+  final Artist artist;
 
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
-    return PageScaffold(
-      title: "艺术家",
-      actions: [
-        _ToggleListOrder(order, _toggleOrder),
-        _SortMethodComboBox(
-          _sortByName,
-          _sortByOrigin,
-          sortMethod,
-        )
-      ],
-      body: Material(
-        type: MaterialType.transparency,
-        child: GridView.builder(
-          padding: const EdgeInsets.only(bottom: 96.0),
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 300,
-            mainAxisExtent: 64,
-            mainAxisSpacing: 8.0,
-            crossAxisSpacing: 8.0,
-          ),
-          itemCount: artistCollection.length,
-          itemBuilder: (BuildContext context, int i) {
-            final artist = artistCollection[i];
-            return InkWell(
-              onTap: () => context.push(
-                app_paths.ARTIST_DETAIL_PAGE,
-                extra: artistCollection[i],
-              ),
-              borderRadius: BorderRadius.circular(8.0),
-              hoverColor: theme.palette.onSurface.withOpacity(0.08),
-              highlightColor: theme.palette.onSurface.withOpacity(0.12),
-              splashColor: theme.palette.onSurface.withOpacity(0.12),
+    return InkWell(
+      onTap: () => context.push(
+        app_paths.ARTIST_DETAIL_PAGE,
+        extra: artist,
+      ),
+      borderRadius: BorderRadius.circular(8.0),
+      hoverColor: theme.palette.onSurface.withOpacity(0.08),
+      highlightColor: theme.palette.onSurface.withOpacity(0.12),
+      splashColor: theme.palette.onSurface.withOpacity(0.12),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            FutureBuilder(
+              future: artist.works.first.cover,
+              builder: (context, snapshot) {
+                if (snapshot.data == null) {
+                  return Icon(
+                    Symbols.broken_image,
+                    color: theme.palette.onSurface,
+                    size: 48,
+                  );
+                }
+                return ClipOval(
+                  child: Image(
+                    image: snapshot.data!,
+                    width: 48.0,
+                    height: 48.0,
+                  ),
+                );
+              },
+            ),
+            Flexible(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    FutureBuilder(
-                      future: artist.works.first.cover,
-                      builder: (context, snapshot) {
-                        if (snapshot.data == null) {
-                          return Icon(
-                            Symbols.broken_image,
-                            color: theme.palette.onSurface,
-                            size: 48,
-                          );
-                        }
-                        return ClipOval(
-                          child: Image(
-                            image: snapshot.data!,
-                            width: 48.0,
-                            height: 48.0,
-                          ),
-                        );
-                      },
-                    ),
-                    Flexible(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(
-                          artist.name,
-                          style: TextStyle(
-                            color: theme.palette.onSurface,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Text(
+                  artist.name,
+                  style: TextStyle(
+                    color: theme.palette.onSurface,
+                  ),
                 ),
               ),
-            );
-          },
+            ),
+          ],
         ),
       ),
     );
@@ -153,16 +105,12 @@ class _ArtistsPageState extends State<ArtistsPage> {
 }
 
 class _SortMethodComboBox extends StatelessWidget {
-  const _SortMethodComboBox(
-      this._sortByName, this._sortByOrigin, this.sortMethod);
-
-  final void Function() _sortByName;
-  final void Function() _sortByOrigin;
-  final SortBy sortMethod;
+  const _SortMethodComboBox();
 
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
+    final pageController = Provider.of<ArtistsPageController>(context);
 
     final menuItemStyle = ButtonStyle(
       backgroundColor: MaterialStatePropertyAll(
@@ -202,7 +150,7 @@ class _SortMethodComboBox extends StatelessWidget {
       menuChildren: [
         MenuItemButton(
           style: menuItemStyle,
-          onPressed: _sortByName,
+          onPressed: pageController.sortByName,
           leadingIcon: Icon(
             Symbols.title,
             color: theme.palette.onSecondaryContainer,
@@ -215,7 +163,7 @@ class _SortMethodComboBox extends StatelessWidget {
             Symbols.filter_list_off,
             color: theme.palette.onSecondaryContainer,
           ),
-          onPressed: _sortByOrigin,
+          onPressed: pageController.sortByOrigin,
           child: const Text("默认"),
         ),
       ],
@@ -254,7 +202,7 @@ class _SortMethodComboBox extends StatelessWidget {
                     const SizedBox(width: 8.0),
                     Expanded(
                       child: Text(
-                        sortMethod.methodName,
+                        pageController.sortMethod.methodName,
                         style: TextStyle(
                           color: theme.palette.onSecondaryContainer,
                         ),
@@ -278,18 +226,17 @@ class _SortMethodComboBox extends StatelessWidget {
 }
 
 class _ToggleListOrder extends StatelessWidget {
-  const _ToggleListOrder(this.order, this.onPressed);
-
-  final ListOrder order;
-  final void Function() onPressed;
+  const _ToggleListOrder();
 
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
+    final pageController = Provider.of<ArtistsPageController>(context);
+
     return IconButton(
-      onPressed: onPressed,
+      onPressed: pageController.toggleOrder,
       icon: Icon(
-        order == ListOrder.ascending
+        pageController.order == ListOrder.ascending
             ? Symbols.arrow_upward
             : Symbols.arrow_downward,
       ),

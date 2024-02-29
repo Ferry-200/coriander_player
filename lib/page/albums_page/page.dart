@@ -1,4 +1,5 @@
 import 'package:coriander_player/audio_library.dart';
+import 'page_controller.dart';
 import 'package:coriander_player/page/page_scaffold.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
@@ -7,170 +8,97 @@ import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
-enum SortBy {
-  name("标题"),
-  artist("艺术家"),
-  origin("默认");
-
-  final String methodName;
-  const SortBy(this.methodName);
-}
-
-enum ListOrder { ascending, decending }
-
-class AlbumsPage extends StatefulWidget {
+class AlbumsPage extends StatelessWidget {
   const AlbumsPage({super.key});
 
   @override
-  State<AlbumsPage> createState() => _AlbumsPageState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => AlbumsPageController(),
+      builder: (context, _) {
+        final pageController = Provider.of<AlbumsPageController>(context);
+        return PageScaffold(
+          title: "专辑",
+          actions: const [_ToggleListOrder(), _SortMethodComboBox()],
+          body: Material(
+            type: MaterialType.transparency,
+            child: GridView.builder(
+              padding: const EdgeInsets.only(bottom: 96.0),
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 300,
+                mainAxisExtent: 64,
+                mainAxisSpacing: 8.0,
+                crossAxisSpacing: 8.0,
+              ),
+              itemCount: pageController.albumCollection.length,
+              itemBuilder: (context, i) {
+                final album = pageController.albumCollection[i];
+                return AlbumTile(album: album);
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 
-class _AlbumsPageState extends State<AlbumsPage> {
-  List<Album> albumCollection =
-      AudioLibrary.instance.albumCollection.values.toList();
+class AlbumTile extends StatelessWidget {
+  const AlbumTile({
+    super.key,
+    required this.album,
+  });
 
-  ListOrder order = ListOrder.ascending;
-  SortBy sortMethod = SortBy.origin;
-
-  void _toggleOrder() {
-    setState(() {
-      albumCollection = albumCollection.reversed.toList();
-      order = order == ListOrder.ascending
-          ? ListOrder.decending
-          : ListOrder.ascending;
-    });
-  }
-
-  void _sortByName() {
-    setState(() {
-      switch (order) {
-        case ListOrder.ascending:
-          albumCollection.sort((a, b) => a.name.compareTo(b.name));
-          break;
-        case ListOrder.decending:
-          albumCollection.sort((a, b) => b.name.compareTo(a.name));
-          break;
-      }
-      sortMethod = SortBy.name;
-    });
-  }
-
-  void _sortByArtist() {
-    setState(() {
-      switch (order) {
-        case ListOrder.ascending:
-          albumCollection.sort(
-            (a, b) => a.artistsMap.values.first.name.compareTo(
-              b.artistsMap.values.first.name,
-            ),
-          );
-          break;
-        case ListOrder.decending:
-          albumCollection.sort(
-            (a, b) => b.artistsMap.values.first.name.compareTo(
-              a.artistsMap.values.first.name,
-            ),
-          );
-          break;
-      }
-      sortMethod = SortBy.artist;
-    });
-  }
-
-  void _sortByOrigin() {
-    setState(() {
-      switch (order) {
-        case ListOrder.ascending:
-          albumCollection =
-              AudioLibrary.instance.albumCollection.values.toList();
-          break;
-        case ListOrder.decending:
-          albumCollection = AudioLibrary.instance.albumCollection.values
-              .toList()
-              .reversed
-              .toList();
-          break;
-      }
-      sortMethod = SortBy.origin;
-    });
-  }
+  final Album album;
 
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
-    return PageScaffold(
-      title: "专辑",
-      actions: [
-        _ToggleListOrder(order, _toggleOrder),
-        _SortMethodComboBox(
-          _sortByName,
-          _sortByArtist,
-          _sortByOrigin,
-          sortMethod,
-        )
-      ],
-      body: Material(
-        type: MaterialType.transparency,
-        child: GridView.builder(
-          padding: const EdgeInsets.only(bottom: 96.0),
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 300,
-            mainAxisExtent: 64,
-            mainAxisSpacing: 8.0,
-            crossAxisSpacing: 8.0,
-          ),
-          itemCount: albumCollection.length,
-          itemBuilder: (BuildContext context, int i) {
-            final album = albumCollection[i];
-            return InkWell(
-              onTap: () => context.push(
-                app_paths.ALBUM_DETAIL_PAGE,
-                extra: albumCollection[i],
-              ),
-              borderRadius: BorderRadius.circular(8.0),
-              hoverColor: theme.palette.onSurface.withOpacity(0.08),
-              highlightColor: theme.palette.onSurface.withOpacity(0.12),
-              splashColor: theme.palette.onSurface.withOpacity(0.12),
+    return InkWell(
+      onTap: () => context.push(
+        app_paths.ALBUM_DETAIL_PAGE,
+        extra: album,
+      ),
+      borderRadius: BorderRadius.circular(8.0),
+      hoverColor: theme.palette.onSurface.withOpacity(0.08),
+      highlightColor: theme.palette.onSurface.withOpacity(0.12),
+      splashColor: theme.palette.onSurface.withOpacity(0.12),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            FutureBuilder(
+              future: album.works.first.cover,
+              builder: (context, snapshot) {
+                if (snapshot.data == null) {
+                  return Icon(
+                    Symbols.broken_image,
+                    color: theme.palette.onSurface,
+                    size: 48,
+                  );
+                }
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Image(
+                    image: snapshot.data!,
+                    width: 48.0,
+                    height: 48.0,
+                  ),
+                );
+              },
+            ),
+            Flexible(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    FutureBuilder(
-                      future: album.works.first.cover,
-                      builder: (context, snapshot) {
-                        if (snapshot.data == null) {
-                          return Icon(
-                            Symbols.broken_image,
-                            color: theme.palette.onSurface,
-                            size: 48,
-                          );
-                        }
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image(
-                            image: snapshot.data!,
-                            width: 48.0,
-                            height: 48.0,
-                          ),
-                        );
-                      },
-                    ),
-                    Flexible(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(
-                          album.name,
-                          style: TextStyle(
-                            color: theme.palette.onSurface,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Text(
+                  album.name,
+                  style: TextStyle(
+                    color: theme.palette.onSurface,
+                  ),
                 ),
               ),
-            );
-          },
+            ),
+          ],
         ),
       ),
     );
@@ -178,17 +106,12 @@ class _AlbumsPageState extends State<AlbumsPage> {
 }
 
 class _SortMethodComboBox extends StatelessWidget {
-  const _SortMethodComboBox(this._sortByName, this._sortByArtist,
-      this._sortByOrigin, this.sortMethod);
-
-  final void Function() _sortByName;
-  final void Function() _sortByArtist;
-  final void Function() _sortByOrigin;
-  final SortBy sortMethod;
+  const _SortMethodComboBox();
 
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
+    final pageController = Provider.of<AlbumsPageController>(context);
 
     final menuItemStyle = ButtonStyle(
       backgroundColor: MaterialStatePropertyAll(
@@ -228,7 +151,7 @@ class _SortMethodComboBox extends StatelessWidget {
       menuChildren: [
         MenuItemButton(
           style: menuItemStyle,
-          onPressed: _sortByName,
+          onPressed: pageController.sortByName,
           leadingIcon: Icon(
             Symbols.title,
             color: theme.palette.onSecondaryContainer,
@@ -241,7 +164,7 @@ class _SortMethodComboBox extends StatelessWidget {
             Symbols.artist,
             color: theme.palette.onSecondaryContainer,
           ),
-          onPressed: _sortByArtist,
+          onPressed: pageController.sortByArtist,
           child: const Text("艺术家"),
         ),
         MenuItemButton(
@@ -250,7 +173,7 @@ class _SortMethodComboBox extends StatelessWidget {
             Symbols.filter_list_off,
             color: theme.palette.onSecondaryContainer,
           ),
-          onPressed: _sortByOrigin,
+          onPressed: pageController.sortByOrigin,
           child: const Text("默认"),
         ),
       ],
@@ -289,7 +212,7 @@ class _SortMethodComboBox extends StatelessWidget {
                     const SizedBox(width: 8.0),
                     Expanded(
                       child: Text(
-                        sortMethod.methodName,
+                        pageController.sortMethod.methodName,
                         style: TextStyle(
                           color: theme.palette.onSecondaryContainer,
                         ),
@@ -313,18 +236,17 @@ class _SortMethodComboBox extends StatelessWidget {
 }
 
 class _ToggleListOrder extends StatelessWidget {
-  const _ToggleListOrder(this.order, this.onPressed);
-
-  final ListOrder order;
-  final void Function() onPressed;
+  const _ToggleListOrder();
 
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
+    final pageController = Provider.of<AlbumsPageController>(context);
+
     return IconButton(
-      onPressed: onPressed,
+      onPressed: pageController.toggleOrder,
       icon: Icon(
-        order == ListOrder.ascending
+        pageController.order == ListOrder.ascending
             ? Symbols.arrow_upward
             : Symbols.arrow_downward,
       ),

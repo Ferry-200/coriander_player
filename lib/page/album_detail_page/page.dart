@@ -1,6 +1,6 @@
 import 'package:coriander_player/audio_library.dart';
 import 'package:coriander_player/component/audio_tile.dart';
-import 'package:coriander_player/page/album_detail_page/page_controller.dart';
+import 'page_controller.dart';
 import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
