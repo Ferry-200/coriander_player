@@ -24,7 +24,7 @@ Future<void> initWindow() async {
   });
 }
 
-Future<bool> judgeWelcom() async {
+Future<bool> judgeWelcome() async {
   final supportPath = (await getApplicationSupportDirectory()).path;
   final indexExists = File("$supportPath\\index.json").existsSync();
   final settingsExists = File("$supportPath\\settings.json").existsSync();
@@ -37,8 +37,8 @@ Future<void> main() async {
   if (File("$supportPath\\settings.json").existsSync()) {
     await AppSettings.readFromJson();
   }
-  final welcom = await judgeWelcom();
+  final welcome = await judgeWelcome();
   await initWindow();
 
-  runApp(Entry(welcom: welcom));
+  runApp(Entry(welcome: welcome));
 }

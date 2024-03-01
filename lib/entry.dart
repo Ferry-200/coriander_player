@@ -56,8 +56,8 @@ class SlideTransitionPage<T> extends CustomTransitionPage<T> {
 }
 
 class Entry extends StatelessWidget {
-  Entry({super.key, required this.welcom});
-  final bool welcom;
+  Entry({super.key, required this.welcome});
+  final bool welcome;
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +78,7 @@ class Entry extends StatelessWidget {
 
   late final GoRouter config = GoRouter(
     initialLocation:
-        welcom ? app_paths.WELCOMING_PAGE : app_paths.UPDATING_DIALOG,
+        welcome ? app_paths.WELCOMING_PAGE : app_paths.UPDATING_DIALOG,
     routes: [
       ShellRoute(
         builder: (context, state, page) => AppShell(page: page),
