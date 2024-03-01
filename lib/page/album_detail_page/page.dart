@@ -269,6 +269,15 @@ class _SortMethodComboBox extends StatelessWidget {
         ),
         MenuItemButton(
           style: menuItemStyle,
+          onPressed: () => pageController.setSortMethod(SortBy.track),
+          leadingIcon: Icon(
+            Symbols.art_track,
+            color: theme.palette.onSecondaryContainer,
+          ),
+          child: const Text("音轨"),
+        ),
+        MenuItemButton(
+          style: menuItemStyle,
           leadingIcon: Icon(
             Symbols.add,
             color: theme.palette.onSecondaryContainer,

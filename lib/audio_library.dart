@@ -137,6 +137,9 @@ class Audio {
 
   String album;
 
+  /// 0: 没有track
+  int track;
+
   /// absolute path
   String path;
 
@@ -154,6 +157,7 @@ class Audio {
     this.title,
     this.artist,
     this.album,
+    this.track,
     this.path,
     this.modified,
     this.created,
@@ -165,6 +169,7 @@ class Audio {
         map["title"],
         map["artist"],
         map["album"],
+        map["track"],
         map["path"],
         map["modified"],
         map["created"],

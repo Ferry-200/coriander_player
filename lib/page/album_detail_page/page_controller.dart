@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 enum SortBy {
   title("标题"),
   artist("艺术家"),
+  track("音轨"),
   created("创建时间"),
   modified("修改时间"),
   origin("默认");
@@ -49,6 +50,9 @@ class AlbumDetailPageController with ChangeNotifier {
       case SortBy.artist:
         _sortByArtist();
         break;
+      case SortBy.track:
+        _sortByTrack();
+        break;
       case SortBy.created:
         _sortByCreated();
         break;
@@ -79,6 +83,17 @@ class AlbumDetailPageController with ChangeNotifier {
         break;
       case ListOrder.decending:
         works.sort((a, b) => b.artist.compareTo(a.artist));
+        break;
+    }
+  }
+
+  void _sortByTrack() {
+    switch (listOrder) {
+      case ListOrder.ascending:
+        works.sort((a, b) => a.track.compareTo(b.track));
+        break;
+      case ListOrder.decending:
+        works.sort((a, b) => b.track.compareTo(a.track));
         break;
     }
   }

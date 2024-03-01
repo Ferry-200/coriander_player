@@ -17,6 +17,7 @@ struct Metadata {
     title: String,
     artist: String,
     album: String,
+    track: u32,
     path: String,
     modified: u64,
     created: u64,
@@ -28,6 +29,7 @@ impl Metadata {
             "title": from.title,
             "artist": from.artist,
             "album": from.album,
+            "track": from.track,
             "path": from.path,
             "modified": from.modified,
             "created": from.created
@@ -49,20 +51,24 @@ impl Metadata {
         let title: Cow<'_, str>;
         let artist: Cow<'_, str>;
         let album: Cow<'_, str>;
+        let track: u32;
 
         if let Some(primary_tag) = tagged_file.primary_tag() {
             title = primary_tag.title().unwrap_or(UNKNOWN);
             artist = primary_tag.artist().unwrap_or(UNKNOWN);
             album = primary_tag.album().unwrap_or(UNKNOWN);
+            track = primary_tag.track().unwrap_or(0);
         } else {
             if let Some(tag) = tagged_file.first_tag() {
                 title = tag.title().unwrap_or(UNKNOWN);
                 artist = tag.artist().unwrap_or(UNKNOWN);
                 album = tag.album().unwrap_or(UNKNOWN);
+                track = tag.track().unwrap_or(0);
             } else {
                 title = UNKNOWN;
                 artist = UNKNOWN;
                 album = UNKNOWN;
+                track = 0;
             }
         }
 
@@ -87,6 +93,7 @@ impl Metadata {
             title: title.to_string(),
             artist: artist.to_string(),
             album: album.to_string(),
+            track,
             path: path.clone(),
             modified,
             created,
