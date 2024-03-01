@@ -204,7 +204,7 @@ class Audio {
         if (value == null) {
           return null;
         }
-        return ResizeImage.resizeIfNeeded(350, 350, MemoryImage(value));
+        return ResizeImage.resizeIfNeeded(400, 400, MemoryImage(value));
       });
 
   @override

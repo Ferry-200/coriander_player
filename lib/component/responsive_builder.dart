@@ -29,3 +29,20 @@ class ResponsiveBuilder extends StatelessWidget {
     }
   }
 }
+
+class ResponsiveBuilder2 extends StatelessWidget {
+  const ResponsiveBuilder2({super.key, required this.builder});
+
+  final Widget Function(BuildContext context, ScreenType screenType) builder;
+
+  @override
+  Widget build(BuildContext context) {
+    final screenSize = MediaQuery.sizeOf(context);
+
+    if (screenSize.width <= 924) {
+      return builder(context, ScreenType.small);
+    } else {
+      return builder(context, ScreenType.large);
+    }
+  }
+}

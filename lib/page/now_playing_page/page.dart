@@ -34,7 +34,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
       body: ChangeNotifierProvider.value(
         value: PlayService.instance,
         builder: (context, _) {
-          return ResponsiveBuilder(builder: (context, screenType) {
+          return ResponsiveBuilder2(builder: (context, screenType) {
             switch (screenType) {
               case ScreenType.small:
                 return _NowPlayingBody_Small(lyricViewKey);
@@ -97,20 +97,18 @@ class __NowPlayingBody_SmallState extends State<_NowPlayingBody_Small> {
     switch (_viewMode) {
       case _ViewMode.onlyMain:
         mainWidgets = const [
-          NowPlayingCover(),
+          Expanded(child: NowPlayingCover()),
           SizedBox(height: 16.0),
           NowPlayingTitle(),
           NowPlayingArtistAlbum(),
           SizedBox(height: 16.0),
           NowPlayingProgressIndicator(),
           PositionAndLength(),
-          SizedBox(height: 16.0),
         ];
         break;
       case _ViewMode.withLyric:
         mainWidgets = [
-          SizedBox(
-            height: 414.0,
+          Expanded(
             child: VerticalLyricView(key: widget.lyricViewKey),
           ),
           const SizedBox(height: 16.0),
@@ -119,8 +117,7 @@ class __NowPlayingBody_SmallState extends State<_NowPlayingBody_Small> {
         break;
       case _ViewMode.withPlaylist:
         mainWidgets = const [
-          SizedBox(
-            height: 414.0,
+          Expanded(
             child: CurrentPlaylistView(),
           ),
           SizedBox(height: 16.0),
@@ -128,11 +125,11 @@ class __NowPlayingBody_SmallState extends State<_NowPlayingBody_Small> {
         ];
         break;
     }
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+    return Padding(
+      padding: const EdgeInsets.all(48.0),
+      child: Center(
         child: SizedBox(
-          width: 350.0,
+          width: 400,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -326,7 +323,7 @@ class __NowPlayingBody_LargeState extends State<_NowPlayingBody_Large> {
         break;
     }
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(48.0),
       child: Row(
         children: views,
       ),

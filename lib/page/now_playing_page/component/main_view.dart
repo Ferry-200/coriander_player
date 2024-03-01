@@ -13,11 +13,11 @@ class NowPlayingMainView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 350.0,
+      width: 400.0,
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const NowPlayingCover(),
+          const Expanded(child: NowPlayingCover()),
           const SizedBox(height: 16.0),
           const NowPlayingTitle(),
           const NowPlayingArtistAlbum(),
@@ -54,9 +54,11 @@ class NowPlayingControls extends StatelessWidget {
     return SizedBox(
       height: 64.0,
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           /// 播放/暂停
-          Expanded(
+          SizedBox(
+            width: 156,
             child: Material(
               color: theme.palette.primary,
               borderRadius: BorderRadius.circular(32.0),
@@ -275,13 +277,11 @@ class NowPlayingCover extends StatelessWidget {
     final theme = Provider.of<ThemeProvider>(context);
 
     return nowPlaying == null
-        ? Flexible(
-            child: FittedBox(
-              child: Icon(
-                Symbols.broken_image,
-                size: 350.0,
-                color: theme.palette.onSecondaryContainer,
-              ),
+        ? FittedBox(
+            child: Icon(
+              Symbols.broken_image,
+              size: 400.0,
+              color: theme.palette.onSecondaryContainer,
             ),
           )
         : FutureBuilder(
@@ -289,25 +289,18 @@ class NowPlayingCover extends StatelessWidget {
             builder: (context, snapshot) {
               final theme = Provider.of<ThemeProvider>(context);
               if (snapshot.data == null) {
-                return Flexible(
+                return FittedBox(
                   child: Icon(
                     Symbols.broken_image,
-                    size: 350.0,
+                    size: 400.0,
                     color: theme.palette.onSecondaryContainer,
                   ),
                 );
               }
-              return Flexible(
-                child: FittedBox(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: Image(
-                      image: snapshot.data!,
-                      width: 350.0,
-                      height: 350.0,
-                    ),
-                  ),
-                ),
+              return Image(
+                image: snapshot.data!,
+                width: 400.0,
+                height: 400.0,
               );
             },
           );
