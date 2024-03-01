@@ -233,19 +233,22 @@ class _LyricViewTile extends StatelessWidget {
         ),
       ));
     }
-    return Opacity(
-      opacity: opacity,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12.0),
-        hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
-        highlightColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
-        splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: textTiles,
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Opacity(
+        opacity: opacity,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12.0),
+          hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
+          highlightColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
+          splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: textTiles,
+            ),
           ),
         ),
       ),
