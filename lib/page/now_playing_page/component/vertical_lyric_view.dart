@@ -45,7 +45,7 @@ class _VerticalLyricViewState extends State<VerticalLyricView> {
     if (lyric == null) {
       lyricTiles = [
         _LyricViewTile(
-          line: LyricLine(time: Duration.zero, content: "Enjoy Music"),
+          line: LyricLine.blankLine,
           opacity: 1.0,
         )
       ];
@@ -130,7 +130,7 @@ class _VerticalLyricViewState extends State<VerticalLyricView> {
     if (lyric == null) {
       lyricTiles = [
         _LyricViewTile(
-          line: LyricLine(time: Duration.zero, content: "Enjoy Music"),
+          line: LyricLine.blankLine,
           opacity: 1.0,
           onTap: () {},
         )
@@ -213,6 +213,14 @@ class _LyricViewTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
 
+    if (line.isBlank) {
+      if (line.length! > const Duration(seconds: 6) && opacity == 1.0) {
+        return _LyricCountDownTile(length: line.length!);
+      } else {
+        return const SizedBox();
+      }
+    }
+
     final texts = line.content.split("┃");
     final List<Text> textTiles = [
       Text(
@@ -250,6 +258,79 @@ class _LyricViewTile extends StatelessWidget {
               children: textTiles,
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LyricCountDownTile extends StatefulWidget {
+  const _LyricCountDownTile({super.key, required this.length});
+
+  final Duration length;
+
+  @override
+  State<_LyricCountDownTile> createState() => __LyricCountDownTileState();
+}
+
+class __LyricCountDownTileState extends State<_LyricCountDownTile>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: widget.length);
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Provider.of<ThemeProvider>(context);
+    final leftColor = theme.palette.onSecondaryContainer;
+    final rightColor = theme.palette.onSecondaryContainer.withOpacity(0.25);
+    final circle = SizedBox(
+      width: 16,
+      height: 16,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: leftColor,
+          shape: BoxShape.circle,
+        ),
+      ),
+    );
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 18, 12, 6),
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            return ShaderMask(
+              shaderCallback: (bounds) {
+                return LinearGradient(
+                  colors: [
+                    leftColor,
+                    leftColor,
+                    rightColor,
+                    rightColor,
+                  ],
+                  stops: [0, _controller.value, _controller.value, 1],
+                ).createShader(bounds);
+              },
+              child: Wrap(
+                spacing: 8.0,
+                children: List.filled(3, circle),
+              ),
+            );
+          },
         ),
       ),
     );

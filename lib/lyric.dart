@@ -4,7 +4,21 @@ class LyricLine {
   Duration time;
   String content;
 
-  LyricLine({required this.time, required this.content});
+  bool isBlank;
+  Duration? length;
+
+  LyricLine(
+      {required this.time,
+      required this.content,
+      required this.isBlank,
+      this.length});
+
+  static LyricLine blankLine = LyricLine(
+    time: Duration.zero,
+    content: "",
+    isBlank: true,
+    length: Duration.zero,
+  );
 
   @override
   String toString() {
@@ -21,7 +35,7 @@ class LyricLine {
       line.indexOf("[") + 1,
       line.indexOf("]"),
     );
-    var content = line.substring(line.indexOf("]") + 1);
+    var content = line.substring(line.indexOf("]") + 1).trim();
 
     var timeList = lrcTimeString.split(":");
     int? minute;
@@ -40,6 +54,7 @@ class LyricLine {
     return LyricLine(
       time: Duration(milliseconds: inMilliseconds),
       content: content,
+      isBlank: content.isEmpty,
     );
   }
 }
@@ -85,9 +100,12 @@ class Lyric {
     for (var i = 1; i < lines.length; i++) {
       if (lines[i].time != lines[i - 1].time) {
         buf.write(lines[i - 1].content);
-        combinedLines.add(
-          LyricLine(time: lines[i - 1].time, content: buf.toString()),
-        );
+        combinedLines.add(LyricLine(
+          time: lines[i - 1].time,
+          content: buf.toString(),
+          isBlank: lines[i - 1].isBlank,
+          length: lines[i - 1].length,
+        ));
         buf.clear();
       } else {
         buf.write(lines[i - 1].content);
@@ -95,9 +113,13 @@ class Lyric {
       }
     }
     buf.write(lines.last.content);
-    combinedLines.add(
-      LyricLine(time: lines.last.time, content: buf.toString()),
-    );
+    combinedLines.add(LyricLine(
+      time: lines.last.time,
+      content: buf.toString(),
+      isBlank: lines.last.isBlank,
+      length: lines.last.length,
+    ));
+
     return Lyric(combinedLines, source);
   }
 
@@ -114,6 +136,11 @@ class Lyric {
       }
       lines.add(lyricLine);
     }
+
+    for (var i = 0; i < lines.length - 1; i++) {
+      lines[i].length = lines[i + 1].time - lines[i].time;
+    }
+    lines.last.length = Duration.zero;
 
     final result = Lyric(lines, source);
 

@@ -60,6 +60,9 @@
       ~~side nav(3)~~, ~~title bar(3)~~, ~~app shell(2)~~, ~~mini now playing(2)~~
       MediaQuery
 - [x] welcoming
+- [x] 在lrc歌词中，只有时间戳没有内容的一行可以表示间奏开始的时间。（常见于QQ音乐的lrc歌词中）
+      这个时间和下一句歌词之间的时间可以作为间奏时长。大于6s时，可以用一个组件描述这一段时间。
+      
 
 ### Last.fm
 1. now playing request  
