@@ -177,10 +177,10 @@ class NowPlayingProgressIndicatorState
     return GestureDetector(
       onHorizontalDragStart: (details) {
         isDragging = true;
-        dragProgress.value = details.localPosition.dx / 350.0;
+        dragProgress.value = details.localPosition.dx / 400.0;
       },
       onHorizontalDragUpdate: (details) {
-        dragProgress.value = details.localPosition.dx / 350.0;
+        dragProgress.value = details.localPosition.dx / 400.0;
       },
       onHorizontalDragEnd: (details) {
         isDragging = false;

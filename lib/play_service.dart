@@ -233,6 +233,7 @@ class PlayService with ChangeNotifier {
   /// 与[start]的差别在于它会通知重绘组件
   void playAgain() {
     _bassPlayer.start();
+    _nextLyricLine = 0;
     notifyListeners();
   }
 

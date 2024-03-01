@@ -144,17 +144,26 @@ class _NowPlayingForeground extends StatelessWidget {
                   StreamBuilder(
                     stream: PlayService.instance.playerStateStream,
                     initialData: PlayService.instance.playerState,
-                    builder: (context, snapshot) => IconButton(
-                      onPressed: snapshot.data! == PlayerState.playing
-                          ? PlayService.instance.pause
-                          : PlayService.instance.start,
-                      icon: Icon(
-                        snapshot.data! == PlayerState.playing
-                            ? Symbols.pause
-                            : Symbols.play_arrow,
-                      ),
-                      style: theme.primaryIconButtonStyle,
-                    ),
+                    builder: (context, snapshot) {
+                      late void Function() onPressed;
+                      if (snapshot.data! == PlayerState.playing) {
+                        onPressed = PlayService.instance.pause;
+                      } else if (snapshot.data! == PlayerState.completed) {
+                        onPressed = PlayService.instance.playAgain;
+                      } else {
+                        onPressed = PlayService.instance.start;
+                      }
+
+                      return IconButton(
+                        onPressed: onPressed,
+                        icon: Icon(
+                          snapshot.data! == PlayerState.playing
+                              ? Symbols.pause
+                              : Symbols.play_arrow,
+                        ),
+                        style: theme.primaryIconButtonStyle,
+                      );
+                    },
                   ),
                 ],
               );

@@ -95,10 +95,10 @@ class _LyricHorizontalScrollAreaState
 
   /// 重新获取歌词
   void _updateLyric() {
-    // nextLyricLine = 0;
     lyric = playService.nowPlayingLyric;
     setState(() {
-      currentLyricLine = "Enjoy Music";
+      currentLyricLine =
+          lyric == null ? "Enjoy Music" : lyric!.lines.first.content;
     });
   }
 
