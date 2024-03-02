@@ -5,6 +5,7 @@ import 'package:coriander_player/lyric.dart';
 import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 
 class VerticalLyricView extends StatefulWidget {
@@ -214,8 +215,8 @@ class _LyricViewTile extends StatelessWidget {
     final theme = Provider.of<ThemeProvider>(context);
 
     if (line.isBlank) {
-      if (line.length! > const Duration(seconds: 6) && opacity == 1.0) {
-        return _LyricCountDownTile(length: line.length!);
+      if (line.length! > const Duration(seconds: 5) && opacity == 1.0) {
+        return _LyricCountDownTile(line: line);
       } else {
         return const SizedBox();
       }
@@ -264,75 +265,74 @@ class _LyricViewTile extends StatelessWidget {
   }
 }
 
-class _LyricCountDownTile extends StatefulWidget {
-  const _LyricCountDownTile({super.key, required this.length});
-
-  final Duration length;
-
-  @override
-  State<_LyricCountDownTile> createState() => __LyricCountDownTileState();
-}
-
-class __LyricCountDownTileState extends State<_LyricCountDownTile>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this, duration: widget.length);
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+class _LyricCountDownTile extends StatelessWidget {
+  final LyricLine line;
+  const _LyricCountDownTile({super.key, required this.line});
 
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
-    final leftColor = theme.palette.onSecondaryContainer;
-    final rightColor = theme.palette.onSecondaryContainer.withOpacity(0.25);
-    final circle = SizedBox(
-      width: 16,
-      height: 16,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: leftColor,
-          shape: BoxShape.circle,
-        ),
-      ),
-    );
 
     return Align(
       alignment: Alignment.centerLeft,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(12, 18, 12, 6),
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, _) {
-            return ShaderMask(
-              shaderCallback: (bounds) {
-                return LinearGradient(
-                  colors: [
-                    leftColor,
-                    leftColor,
-                    rightColor,
-                    rightColor,
-                  ],
-                  stops: [0, _controller.value, _controller.value, 1],
-                ).createShader(bounds);
-              },
-              child: Wrap(
-                spacing: 8.0,
-                children: List.filled(3, circle),
-              ),
-            );
-          },
+        child: SizedBox(
+          height: 12.0,
+          child: StreamBuilder(
+            stream: PlayService.instance.positionStream,
+            builder: (context, snapshot) {
+              var position = snapshot.data == null
+                  ? line.time.inMilliseconds
+                  : snapshot.data! * 1000;
+              position -= line.time.inMilliseconds;
+
+              return CustomPaint(
+                painter: CountDownTilePainter(
+                  theme,
+                  position / line.length!.inMilliseconds,
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
   }
+}
+
+class CountDownTilePainter extends CustomPainter {
+  final ThemeProvider theme;
+  final double progress;
+
+  final Paint foregroundPaint1 = Paint();
+  final Paint foregroundPaint2 = Paint();
+  final Paint foregroundPaint3 = Paint();
+
+  final double radius = 6;
+  final c1 = const Offset(6, 6);
+  final c2 = const Offset(24, 6);
+  final c3 = const Offset(42, 6);
+
+  CountDownTilePainter(this.theme, this.progress) {
+    foregroundPaint1.color = theme.palette.onSecondaryContainer
+        .withOpacity(0.05 + min(progress * 3, 1) * 0.95);
+    foregroundPaint2.color = theme.palette.onSecondaryContainer
+        .withOpacity(0.05 + min(progress * 3 / 2, 1) * 0.95);
+    foregroundPaint3.color = theme.palette.onSecondaryContainer
+        .withOpacity(0.05 + min(progress, 1) * 0.95);
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawCircle(c1, radius, foregroundPaint1);
+    canvas.drawCircle(c2, radius, foregroundPaint2);
+    canvas.drawCircle(c3, radius, foregroundPaint3);
+  }
+
+  @override
+  bool shouldRepaint(CountDownTilePainter oldDelegate) => true;
+
+  @override
+  bool shouldRebuildSemantics(CountDownTilePainter oldDelegate) => false;
 }
