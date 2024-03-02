@@ -5,7 +5,6 @@ import 'package:coriander_player/lyric.dart';
 import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 
 class VerticalLyricView extends StatefulWidget {
