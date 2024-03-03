@@ -276,33 +276,35 @@ class NowPlayingCover extends StatelessWidget {
     final nowPlaying = playService.nowPlaying;
     final theme = Provider.of<ThemeProvider>(context);
 
-    return nowPlaying == null
-        ? FittedBox(
-            child: Icon(
-              Symbols.broken_image,
-              size: 400.0,
-              color: theme.palette.onSecondaryContainer,
-            ),
-          )
-        : FutureBuilder(
-            future: nowPlaying.bigCover,
-            builder: (context, snapshot) {
-              final theme = Provider.of<ThemeProvider>(context);
-              if (snapshot.data == null) {
-                return FittedBox(
-                  child: Icon(
-                    Symbols.broken_image,
-                    size: 400.0,
-                    color: theme.palette.onSecondaryContainer,
-                  ),
+    return RepaintBoundary(
+      child: nowPlaying == null
+          ? FittedBox(
+              child: Icon(
+                Symbols.broken_image,
+                size: 400.0,
+                color: theme.palette.onSecondaryContainer,
+              ),
+            )
+          : FutureBuilder(
+              future: nowPlaying.bigCover,
+              builder: (context, snapshot) {
+                final theme = Provider.of<ThemeProvider>(context);
+                if (snapshot.data == null) {
+                  return FittedBox(
+                    child: Icon(
+                      Symbols.broken_image,
+                      size: 400.0,
+                      color: theme.palette.onSecondaryContainer,
+                    ),
+                  );
+                }
+                return Image(
+                  image: snapshot.data!,
+                  width: 400.0,
+                  height: 400.0,
                 );
-              }
-              return Image(
-                image: snapshot.data!,
-                width: 400.0,
-                height: 400.0,
-              );
-            },
-          );
+              },
+            ),
+    );
   }
 }

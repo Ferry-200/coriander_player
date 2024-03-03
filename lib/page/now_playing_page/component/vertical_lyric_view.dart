@@ -5,6 +5,7 @@ import 'package:coriander_player/lyric.dart';
 import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 
 class VerticalLyricView extends StatefulWidget {
@@ -274,25 +275,15 @@ class _LyricCountDownTile extends StatelessWidget {
 
     return Align(
       alignment: Alignment.centerLeft,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 18, 12, 6),
-        child: SizedBox(
-          height: 12.0,
-          child: StreamBuilder(
-            stream: PlayService.instance.positionStream,
-            builder: (context, snapshot) {
-              var position = snapshot.data == null
-                  ? line.time.inMilliseconds
-                  : snapshot.data! * 1000;
-              position -= line.time.inMilliseconds;
-
-              return CustomPaint(
-                painter: CountDownTilePainter(
-                  theme,
-                  position / line.length!.inMilliseconds,
-                ),
-              );
-            },
+      child: SizedBox(
+        height: 40.0,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(12, 18, 12, 6),
+          child: CustomPaint(
+            painter: CountDownTilePainter(
+              theme,
+              CountDownTileController(line),
+            ),
           ),
         ),
       ),
@@ -302,36 +293,88 @@ class _LyricCountDownTile extends StatelessWidget {
 
 class CountDownTilePainter extends CustomPainter {
   final ThemeProvider theme;
-  final double progress;
+  final CountDownTileController controller;
 
   final Paint foregroundPaint1 = Paint();
   final Paint foregroundPaint2 = Paint();
   final Paint foregroundPaint3 = Paint();
 
   final double radius = 6;
-  final c1 = const Offset(6, 6);
-  final c2 = const Offset(24, 6);
-  final c3 = const Offset(42, 6);
 
-  CountDownTilePainter(this.theme, this.progress) {
-    foregroundPaint1.color = theme.palette.onSecondaryContainer
-        .withOpacity(0.05 + min(progress * 3, 1) * 0.95);
-    foregroundPaint2.color = theme.palette.onSecondaryContainer
-        .withOpacity(0.05 + min(progress * 3 / 2, 1) * 0.95);
-    foregroundPaint3.color = theme.palette.onSecondaryContainer
-        .withOpacity(0.05 + min(progress, 1) * 0.95);
-  }
+  CountDownTilePainter(this.theme, this.controller)
+      : super(repaint: controller);
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawCircle(c1, radius, foregroundPaint1);
-    canvas.drawCircle(c2, radius, foregroundPaint2);
-    canvas.drawCircle(c3, radius, foregroundPaint3);
+    foregroundPaint1.color = theme.palette.onSecondaryContainer.withOpacity(
+      0.05 + min(controller.progress * 3, 1) * 0.95,
+    );
+    foregroundPaint2.color = theme.palette.onSecondaryContainer.withOpacity(
+      0.05 + min(max(controller.progress - 1 / 3, 0) * 3, 1) * 0.95,
+    );
+    foregroundPaint3.color = theme.palette.onSecondaryContainer.withOpacity(
+      0.05 + min(max(controller.progress - 2 / 3, 0) * 3, 1) * 0.95,
+    );
+
+    final rWithFactor = radius + controller.sizeFactor;
+    final c1 = Offset(rWithFactor, 8);
+    final c2 = Offset(4 * rWithFactor, 8);
+    final c3 = Offset(7 * rWithFactor, 8);
+
+    canvas.drawCircle(c1, rWithFactor, foregroundPaint1);
+    canvas.drawCircle(c2, rWithFactor, foregroundPaint2);
+    canvas.drawCircle(c3, rWithFactor, foregroundPaint3);
   }
 
   @override
-  bool shouldRepaint(CountDownTilePainter oldDelegate) => true;
+  bool shouldRepaint(CountDownTilePainter oldDelegate) => false;
 
   @override
   bool shouldRebuildSemantics(CountDownTilePainter oldDelegate) => false;
+}
+
+class CountDownTileController extends ChangeNotifier {
+  final LyricLine line;
+
+  final playService = PlayService.instance;
+
+  double progress = 0;
+  late final StreamSubscription positionStreamSub;
+
+  double sizeFactor = 0;
+  double k = 1;
+  late final Ticker factorTicker;
+
+  CountDownTileController(this.line) {
+    positionStreamSub = playService.positionStream.listen(_updateProgress);
+    factorTicker = Ticker((elapsed) {
+      sizeFactor += k * 1 / 180;
+      if (sizeFactor > 1) {
+        k = -1;
+        sizeFactor = 1;
+      } else if (sizeFactor < 0) {
+        k = 1;
+        sizeFactor = 0;
+      }
+      notifyListeners();
+    });
+    factorTicker.start();
+  }
+
+  void _updateProgress(double position) {
+    final sinceStart = position * 1000 - line.time.inMilliseconds;
+    progress = max(sinceStart, 0) / line.length!.inMilliseconds;
+    notifyListeners();
+
+    if (progress >= 1) {
+      dispose();
+    }
+  }
+
+  @override
+  void dispose() {
+    positionStreamSub.cancel();
+    factorTicker.dispose();
+    super.dispose();
+  }
 }
