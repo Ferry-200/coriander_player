@@ -30,6 +30,12 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   integration_test:
     sdk: flutter
+  msix: ^3.16.7
 
 flutter:
   uses-material-design: true
+
+msix_config:
+  display_name: Coriander Player
+  msix_version: 1.0.0.0
+  logo_path: D:\FlutterApps\coriander_player\windows\runner\resources\app_icon.ico
