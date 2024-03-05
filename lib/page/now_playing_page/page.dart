@@ -27,7 +27,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
 
     return Scaffold(
       appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(48.0),
+        preferredSize: Size.fromHeight(80.0),
         child: NowPlayingPageTitleBar(),
       ),
       backgroundColor: theme.palette.secondaryContainer,
@@ -126,7 +126,7 @@ class __NowPlayingBody_SmallState extends State<_NowPlayingBody_Small> {
         break;
     }
     return Padding(
-      padding: const EdgeInsets.all(48.0),
+      padding: const EdgeInsets.symmetric(horizontal: 48.0, vertical: 16.0),
       child: Center(
         child: SizedBox(
           width: 400,
@@ -310,20 +310,20 @@ class __NowPlayingBody_LargeState extends State<_NowPlayingBody_Large> {
       case _ViewMode.withLyric:
         views = [
           mainView(Alignment.centerRight),
-          const SizedBox(width: 32.0),
+          const SizedBox(width: 48.0),
           lyricView,
         ];
         break;
       case _ViewMode.withPlaylist:
         views = [
           mainView(Alignment.centerRight),
-          const SizedBox(width: 32.0),
+          const SizedBox(width: 48.0),
           playlistView,
         ];
         break;
     }
     return Padding(
-      padding: const EdgeInsets.all(48.0),
+      padding: const EdgeInsets.symmetric(horizontal: 48.0, vertical: 16.0),
       child: Row(
         children: views,
       ),

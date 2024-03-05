@@ -39,7 +39,7 @@ class ResponsiveBuilder2 extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.sizeOf(context);
 
-    if (screenSize.width <= 924) {
+    if (screenSize.width <= 944) {
       return builder(context, ScreenType.small);
     } else {
       return builder(context, ScreenType.large);

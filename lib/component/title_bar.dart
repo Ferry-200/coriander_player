@@ -35,32 +35,31 @@ class _TitleBar_Small extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
 
-    return DragToMoveArea(
-      child: SizedBox(
-        height: 56.0,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Row(
-            children: [
-              const _OpenDrawerBtn(),
-              const SizedBox(width: 8.0),
-              const _NavBackBtn(),
-              const SizedBox(width: 8.0),
-              Expanded(
-                child: Text(
-                  "Coriander Player",
-                  style: TextStyle(
-                    color: theme.palette.onSurface,
-                    fontSize: 16,
+    return SizedBox(
+      height: 56.0,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Row(
+          children: [
+            const _OpenDrawerBtn(),
+            const SizedBox(width: 8.0),
+            const _NavBackBtn(),
+            Expanded(
+              child: DragToMoveArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    "Coriander Player",
+                    style: TextStyle(
+                      color: theme.palette.onSurface,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(width: 16.0),
-
-              /// window controlls
-              const WindowControlls(),
-            ],
-          ),
+            ),
+            const WindowControlls(),
+          ],
         ),
       ),
     );
@@ -74,33 +73,36 @@ class _TitleBar_Medium extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
 
-    return DragToMoveArea(
-      child: Row(
-        children: [
-          const SizedBox(
-            width: 80,
-            child: Center(
-              child: _NavBackBtn(),
+    return Row(
+      children: [
+        const SizedBox(
+          width: 80,
+          child: Center(child: _NavBackBtn()),
+        ),
+        Expanded(
+          child: DragToMoveArea(
+            child: Row(
+              children: [
+                Text(
+                  "Coriander Player",
+                  style: TextStyle(
+                    color: theme.palette.onSurface,
+                    fontSize: 16,
+                  ),
+                ),
+                const Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: HorizontalLyricView(),
+                  ),
+                ),
+              ],
             ),
           ),
-          Text(
-            "Coriander Player",
-            style: TextStyle(
-              color: theme.palette.onSurface,
-              fontSize: 16,
-            ),
-          ),
-          const SizedBox(width: 16.0),
-
-          const HorizontalLyricView(),
-
-          const SizedBox(width: 16.0),
-
-          /// window controlls
-          const WindowControlls(),
-          const SizedBox(width: 8.0),
-        ],
-      ),
+        ),
+        const WindowControlls(),
+        const SizedBox(width: 8.0),
+      ],
     );
   }
 }
@@ -112,44 +114,44 @@ class _TitleBar_Large extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
 
-    return DragToMoveArea(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Row(
         children: [
-          SizedBox(
-            width: 284.0,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          const _NavBackBtn(),
+          Expanded(
+            child: DragToMoveArea(
               child: Row(
                 children: [
-                  Icon(
-                    Symbols.music_note,
-                    color: theme.palette.onSurface,
-                    size: 24.0,
-                  ),
-                  const SizedBox(width: 8.0),
-                  Text(
-                    "Coriander Player",
-                    style: TextStyle(
-                      color: theme.palette.onSurface,
-                      fontSize: 16,
+                  SizedBox(
+                    width: 236,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Symbols.music_note,
+                          color: theme.palette.onSurface,
+                          size: 24.0,
+                        ),
+                        const SizedBox(width: 8.0),
+                        Text(
+                          "Coriander Player",
+                          style: TextStyle(
+                            color: theme.palette.onSurface,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+                  const Expanded(
+                    child: HorizontalLyricView(),
+                  ),
+                  const SizedBox(width: 16.0),
                 ],
               ),
             ),
           ),
-
-          /// navigate back
-          const _NavBackBtn(),
-          const SizedBox(width: 16.0),
-
-          const HorizontalLyricView(),
-
-          const SizedBox(width: 16.0),
-
-          /// window controlls
           const WindowControlls(),
-          const SizedBox(width: 8.0),
         ],
       ),
     );
@@ -207,8 +209,7 @@ class WindowControlls extends StatefulWidget {
   State<WindowControlls> createState() => _WindowControllsState();
 }
 
-class _WindowControllsState extends State<WindowControlls>
-    with WindowListener {
+class _WindowControllsState extends State<WindowControlls> with WindowListener {
   @override
   void initState() {
     windowManager.addListener(this);
