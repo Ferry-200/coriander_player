@@ -95,6 +95,7 @@ class _SearchPageState extends State<SearchPage> {
                 /// when 'enter' is pressed
                 onSubmitted: (_) => toUnionPage(),
                 cursorColor: theme.palette.primary,
+                style: TextStyle(color: theme.palette.onSurface),
                 decoration: InputDecoration(
                   suffixIcon: Padding(
                     padding: const EdgeInsets.only(right: 12.0),
