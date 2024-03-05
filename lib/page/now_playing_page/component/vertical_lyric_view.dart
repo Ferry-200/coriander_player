@@ -24,7 +24,7 @@ class _VerticalLyricViewState extends State<VerticalLyricView> {
   final scrollBehavier = const ScrollBehavior().copyWith(scrollbars: false);
 
   Lyric? lyric;
-  List<_LyricViewTile>? lyricTiles;
+  late List<_LyricViewTile> lyricTiles;
 
   /// 用来定位到当前歌词
   final currentLyricTileKey = GlobalKey();
@@ -167,16 +167,6 @@ class _VerticalLyricViewState extends State<VerticalLyricView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
-    if (lyricTiles == null) {
-      return Center(
-        child: Text(
-          "Not Playing",
-          style: TextStyle(color: theme.palette.onSecondaryContainer),
-        ),
-      );
-    }
-
     return Material(
       type: MaterialType.transparency,
       child: ScrollConfiguration(
@@ -186,7 +176,7 @@ class _VerticalLyricViewState extends State<VerticalLyricView> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: lyricTiles!,
+            children: lyricTiles,
           ),
         ),
       ),

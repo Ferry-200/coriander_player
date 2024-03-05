@@ -97,8 +97,15 @@ class _LyricHorizontalScrollAreaState
   void _updateLyric() {
     lyric = playService.nowPlayingLyric;
     setState(() {
-      currentLyricLine =
-          lyric == null ? "Enjoy Music" : lyric!.lines.first.content;
+      if (lyric == null) {
+        currentLyricLine = "Enjoy Music";
+      } else {
+        if (lyric!.lines.isNotEmpty) {
+          currentLyricLine = lyric!.lines.first.content;
+        } else {
+          currentLyricLine = "Enjoy Music";
+        }
+      }
     });
   }
 

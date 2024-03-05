@@ -37,5 +37,5 @@ flutter:
 
 msix_config:
   display_name: Coriander Player
-  msix_version: 1.0.0.0
+  msix_version: 1.0.0.1
   logo_path: D:\FlutterApps\coriander_player\windows\runner\resources\app_icon.ico

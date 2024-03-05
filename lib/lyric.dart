@@ -112,13 +112,15 @@ class Lyric {
         buf.write(separator);
       }
     }
-    buf.write(lines.last.content);
-    combinedLines.add(LyricLine(
-      time: lines.last.time,
-      content: buf.toString(),
-      isBlank: lines.last.isBlank,
-      length: lines.last.length,
-    ));
+    if (lines.isNotEmpty) {
+      buf.write(lines.last.content);
+      combinedLines.add(LyricLine(
+        time: lines.last.time,
+        content: buf.toString(),
+        isBlank: lines.last.isBlank,
+        length: lines.last.length,
+      ));
+    }
 
     return Lyric(combinedLines, source);
   }
@@ -140,7 +142,9 @@ class Lyric {
     for (var i = 0; i < lines.length - 1; i++) {
       lines[i].length = lines[i + 1].time - lines[i].time;
     }
-    lines.last.length = Duration.zero;
+    if (lines.isNotEmpty) {
+      lines.last.length = Duration.zero;
+    }
 
     final result = Lyric(lines, source);
 
