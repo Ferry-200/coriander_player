@@ -28,12 +28,7 @@ class WelcomingPage extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(32.0),
-          child: Wrap(
-            spacing: 32.0,
-            runSpacing: 32.0,
-            alignment: WrapAlignment.center,
-            runAlignment: WrapAlignment.center,
-            crossAxisAlignment: WrapCrossAlignment.center,
+          child: Column(
             children: [
               Text(
                 "你的音乐都在那些文件夹呢？",
@@ -42,6 +37,7 @@ class WelcomingPage extends StatelessWidget {
                   fontSize: 22,
                 ),
               ),
+              const SizedBox(height: 32.0),
               const _AudioFolderEdit(),
             ],
           ),
