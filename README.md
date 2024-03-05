@@ -8,7 +8,7 @@
 - 歌词栏
 - 美观的歌词界面
 - 跟 Apple Music 相似的间奏表示
-  <video controls src="for_readme/transition.mp4" title="Title"></video>
+  ![间奏表示](for_readme/transition.png)
 
 ### 安装
 1. 下载 [Release](https://github.com/Ferry-200/coriander_player/releases) 里的发行版，直接双击release.zip里的exe运行
