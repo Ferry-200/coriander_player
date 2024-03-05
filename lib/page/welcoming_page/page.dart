@@ -52,7 +52,7 @@ class WelcomingPage extends StatelessWidget {
 }
 
 class _AudioFolderEdit extends StatefulWidget {
-  const _AudioFolderEdit({super.key});
+  const _AudioFolderEdit();
 
   @override
   State<_AudioFolderEdit> createState() => __AudioFolderEditState();
@@ -118,7 +118,7 @@ class __AudioFolderEditState extends State<_AudioFolderEdit> {
 }
 
 class _SaveButton extends StatefulWidget {
-  const _SaveButton({super.key, required this.folderPaths});
+  const _SaveButton({required this.folderPaths});
 
   final List<String> folderPaths;
 
@@ -218,7 +218,7 @@ class _FolderChip extends StatelessWidget {
 }
 
 class _TitleBar extends StatelessWidget {
-  const _TitleBar({super.key});
+  const _TitleBar();
 
   @override
   Widget build(BuildContext context) {

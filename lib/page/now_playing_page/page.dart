@@ -1,3 +1,5 @@
+// ignore_for_file: camel_case_types
+
 import 'package:coriander_player/audio_library.dart';
 import 'package:coriander_player/component/responsive_builder.dart';
 import 'package:coriander_player/page/now_playing_page/component/current_playlist_view.dart';
@@ -58,7 +60,7 @@ enum _ViewMode {
 _ViewMode _viewMode = _ViewMode.onlyMain;
 
 class _NowPlayingBody_Small extends StatefulWidget {
-  const _NowPlayingBody_Small(this.lyricViewKey, {super.key});
+  const _NowPlayingBody_Small(this.lyricViewKey);
 
   final GlobalKey lyricViewKey;
 
@@ -157,7 +159,7 @@ class __NowPlayingBody_SmallState extends State<_NowPlayingBody_Small> {
 }
 
 class _CompactAudioInfo extends StatelessWidget {
-  const _CompactAudioInfo({super.key});
+  const _CompactAudioInfo();
 
   @override
   Widget build(BuildContext context) {
@@ -231,10 +233,7 @@ class _CompactAudioInfo extends StatelessWidget {
 }
 
 class _NowPlayingBody_Large extends StatefulWidget {
-  const _NowPlayingBody_Large(
-    this.lyricViewKey, {
-    super.key,
-  });
+  const _NowPlayingBody_Large(this.lyricViewKey);
 
   final GlobalKey lyricViewKey;
 
@@ -332,7 +331,7 @@ class __NowPlayingBody_LargeState extends State<_NowPlayingBody_Large> {
 }
 
 class _LyricViewBtn extends StatelessWidget {
-  const _LyricViewBtn({super.key, required this.onTap});
+  const _LyricViewBtn({required this.onTap});
 
   final void Function() onTap;
 
@@ -355,7 +354,7 @@ class _LyricViewBtn extends StatelessWidget {
 }
 
 class _PlaylistViewBtn extends StatelessWidget {
-  const _PlaylistViewBtn({super.key, required this.onTap});
+  const _PlaylistViewBtn({required this.onTap});
 
   final void Function() onTap;
 

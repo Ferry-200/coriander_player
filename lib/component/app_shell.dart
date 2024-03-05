@@ -30,7 +30,7 @@ class AppShell extends StatelessWidget {
 }
 
 class _AppShell_Small extends StatelessWidget {
-  const _AppShell_Small({super.key, required this.page});
+  const _AppShell_Small({required this.page});
 
   final Widget page;
 
@@ -50,7 +50,7 @@ class _AppShell_Small extends StatelessWidget {
 }
 
 class _AppShell_Large extends StatelessWidget {
-  const _AppShell_Large({super.key, required this.page});
+  const _AppShell_Large({required this.page});
 
   final Widget page;
 

@@ -1,3 +1,5 @@
+// ignore_for_file: camel_case_types
+
 import 'package:coriander_player/component/responsive_builder.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
@@ -8,8 +10,7 @@ import 'package:provider/provider.dart';
 
 class _SideNavItem_Medium extends StatelessWidget {
   const _SideNavItem_Medium(
-      {super.key,
-      required this.isSelected,
+      {required this.isSelected,
       required this.onTap,
       required this.icon,
       required this.label});
@@ -81,8 +82,7 @@ class _SideNavItem_Medium extends StatelessWidget {
 
 class _SideNavItem_Large extends StatelessWidget {
   const _SideNavItem_Large(
-      {super.key,
-      required this.isSelected,
+      {required this.isSelected,
       required this.onTap,
       required this.icon,
       required this.label});

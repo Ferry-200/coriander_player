@@ -267,7 +267,7 @@ class _LyricViewTile extends StatelessWidget {
 
 class _LyricCountDownTile extends StatelessWidget {
   final LyricLine line;
-  const _LyricCountDownTile({super.key, required this.line});
+  const _LyricCountDownTile({required this.line});
 
   @override
   Widget build(BuildContext context) {

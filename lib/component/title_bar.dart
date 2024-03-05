@@ -1,3 +1,5 @@
+// ignore_for_file: camel_case_types
+
 import 'package:coriander_player/component/horizontal_lyric_view.dart';
 import 'package:coriander_player/component/responsive_builder.dart';
 import 'package:coriander_player/playlist.dart';
@@ -29,7 +31,7 @@ class TitleBar extends StatelessWidget {
 }
 
 class _TitleBar_Small extends StatelessWidget {
-  const _TitleBar_Small({super.key});
+  const _TitleBar_Small();
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +69,7 @@ class _TitleBar_Small extends StatelessWidget {
 }
 
 class _TitleBar_Medium extends StatelessWidget {
-  const _TitleBar_Medium({super.key});
+  const _TitleBar_Medium();
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +110,7 @@ class _TitleBar_Medium extends StatelessWidget {
 }
 
 class _TitleBar_Large extends StatelessWidget {
-  const _TitleBar_Large({super.key});
+  const _TitleBar_Large();
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +161,7 @@ class _TitleBar_Large extends StatelessWidget {
 }
 
 class _OpenDrawerBtn extends StatelessWidget {
-  const _OpenDrawerBtn({super.key});
+  const _OpenDrawerBtn();
 
   @override
   Widget build(BuildContext context) {
@@ -180,7 +182,7 @@ class _OpenDrawerBtn extends StatelessWidget {
 }
 
 class _NavBackBtn extends StatelessWidget {
-  const _NavBackBtn({super.key});
+  const _NavBackBtn();
 
   @override
   Widget build(BuildContext context) {
