@@ -167,19 +167,24 @@ class _VerticalLyricViewState extends State<VerticalLyricView> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      type: MaterialType.transparency,
-      child: ScrollConfiguration(
-        behavior: scrollBehavier,
-        child: SingleChildScrollView(
-          controller: scrollController,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: lyricTiles,
+    return Stack(
+      children: [
+        Material(
+          type: MaterialType.transparency,
+          child: ScrollConfiguration(
+            behavior: scrollBehavier,
+            child: SingleChildScrollView(
+              controller: scrollController,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: lyricTiles,
+              ),
+            ),
           ),
         ),
-      ),
+        const LyricSourceLabel()
+      ],
     );
   }
 
@@ -189,6 +194,44 @@ class _VerticalLyricViewState extends State<VerticalLyricView> {
     lyricLineStreamSubscription.cancel();
     playService.removeListener(_updateLyric);
     scrollController.dispose();
+  }
+}
+
+class LyricSourceLabel extends StatelessWidget {
+  const LyricSourceLabel({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Provider.of<ThemeProvider>(context);
+    final playService = Provider.of<PlayService>(context);
+    final lyric = playService.nowPlayingLyric;
+
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4.0),
+            border: Border.all(color: theme.palette.outline),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Text(
+              lyric == null
+                  ? "无"
+                  : lyric.lines.isEmpty
+                      ? "歌词为空"
+                      : lyric.source.name,
+              style: TextStyle(
+                fontSize: 12,
+                color: theme.palette.onSecondaryContainer,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 

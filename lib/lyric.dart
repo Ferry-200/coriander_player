@@ -62,8 +62,12 @@ class LyricLine {
 enum LyricSource {
   /// mp3: USLT frame
   /// flac: LYRICS comment
-  embedded,
-  lrc,
+  embedded("内嵌"),
+  lrc("外挂");
+
+  final String name;
+
+  const LyricSource(this.name);
 }
 
 class Lyric {
