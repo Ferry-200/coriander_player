@@ -23,6 +23,7 @@ dependencies:
   path: ^1.8.3
   file_picker: ^6.1.1
   material_symbols_icons: ^4.2719.1
+  windows_ui: ^0.2.0
 
 dev_dependencies:
   flutter_test:

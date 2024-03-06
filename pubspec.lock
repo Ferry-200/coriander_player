@@ -544,6 +544,118 @@ packages:
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
     source: hosted
     version: "0.3.8"
+  windows_applicationmodel:
+    dependency: transitive
+    description:
+      name: windows_applicationmodel
+      sha256: fce866308c8395efca0ea646cc8ee3ff5a59470f82458e420cf170129876cc85
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.2.0"
+  windows_data:
+    dependency: transitive
+    description:
+      name: windows_data
+      sha256: "7da30e632a9bb8db10c7c4bae11e8cae66cf9b89efb5f1a7ff19b8906f3fdf08"
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.2.0"
+  windows_devices:
+    dependency: transitive
+    description:
+      name: windows_devices
+      sha256: "503d78b9f721d42b35c1d280c3ec839d1006d29b7b5cabd38ed100458d9f0358"
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.2.0"
+  windows_foundation:
+    dependency: transitive
+    description:
+      name: windows_foundation
+      sha256: "3ed6e5346e9d54eff9781b1b371a47ca323d0978f4b26e8916e8bc494cae187f"
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.2.0"
+  windows_globalization:
+    dependency: transitive
+    description:
+      name: windows_globalization
+      sha256: "162e7f05a866f2d99ae797afa9c68dff570ba8562d13c5c0a7cc14089b3c8d18"
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.1.0+1"
+  windows_graphics:
+    dependency: transitive
+    description:
+      name: windows_graphics
+      sha256: a6646c32ff79105264dcc9cf47ead211ba176386f857b63394e6d29f0c5ff9eb
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.2.0"
+  windows_media:
+    dependency: transitive
+    description:
+      name: windows_media
+      sha256: "6b55c1a7ed48f1e38eb1dc4829eca7ee9fdbe6d2a4744d887d99ba13bde78c7d"
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.2.0"
+  windows_networking:
+    dependency: transitive
+    description:
+      name: windows_networking
+      sha256: "04f9e1f004f85af3d400c24bd226efb0c4513f7f843ba07998528f0bdee62e7a"
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.2.0"
+  windows_perception:
+    dependency: transitive
+    description:
+      name: windows_perception
+      sha256: aa9fb6c8c97be855aece8f28943284c2680afa65a012144e012173081e568728
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.1.0"
+  windows_security:
+    dependency: transitive
+    description:
+      name: windows_security
+      sha256: c1f2bbe4c2b2fdf07cb50afff652413bb8f908d27328c547db03e7591c1331e2
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.1.0+1"
+  windows_services:
+    dependency: transitive
+    description:
+      name: windows_services
+      sha256: dad37ce3c795867e650b66a347b412e066e625a734ac2444ff163f4e5b8a040b
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.1.0"
+  windows_storage:
+    dependency: transitive
+    description:
+      name: windows_storage
+      sha256: ba370214ad4dca9ffda684f40231a5da68f296d8d8dde1b7c0b8011dd150b64e
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.2.0"
+  windows_system:
+    dependency: transitive
+    description:
+      name: windows_system
+      sha256: "8d5c2524bef8c71923b16cd9610fe194c77540687fae661e4fbbb7c78340fabe"
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.1.0+1"
+  windows_ui:
+    dependency: "direct main"
+    description:
+      name: windows_ui
+      sha256: "8fdff2a7bc05070ea3021b320d64fa27559095708bc8912cd3ee9eb509ed9b95"
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.2.0"
   xdg_directories:
     dependency: transitive
     description:

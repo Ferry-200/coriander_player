@@ -7,6 +7,7 @@ import 'package:coriander_player/audio_library.dart';
 import 'package:coriander_player/lyric.dart';
 import 'package:coriander_player/src/bass/bass_player.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
+import 'package:coriander_player/windows_toast.dart';
 import 'package:flutter/widgets.dart';
 
 enum PlayMode {
@@ -118,6 +119,12 @@ class PlayService with ChangeNotifier {
     _bassPlayer.start();
     notifyListeners();
     ThemeProvider.instance.setPalleteFromAudio(nowPlaying!);
+
+    sendWindowsNotification(
+      title: "正在播放",
+      content:
+          "${nowPlaying!.title}\n${nowPlaying!.artist} - ${nowPlaying!.album}",
+    );
   }
 
   /// 播放当前播放列表的第几项，只能用在播放列表界面
