@@ -94,7 +94,10 @@ class _TitleBar_Medium extends StatelessWidget {
                 ),
                 const Expanded(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 8.0,
+                    ),
                     child: HorizontalLyricView(),
                   ),
                 ),
@@ -146,9 +149,11 @@ class _TitleBar_Large extends StatelessWidget {
                     ),
                   ),
                   const Expanded(
-                    child: HorizontalLyricView(),
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(0, 8.0, 16.0, 8.0),
+                      child: HorizontalLyricView(),
+                    ),
                   ),
-                  const SizedBox(width: 16.0),
                 ],
               ),
             ),
