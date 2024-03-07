@@ -16,17 +16,12 @@ class HorizontalLyricView extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
 
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: theme.palette.secondaryContainer,
-            borderRadius: BorderRadius.circular(16.0),
-          ),
-          child: const _LyricHorizontalScrollArea(),
-        ),
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.palette.secondaryContainer,
+        borderRadius: BorderRadius.circular(16.0),
       ),
+      child: const _LyricHorizontalScrollArea(),
     );
   }
 }
