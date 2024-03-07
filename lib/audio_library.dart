@@ -202,7 +202,7 @@ class Audio {
     return Future.value(_cover!);
   }
 
-  /// now playing 不需要频繁调用，所以不缓存图片
+  /// audio detail page 不需要频繁调用，所以不缓存图片
   /// 200 * 200
   Future<ImageProvider?> get mediumCover =>
       loadCoverBytes(path: path).then((value) {
