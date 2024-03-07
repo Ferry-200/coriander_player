@@ -203,7 +203,7 @@ class Audio {
   }
 
   /// now playing 不需要频繁调用，所以不缓存图片
-  /// 350*350
+  /// 400 * 400
   Future<ImageProvider?> get bigCover =>
       loadCoverBytes(path: path).then((value) {
         if (value == null) {
