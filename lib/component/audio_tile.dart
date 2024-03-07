@@ -168,6 +168,19 @@ class AudioTile extends StatelessWidget {
               ),
               child: const Text("添加到歌单"),
             ),
+
+            /// to detail page
+            MenuItemButton(
+              style: menuItemStyle,
+              onPressed: () {
+                context.push(app_paths.AUDIO_DETAIL_PAGE, extra: audio);
+              },
+              leadingIcon: Icon(
+                Symbols.info,
+                color: theme.palette.onSurface,
+              ),
+              child: const Text("详细信息"),
+            ),
           ],
           builder: (context, controller, _) {
             return Padding(

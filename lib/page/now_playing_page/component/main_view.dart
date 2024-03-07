@@ -286,7 +286,7 @@ class NowPlayingCover extends StatelessWidget {
               ),
             )
           : FutureBuilder(
-              future: nowPlaying.bigCover,
+              future: nowPlaying.largeCover,
               builder: (context, snapshot) {
                 final theme = Provider.of<ThemeProvider>(context);
                 if (snapshot.data == null) {

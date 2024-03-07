@@ -1,6 +1,7 @@
 // ignore_for_file: constant_identifier_names
 
 const String AUDIOS_PAGE = "/audios";
+const String AUDIO_DETAIL_PAGE = "/audios/detail";
 
 const String ARTISTS_PAGE = "/artists";
 const String ARTIST_DETAIL_PAGE = "/artists/detail";

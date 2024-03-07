@@ -4,6 +4,7 @@ import 'package:coriander_player/page/album_detail_page/page.dart';
 import 'package:coriander_player/page/albums_page/page.dart';
 import 'package:coriander_player/page/artist_detail_page/page.dart';
 import 'package:coriander_player/page/artists_page/page.dart';
+import 'package:coriander_player/page/audio_detail_page/page.dart';
 import 'package:coriander_player/page/audios_page/page.dart';
 import 'package:coriander_player/page/folders_page/page.dart';
 import 'package:coriander_player/page/now_playing_page/page.dart';
@@ -96,6 +97,14 @@ class Entry extends StatelessWidget {
               }
               return const SlideTransitionPage(child: AudiosPage());
             },
+            routes: [
+              GoRoute(
+                path: "detail",
+                pageBuilder: (context, state) => SlideTransitionPage(
+                  child: AudioDetailPage(audio: state.extra as Audio),
+                ),
+              ),
+            ],
           ),
 
           /// artists page
