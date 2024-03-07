@@ -166,38 +166,50 @@ class Lyric {
     final suffix = path.split(".").last.toLowerCase();
 
     if (suffix == "mp3") {
-      return loadLyricFromMp3(path: path).then((value) {
-        if (value == null) {
-          return null;
-        }
-        return Lyric._fromLrcStr(
-          value,
-          LyricSource.embedded,
-          separator: separator,
-        );
-      });
+      return _fromMp3(path, separator);
     } else if (suffix == "flac") {
-      return loadLyricFromFlac(path: path).then((value) {
-        if (value == null) {
-          return null;
-        }
-        return Lyric._fromLrcStr(
-          value,
-          LyricSource.embedded,
-          separator: separator,
-        );
-      });
+      return _fromFlac(path, separator);
     } else {
-      return loadLyricFromLrc(path: path).then((value) {
-        if (value == null) {
-          return null;
-        }
-        return Lyric._fromLrcStr(
-          value,
-          LyricSource.lrc,
-          separator: separator,
-        );
-      });
+      return _fromLrcFile(path, separator);
     }
+  }
+
+  static Future<Lyric?> _fromLrcFile(String path, String? separator) {
+    return loadLyricFromLrc(path: path).then((value) {
+      if (value == null) {
+        return null;
+      }
+      return Lyric._fromLrcStr(
+        value,
+        LyricSource.lrc,
+        separator: separator,
+      );
+    });
+  }
+
+  static Future<Lyric?> _fromFlac(String path, String? separator) {
+    return loadLyricFromFlac(path: path).then((value) {
+      if (value == null) {
+        return _fromLrcFile(path, separator);
+      }
+      return Lyric._fromLrcStr(
+        value,
+        LyricSource.embedded,
+        separator: separator,
+      );
+    });
+  }
+
+  static Future<Lyric?> _fromMp3(String path, String? separator) {
+    return loadLyricFromMp3(path: path).then((value) {
+      if (value == null) {
+        return _fromLrcFile(path, separator);
+      }
+      return Lyric._fromLrcStr(
+        value,
+        LyricSource.embedded,
+        separator: separator,
+      );
+    });
   }
 }
