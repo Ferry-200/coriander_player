@@ -371,29 +371,32 @@ class _BuildIndexButton extends StatefulWidget {
 
 class __BuildIndexButtonState extends State<_BuildIndexButton> {
   var isLoading = false;
+
+  void save() async {
+    final audioLibrary = AudioLibrary.instance;
+    setState(() {
+      isLoading = true;
+    });
+    final indexPath = (await getApplicationSupportDirectory()).path;
+    await buildIndexFromPaths(
+      paths: List.generate(
+        audioLibrary.folders.length,
+        (i) => audioLibrary.folders[i].path,
+      ),
+      indexPath: indexPath,
+    );
+    await AudioLibrary.initFromIndex();
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
-    final audioLibrary = AudioLibrary.instance;
 
     return IconButton(
-      onPressed: () async {
-        setState(() {
-          isLoading = true;
-        });
-        final indexPath = (await getApplicationSupportDirectory()).path;
-        await buildIndexFromPaths(
-          paths: List.generate(
-            audioLibrary.folders.length,
-            (i) => audioLibrary.folders[i].path,
-          ),
-          indexPath: indexPath,
-        );
-        await AudioLibrary.initFromIndex();
-        setState(() {
-          isLoading = false;
-        });
-      },
+      onPressed: isLoading ? null : save,
       hoverColor: theme.palette.onSurface.withOpacity(0.08),
       highlightColor: theme.palette.onSurface.withOpacity(0.12),
       splashColor: theme.palette.onSurface.withOpacity(0.12),

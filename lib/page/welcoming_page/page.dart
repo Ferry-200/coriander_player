@@ -125,27 +125,28 @@ class _SaveButton extends StatefulWidget {
 class __SaveButtonState extends State<_SaveButton> {
   bool isSaving = false;
 
+  void save() async {
+    setState(() {
+      isSaving = true;
+    });
+    final indexPath = (await getApplicationSupportDirectory()).path;
+    await buildIndexFromPaths(paths: widget.folderPaths, indexPath: indexPath);
+    await AppSettings.instance.saveSettings();
+    await AudioLibrary.initFromIndex();
+    setState(() {
+      isSaving = false;
+    });
+    if (context.mounted) {
+      context.go(app_paths.AUDIOS_PAGE);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
 
     return FilledButton.icon(
-      onPressed: () async {
-        setState(() {
-          isSaving = true;
-        });
-        final indexPath = (await getApplicationSupportDirectory()).path;
-        await buildIndexFromPaths(
-            paths: widget.folderPaths, indexPath: indexPath);
-        await AppSettings.instance.saveSettings();
-        await AudioLibrary.initFromIndex();
-        setState(() {
-          isSaving = false;
-        });
-        if (context.mounted) {
-          context.go(app_paths.AUDIOS_PAGE);
-        }
-      },
+      onPressed: isSaving ? null : save,
       icon: isSaving
           ? SizedBox(
               width: 18,
