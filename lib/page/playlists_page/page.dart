@@ -2,7 +2,7 @@ import 'package:coriander_player/component/audio_tile.dart';
 import 'package:coriander_player/page/page_scaffold.dart';
 import 'page_controller.dart';
 import 'package:coriander_player/play_service.dart';
-import 'package:coriander_player/playlist.dart';
+import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:flutter/material.dart';

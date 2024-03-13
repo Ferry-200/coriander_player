@@ -2,7 +2,7 @@
 
 import 'package:coriander_player/component/horizontal_lyric_view.dart';
 import 'package:coriander_player/component/responsive_builder.dart';
-import 'package:coriander_player/playlist.dart';
+import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

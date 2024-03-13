@@ -1,4 +1,4 @@
-import 'package:coriander_player/audio_library.dart';
+import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/app_shell.dart';
 import 'package:coriander_player/page/album_detail_page/page.dart';
 import 'package:coriander_player/page/albums_page/page.dart';
@@ -15,7 +15,7 @@ import 'package:coriander_player/page/search_page/union_result.dart';
 import 'package:coriander_player/page/settings_page/page.dart';
 import 'package:coriander_player/page/updating_dialog/dialog.dart';
 import 'package:coriander_player/page/welcoming_page/page.dart';
-import 'package:coriander_player/playlist.dart';
+import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';

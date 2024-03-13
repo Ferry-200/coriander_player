@@ -1,19 +1,19 @@
 import 'package:coriander_player/src/rust/api/tag_reader.dart';
 
-class LyricLine {
+class LrcLine {
   Duration time;
   String content;
 
   bool isBlank;
   Duration? length;
 
-  LyricLine(
+  LrcLine(
       {required this.time,
       required this.content,
       required this.isBlank,
       this.length});
 
-  static LyricLine blankLine = LyricLine(
+  static LrcLine blankLine = LrcLine(
     time: Duration.zero,
     content: "",
     isBlank: true,
@@ -26,7 +26,7 @@ class LyricLine {
   }
 
   /// line: [mm:ss.msmsms]content
-  static LyricLine? fromLine(String line) {
+  static LrcLine? fromLine(String line) {
     if (line.trim().isEmpty) {
       return null;
     }
@@ -51,7 +51,7 @@ class LyricLine {
 
     var inMilliseconds = ((minute * 60 + second) * 1000).toInt();
 
-    return LyricLine(
+    return LrcLine(
       time: Duration(milliseconds: inMilliseconds),
       content: content,
       isBlank: content.isEmpty,
@@ -59,23 +59,23 @@ class LyricLine {
   }
 }
 
-enum LyricSource {
+enum LrcSource {
   /// mp3: USLT frame
   /// flac: LYRICS comment
   embedded("内嵌"),
-  lrc("外挂");
+  lrcFile("外挂");
 
   final String name;
 
-  const LyricSource(this.name);
+  const LrcSource(this.name);
 }
 
-class Lyric {
-  List<LyricLine> lines;
+class Lrc {
+  List<LrcLine> lines;
 
-  LyricSource source;
+  LrcSource source;
 
-  Lyric(this.lines, this.source);
+  Lrc(this.lines, this.source);
 
   @override
   String toString() {
@@ -97,14 +97,14 @@ class Lyric {
   }
 
   /// line_1 and line_2时间戳相同，合并成line_1[separator]line_2
-  Lyric _combineLyricLine(String separator) {
+  Lrc _combineLrcLine(String separator) {
     _sort();
-    List<LyricLine> combinedLines = [];
+    List<LrcLine> combinedLines = [];
     var buf = StringBuffer();
     for (var i = 1; i < lines.length; i++) {
       if (lines[i].time != lines[i - 1].time) {
         buf.write(lines[i - 1].content);
-        combinedLines.add(LyricLine(
+        combinedLines.add(LrcLine(
           time: lines[i - 1].time,
           content: buf.toString(),
           isBlank: lines[i - 1].isBlank,
@@ -118,7 +118,7 @@ class Lyric {
     }
     if (lines.isNotEmpty) {
       buf.write(lines.last.content);
-      combinedLines.add(LyricLine(
+      combinedLines.add(LrcLine(
         time: lines.last.time,
         content: buf.toString(),
         isBlank: lines.last.isBlank,
@@ -126,17 +126,17 @@ class Lyric {
       ));
     }
 
-    return Lyric(combinedLines, source);
+    return Lrc(combinedLines, source);
   }
 
   /// 如果separator为null，不合并歌词；否则，合并相同时间戳的歌词
-  static Lyric _fromLrcStr(String lrc, LyricSource source,
+  static Lrc _fromLrcStr(String lrc, LrcSource source,
       {String? separator}) {
     var lrcLines = lrc.split("\n");
 
-    var lines = <LyricLine>[];
+    var lines = <LrcLine>[];
     for (int i = 0; i < lrcLines.length; i++) {
-      var lyricLine = LyricLine.fromLine(lrcLines[i]);
+      var lyricLine = LrcLine.fromLine(lrcLines[i]);
       if (lyricLine == null) {
         continue;
       }
@@ -150,19 +150,19 @@ class Lyric {
       lines.last.length = Duration.zero;
     }
 
-    final result = Lyric(lines, source);
+    final result = Lrc(lines, source);
 
     if (separator == null) {
       return result;
     }
 
-    return result._combineLyricLine(separator);
+    return result._combineLrcLine(separator);
   }
 
   /// .mp3: parse from USLT frame
   /// .flac: parse from LYRICS comment
   /// other: parse from .lrc file content
-  static Future<Lyric?> fromAudioPath(String path, {String? separator}) async {
+  static Future<Lrc?> fromAudioPath(String path, {String? separator}) async {
     final suffix = path.split(".").last.toLowerCase();
 
     if (suffix == "mp3") {
@@ -174,40 +174,40 @@ class Lyric {
     }
   }
 
-  static Future<Lyric?> _fromLrcFile(String path, String? separator) {
+  static Future<Lrc?> _fromLrcFile(String path, String? separator) {
     return loadLyricFromLrc(path: path).then((value) {
       if (value == null) {
         return null;
       }
-      return Lyric._fromLrcStr(
+      return Lrc._fromLrcStr(
         value,
-        LyricSource.lrc,
+        LrcSource.lrcFile,
         separator: separator,
       );
     });
   }
 
-  static Future<Lyric?> _fromFlac(String path, String? separator) {
+  static Future<Lrc?> _fromFlac(String path, String? separator) {
     return loadLyricFromFlac(path: path).then((value) {
       if (value == null) {
         return _fromLrcFile(path, separator);
       }
-      return Lyric._fromLrcStr(
+      return Lrc._fromLrcStr(
         value,
-        LyricSource.embedded,
+        LrcSource.embedded,
         separator: separator,
       );
     });
   }
 
-  static Future<Lyric?> _fromMp3(String path, String? separator) {
+  static Future<Lrc?> _fromMp3(String path, String? separator) {
     return loadLyricFromMp3(path: path).then((value) {
       if (value == null) {
         return _fromLrcFile(path, separator);
       }
-      return Lyric._fromLrcStr(
+      return Lrc._fromLrcStr(
         value,
-        LyricSource.embedded,
+        LrcSource.embedded,
         separator: separator,
       );
     });

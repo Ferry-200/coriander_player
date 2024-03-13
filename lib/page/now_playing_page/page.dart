@@ -1,6 +1,6 @@
 // ignore_for_file: camel_case_types
 
-import 'package:coriander_player/audio_library.dart';
+import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/responsive_builder.dart';
 import 'package:coriander_player/page/now_playing_page/component/current_playlist_view.dart';
 import 'package:coriander_player/page/now_playing_page/component/main_view.dart';

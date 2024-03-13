@@ -1,7 +1,7 @@
-import 'package:coriander_player/audio_library.dart';
+import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/album_tile.dart';
 import 'package:coriander_player/component/artist_tile.dart';
-import 'package:coriander_player/lyric.dart';
+import 'package:coriander_player/lyric/lrc.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -23,7 +23,7 @@ class AudioDetailPage extends StatelessWidget {
     );
     final album = AudioLibrary.instance.albumCollection[audio.album]!;
     const space = SizedBox(height: 16.0);
-    final lyric = Lyric.fromAudioPath(audio.path, separator: "\n");
+    final lyric = Lrc.fromAudioPath(audio.path, separator: "\n");
 
     return Material(
       color: theme.palette.surface,

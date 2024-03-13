@@ -3,7 +3,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:coriander_player/audio_library.dart';
+import 'package:coriander_player/library/audio_library.dart';
 import 'package:path_provider/path_provider.dart';
 
 List<Playlist> PLAYLISTS = [];

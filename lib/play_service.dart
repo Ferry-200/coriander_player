@@ -3,8 +3,8 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:coriander_player/audio_library.dart';
-import 'package:coriander_player/lyric.dart';
+import 'package:coriander_player/library/audio_library.dart';
+import 'package:coriander_player/lyric/lrc.dart';
 import 'package:coriander_player/src/bass/bass_player.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:coriander_player/windows_toast.dart';
@@ -44,7 +44,7 @@ class PlayService with ChangeNotifier {
   }
 
   Audio? nowPlaying;
-  Lyric? nowPlayingLyric;
+  Lrc? nowPlayingLyric;
 
   /// 下一行歌词
   int _nextLyricLine = 0;
@@ -110,7 +110,7 @@ class PlayService with ChangeNotifier {
     nowPlaying = playlist[audioIndex];
     _bassPlayer.setSource(nowPlaying!.path);
 
-    Lyric.fromAudioPath(nowPlaying!.path, separator: "┃").then((value) {
+    Lrc.fromAudioPath(nowPlaying!.path, separator: "┃").then((value) {
       nowPlayingLyric = value;
       notifyListeners();
     });

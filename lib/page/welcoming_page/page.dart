@@ -1,5 +1,5 @@
 import 'package:coriander_player/app_settings.dart';
-import 'package:coriander_player/audio_library.dart';
+import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/title_bar.dart';
 import 'package:coriander_player/src/rust/api/tag_reader.dart';
 import 'package:coriander_player/theme/theme_provider.dart';

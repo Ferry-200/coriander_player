@@ -1,4 +1,4 @@
-import 'package:coriander_player/audio_library.dart';
+import 'package:coriander_player/library/audio_library.dart';
 import 'package:flutter/widgets.dart';
 
 enum SortBy {

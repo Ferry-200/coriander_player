@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:coriander_player/lyric.dart';
+import 'package:coriander_player/lyric/lrc.dart';
 import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +23,7 @@ class _VerticalLyricViewState extends State<VerticalLyricView> {
   /// 隐藏滚动条
   final scrollBehavier = const ScrollBehavior().copyWith(scrollbars: false);
 
-  Lyric? lyric;
+  Lrc? lyric;
   late List<_LyricViewTile> lyricTiles;
 
   /// 用来定位到当前歌词
@@ -46,7 +46,7 @@ class _VerticalLyricViewState extends State<VerticalLyricView> {
     if (lyric == null) {
       lyricTiles = [
         _LyricViewTile(
-          line: LyricLine.blankLine,
+          line: LrcLine.blankLine,
           opacity: 1.0,
         )
       ];
@@ -131,7 +131,7 @@ class _VerticalLyricViewState extends State<VerticalLyricView> {
     if (lyric == null) {
       lyricTiles = [
         _LyricViewTile(
-          line: LyricLine.blankLine,
+          line: LrcLine.blankLine,
           opacity: 1.0,
           onTap: () {},
         )
@@ -239,7 +239,7 @@ class _LyricViewTile extends StatelessWidget {
   const _LyricViewTile(
       {super.key, required this.line, required this.opacity, this.onTap});
 
-  final LyricLine line;
+  final LrcLine line;
   final double opacity;
   final void Function()? onTap;
 
@@ -299,7 +299,7 @@ class _LyricViewTile extends StatelessWidget {
 }
 
 class _LyricCountDownTile extends StatelessWidget {
-  final LyricLine line;
+  final LrcLine line;
   const _LyricCountDownTile({required this.line});
 
   @override
@@ -367,7 +367,7 @@ class CountDownTilePainter extends CustomPainter {
 }
 
 class CountDownTileController extends ChangeNotifier {
-  final LyricLine line;
+  final LrcLine line;
 
   final playService = PlayService.instance;
 

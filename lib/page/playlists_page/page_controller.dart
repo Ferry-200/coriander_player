@@ -1,4 +1,4 @@
-import 'package:coriander_player/playlist.dart';
+import 'package:coriander_player/library/playlist.dart';
 import 'package:flutter/foundation.dart';
 
 class PlayListsPageController with ChangeNotifier {

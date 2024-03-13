@@ -1,4 +1,4 @@
-import 'package:coriander_player/audio_library.dart';
+import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:coriander_player/component/audio_tile.dart';
 import 'package:coriander_player/page/page_scaffold.dart';

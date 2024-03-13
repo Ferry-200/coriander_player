@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:coriander_player/lyric.dart';
+import 'package:coriander_player/lyric/lrc.dart';
 import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +42,7 @@ class _LyricHorizontalScrollAreaState
   final playService = PlayService.instance;
   late StreamSubscription lyricLineStreamSubscription;
 
-  Lyric? lyric;
+  Lrc? lyric;
   var currentLyricLine = "Enjoy Music";
 
   @override
