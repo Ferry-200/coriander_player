@@ -78,7 +78,7 @@ class BassPlayer {
 
   Timer _getPositionUpdater() {
     return Timer.periodic(
-      const Duration(milliseconds: 200),
+      const Duration(milliseconds: 33),
       (timer) {
         final position = this.position;
         _positionStreamController.add(position);
