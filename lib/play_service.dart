@@ -4,7 +4,10 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:coriander_player/library/audio_library.dart';
+import 'package:coriander_player/lyric/krc.dart';
 import 'package:coriander_player/lyric/lrc.dart';
+import 'package:coriander_player/lyric/qrc.dart';
+import 'package:coriander_player/music_api/search_helper.dart';
 import 'package:coriander_player/src/bass/bass_player.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:coriander_player/windows_toast.dart';
@@ -115,6 +118,13 @@ class PlayService with ChangeNotifier {
       notifyListeners();
     });
     _nextLyricLine = 0;
+
+    getMostMatchedLyric(nowPlaying!).then((value) {
+      if (value == null) print("null");
+      if (value is Lrc) print(value);
+      if (value is Qrc) print("Qrc: $value");
+      if (value is Krc) print("Krc: $value");
+    });
 
     _bassPlayer.start();
     notifyListeners();
