@@ -25,6 +25,14 @@ dependencies:
   material_symbols_icons: ^4.2719.1
   windows_ui: ^0.2.0
 
+  # music_api
+  encrypt: ^5.0.3
+  meta: ^1.10.0
+  pointycastle: ^3.7.4
+  crypto: ^3.0.3
+  xml: ^6.5.0
+  collection: ^1.18.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

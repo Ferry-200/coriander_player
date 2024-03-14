@@ -1,0 +1,5 @@
+
+
+class MusicApi {
+  MusicApi._();
+}
