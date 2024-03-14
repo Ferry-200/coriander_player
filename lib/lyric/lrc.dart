@@ -123,7 +123,7 @@ class Lrc extends Lyric {
   }
 
   /// 如果separator为null，不合并歌词；否则，合并相同时间戳的歌词
-  static Lrc fromLrcStr(String lrc, LrcSource source, {String? separator}) {
+  static Lrc fromLrcText(String lrc, LrcSource source, {String? separator}) {
     var lrcLines = lrc.split("\n");
 
     var lines = <LrcLine>[];
@@ -171,7 +171,7 @@ class Lrc extends Lyric {
       if (value == null) {
         return null;
       }
-      return Lrc.fromLrcStr(
+      return Lrc.fromLrcText(
         value,
         LrcSource.lrcFile,
         separator: separator,
@@ -184,7 +184,7 @@ class Lrc extends Lyric {
       if (value == null) {
         return _fromLrcFile(path, separator);
       }
-      return Lrc.fromLrcStr(
+      return Lrc.fromLrcText(
         value,
         LrcSource.embedded,
         separator: separator,
@@ -197,7 +197,7 @@ class Lrc extends Lyric {
       if (value == null) {
         return _fromLrcFile(path, separator);
       }
-      return Lrc.fromLrcStr(
+      return Lrc.fromLrcText(
         value,
         LrcSource.embedded,
         separator: separator,
