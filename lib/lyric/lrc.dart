@@ -1,28 +1,22 @@
+import 'package:coriander_player/lyric/lyric.dart';
 import 'package:coriander_player/src/rust/api/tag_reader.dart';
 
-class LrcLine {
-  Duration time;
-  String content;
-
+class LrcLine extends UnsyncLyricLine {
   bool isBlank;
-  Duration? length;
+  Duration length;
 
-  LrcLine(
-      {required this.time,
-      required this.content,
-      required this.isBlank,
-      this.length});
+  LrcLine(super.start, super.content, {required this.isBlank, this.length = Duration.zero});
 
   static LrcLine blankLine = LrcLine(
-    time: Duration.zero,
-    content: "",
+    Duration.zero,
+    "",
     isBlank: true,
     length: Duration.zero,
   );
 
   @override
   String toString() {
-    return {"time": time.toString(), "content": content}.toString();
+    return {"time": start.toString(), "content": content}.toString();
   }
 
   /// line: [mm:ss.msmsms]content
@@ -40,7 +34,7 @@ class LrcLine {
     var timeList = lrcTimeString.split(":");
     int? minute;
     double? second;
-    if (timeList.length == 2) {
+    if (timeList.length >= 2) {
       minute = int.tryParse(timeList[0]);
       second = double.tryParse(timeList[1]);
     }
@@ -52,8 +46,8 @@ class LrcLine {
     var inMilliseconds = ((minute * 60 + second) * 1000).toInt();
 
     return LrcLine(
-      time: Duration(milliseconds: inMilliseconds),
-      content: content,
+      Duration(milliseconds: inMilliseconds),
+      content,
       isBlank: content.isEmpty,
     );
   }
@@ -63,19 +57,18 @@ enum LrcSource {
   /// mp3: USLT frame
   /// flac: LYRICS comment
   embedded("内嵌"),
-  lrcFile("外挂");
+  lrcFile("外挂"),
+  web("网络");
 
   final String name;
 
   const LrcSource(this.name);
 }
 
-class Lrc {
-  List<LrcLine> lines;
-
+class Lrc extends Lyric {
   LrcSource source;
 
-  Lrc(this.lines, this.source);
+  Lrc(super.lines, this.source);
 
   @override
   String toString() {
@@ -89,7 +82,7 @@ class Lrc {
     for (int i = 1; i < lines.length; i++) {
       var temp = lines[i];
       int j;
-      for (j = i; j > 0 && lines[j - 1].time > temp.time; j--) {
+      for (j = i; j > 0 && lines[j - 1].start > temp.start; j--) {
         lines[j] = lines[j - 1];
       }
       lines[j] = temp;
@@ -102,27 +95,27 @@ class Lrc {
     List<LrcLine> combinedLines = [];
     var buf = StringBuffer();
     for (var i = 1; i < lines.length; i++) {
-      if (lines[i].time != lines[i - 1].time) {
-        buf.write(lines[i - 1].content);
+      if (lines[i].start != lines[i - 1].start) {
+        buf.write((lines[i - 1] as UnsyncLyricLine).content);
         combinedLines.add(LrcLine(
-          time: lines[i - 1].time,
-          content: buf.toString(),
-          isBlank: lines[i - 1].isBlank,
-          length: lines[i - 1].length,
+          lines[i - 1].start,
+          buf.toString(),
+          isBlank: (lines[i - 1] as LrcLine).isBlank,
+          length: (lines[i - 1] as LrcLine).length,
         ));
         buf.clear();
       } else {
-        buf.write(lines[i - 1].content);
+        buf.write((lines[i - 1] as UnsyncLyricLine).content);
         buf.write(separator);
       }
     }
     if (lines.isNotEmpty) {
-      buf.write(lines.last.content);
+      buf.write((lines.last as UnsyncLyricLine).content);
       combinedLines.add(LrcLine(
-        time: lines.last.time,
-        content: buf.toString(),
-        isBlank: lines.last.isBlank,
-        length: lines.last.length,
+        lines.last.start,
+        buf.toString(),
+        isBlank: (lines.last as LrcLine).isBlank,
+        length: (lines.last as LrcLine).length,
       ));
     }
 
@@ -130,8 +123,7 @@ class Lrc {
   }
 
   /// 如果separator为null，不合并歌词；否则，合并相同时间戳的歌词
-  static Lrc _fromLrcStr(String lrc, LrcSource source,
-      {String? separator}) {
+  static Lrc fromLrcStr(String lrc, LrcSource source, {String? separator}) {
     var lrcLines = lrc.split("\n");
 
     var lines = <LrcLine>[];
@@ -144,7 +136,7 @@ class Lrc {
     }
 
     for (var i = 0; i < lines.length - 1; i++) {
-      lines[i].length = lines[i + 1].time - lines[i].time;
+      lines[i].length = lines[i + 1].start - lines[i].start;
     }
     if (lines.isNotEmpty) {
       lines.last.length = Duration.zero;
@@ -179,7 +171,7 @@ class Lrc {
       if (value == null) {
         return null;
       }
-      return Lrc._fromLrcStr(
+      return Lrc.fromLrcStr(
         value,
         LrcSource.lrcFile,
         separator: separator,
@@ -192,7 +184,7 @@ class Lrc {
       if (value == null) {
         return _fromLrcFile(path, separator);
       }
-      return Lrc._fromLrcStr(
+      return Lrc.fromLrcStr(
         value,
         LrcSource.embedded,
         separator: separator,
@@ -205,7 +197,7 @@ class Lrc {
       if (value == null) {
         return _fromLrcFile(path, separator);
       }
-      return Lrc._fromLrcStr(
+      return Lrc.fromLrcStr(
         value,
         LrcSource.embedded,
         separator: separator,

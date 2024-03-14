@@ -57,13 +57,13 @@ class _LyricHorizontalScrollAreaState
       if (lyric == null) return;
 
       setState(() {
-        currentLyricLine = lyric!.lines[line].content;
+        currentLyricLine = (lyric!.lines[line] as LrcLine).content;
       });
 
       /// 减去启动延时和滚动结束停留时间
       final lastTime =
-          lyric!.lines[min(line + 1, lyric!.lines.length - 1)].time -
-              lyric!.lines[line].time -
+          lyric!.lines[min(line + 1, lyric!.lines.length - 1)].start -
+              lyric!.lines[line].start -
               waitFor -
               waitFor;
 
@@ -96,7 +96,7 @@ class _LyricHorizontalScrollAreaState
         currentLyricLine = "Enjoy Music";
       } else {
         if (lyric!.lines.isNotEmpty) {
-          currentLyricLine = lyric!.lines.first.content;
+          currentLyricLine = (lyric!.lines.first as LrcLine).content;
         } else {
           currentLyricLine = "Enjoy Music";
         }

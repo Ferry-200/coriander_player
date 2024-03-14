@@ -211,14 +211,14 @@ class AudioDetailPage extends StatelessWidget {
                     itemBuilder: (context, i) {
                       return ListTile(
                         title: Text(
-                          snapshot.data!.lines[i].time.toString(),
+                          snapshot.data!.lines[i].start.toString(),
                           style: TextStyle(
                             fontSize: 16,
                             color: theme.palette.onSurface,
                           ),
                         ),
                         subtitle: Text(
-                          snapshot.data!.lines[i].content,
+                          (snapshot.data!.lines[i] as LrcLine).content,
                           style: TextStyle(
                             fontSize: 16,
                             color: theme.palette.onSurface,

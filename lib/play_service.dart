@@ -92,7 +92,7 @@ class PlayService with ChangeNotifier {
       if (_nextLyricLine >= nowPlayingLyric!.lines.length) return;
 
       if ((pos * 1000) >
-          nowPlayingLyric!.lines[_nextLyricLine].time.inMilliseconds) {
+          nowPlayingLyric!.lines[_nextLyricLine].start.inMilliseconds) {
         _nextLyricLine += 1;
         _lyricLineStreamController.add(max(_nextLyricLine - 1, 0));
       }
@@ -251,7 +251,7 @@ class PlayService with ChangeNotifier {
     if (nowPlayingLyric == null) return;
 
     final next = nowPlayingLyric!.lines.indexWhere(
-      (element) => element.time.inMilliseconds / 1000 > position,
+      (element) => element.start.inMilliseconds / 1000 > position,
     );
     _nextLyricLine = next == -1 ? nowPlayingLyric!.lines.length : next;
     _lyricLineStreamController.add(max(_nextLyricLine - 1, 0));

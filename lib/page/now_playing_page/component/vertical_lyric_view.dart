@@ -52,7 +52,7 @@ class _VerticalLyricViewState extends State<VerticalLyricView> {
       ];
     } else {
       final next = lyric!.lines.indexWhere(
-        (element) => element.time.inMilliseconds / 1000 > playService.position,
+        (element) => element.start.inMilliseconds / 1000 > playService.position,
       );
       int nextLyricLine = next == -1 ? lyric!.lines.length : next;
       lyricTiles = _generateLyricTiles(max(nextLyricLine - 1, 0));
@@ -75,7 +75,7 @@ class _VerticalLyricViewState extends State<VerticalLyricView> {
   }
 
   void _seekToLyricLine(int i) {
-    PlayService.instance.seek(lyric!.lines[i].time.inMilliseconds / 1000);
+    PlayService.instance.seek(lyric!.lines[i].start.inMilliseconds / 1000);
     setState(() {
       lyricTiles = _generateLyricTiles(i);
     });
@@ -89,35 +89,35 @@ class _VerticalLyricViewState extends State<VerticalLyricView> {
       (i) {
         if (lyricLine >= 2 && i <= lyricLine - 2) {
           return _LyricViewTile(
-            line: lyric!.lines[i],
+            line: lyric!.lines[i] as LrcLine,
             opacity: 0.10,
             onTap: () => _seekToLyricLine(i),
           );
         }
         if (lyricLine >= 1 && i == lyricLine - 1) {
           return _LyricViewTile(
-            line: lyric!.lines[i],
+            line: lyric!.lines[i] as LrcLine,
             opacity: 0.55,
             onTap: () => _seekToLyricLine(i),
           );
         }
         if (lyricLine < lyric!.lines.length - 1 && i == lyricLine + 1) {
           return _LyricViewTile(
-            line: lyric!.lines[i],
+            line: lyric!.lines[i] as LrcLine,
             opacity: 0.55,
             onTap: () => _seekToLyricLine(i),
           );
         }
         if (lyricLine < lyric!.lines.length - 2 && i >= lyricLine + 2) {
           return _LyricViewTile(
-            line: lyric!.lines[i],
+            line: lyric!.lines[i] as LrcLine,
             opacity: 0.10,
             onTap: () => _seekToLyricLine(i),
           );
         }
         return _LyricViewTile(
           key: currentLyricTileKey,
-          line: lyric!.lines[i],
+          line: lyric!.lines[i] as LrcLine,
           opacity: 1.0,
           onTap: () => _seekToLyricLine(i),
         );
@@ -248,7 +248,7 @@ class _LyricViewTile extends StatelessWidget {
     final theme = Provider.of<ThemeProvider>(context);
 
     if (line.isBlank) {
-      if (line.length! > const Duration(seconds: 5) && opacity == 1.0) {
+      if (line.length > const Duration(seconds: 5) && opacity == 1.0) {
         return _LyricCountDownTile(line: line);
       } else {
         return const SizedBox();
@@ -395,8 +395,8 @@ class CountDownTileController extends ChangeNotifier {
   }
 
   void _updateProgress(double position) {
-    final sinceStart = position * 1000 - line.time.inMilliseconds;
-    progress = max(sinceStart, 0) / line.length!.inMilliseconds;
+    final sinceStart = position * 1000 - line.start.inMilliseconds;
+    progress = max(sinceStart, 0) / line.length.inMilliseconds;
     notifyListeners();
 
     if (progress >= 1) {
