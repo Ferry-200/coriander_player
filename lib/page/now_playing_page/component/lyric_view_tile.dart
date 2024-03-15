@@ -58,6 +58,10 @@ class _SyncLineContent extends StatelessWidget {
     final theme = Provider.of<ThemeProvider>(context);
 
     if (!isMainLine) {
+      if (syncLine.words.isEmpty) {
+        return const SizedBox.shrink();
+      }
+      
       final List<Text> contents = [
         buildText(syncLine.content, theme),
       ];
@@ -72,6 +76,14 @@ class _SyncLineContent extends StatelessWidget {
           children: contents,
         ),
       );
+    }
+
+    if (syncLine.words.isEmpty) {
+      if (syncLine.length > const Duration(seconds: 5) && isMainLine) {
+        return LyricTransitionTile(syncLine: syncLine);
+      } else {
+        return const SizedBox.shrink();
+      }
     }
 
     final List<Widget> contents = [
@@ -158,7 +170,7 @@ class _LrcLineContent extends StatelessWidget {
   Widget build(BuildContext context) {
     if (lrcLine.isBlank) {
       if (lrcLine.length > const Duration(seconds: 5) && isMainLine) {
-        return LrcTransitionTile(line: lrcLine);
+        return LyricTransitionTile(lrcLine: lrcLine);
       } else {
         return const SizedBox.shrink();
       }
@@ -195,10 +207,12 @@ class _LrcLineContent extends StatelessWidget {
   }
 }
 
-/// Lrc歌词间奏表示
-class LrcTransitionTile extends StatelessWidget {
-  final LrcLine line;
-  const LrcTransitionTile({super.key, required this.line});
+/// 歌词间奏表示
+/// lrcLine 和 syncLine 必须有且只有一个不为空
+class LyricTransitionTile extends StatelessWidget {
+  final LrcLine? lrcLine;
+  final SyncLyricLine? syncLine;
+  const LyricTransitionTile({super.key, this.lrcLine, this.syncLine});
 
   @override
   Widget build(BuildContext context) {
@@ -206,12 +220,13 @@ class LrcTransitionTile extends StatelessWidget {
 
     return SizedBox(
       height: 40.0,
+      width: 80.0,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(12, 18, 12, 6),
         child: CustomPaint(
-          painter: LrcTransitionPainter(
+          painter: LyricTransitionPainter(
             theme,
-            LrcTransitionTileController(line),
+            LyricTransitionTileController(lrcLine, syncLine),
           ),
         ),
       ),
@@ -219,9 +234,9 @@ class LrcTransitionTile extends StatelessWidget {
   }
 }
 
-class LrcTransitionPainter extends CustomPainter {
+class LyricTransitionPainter extends CustomPainter {
   final ThemeProvider theme;
-  final LrcTransitionTileController controller;
+  final LyricTransitionTileController controller;
 
   final Paint circlePaint1 = Paint();
   final Paint circlePaint2 = Paint();
@@ -229,7 +244,7 @@ class LrcTransitionPainter extends CustomPainter {
 
   final double radius = 6;
 
-  LrcTransitionPainter(this.theme, this.controller)
+  LyricTransitionPainter(this.theme, this.controller)
       : super(repaint: controller);
 
   @override
@@ -255,14 +270,15 @@ class LrcTransitionPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(LrcTransitionPainter oldDelegate) => false;
+  bool shouldRepaint(LyricTransitionPainter oldDelegate) => false;
 
   @override
-  bool shouldRebuildSemantics(LrcTransitionPainter oldDelegate) => false;
+  bool shouldRebuildSemantics(LyricTransitionPainter oldDelegate) => false;
 }
 
-class LrcTransitionTileController extends ChangeNotifier {
-  final LrcLine line;
+class LyricTransitionTileController extends ChangeNotifier {
+  final LrcLine? lrcLine;
+  final SyncLyricLine? syncLine;
 
   final playService = PlayService.instance;
 
@@ -273,7 +289,7 @@ class LrcTransitionTileController extends ChangeNotifier {
   double k = 1;
   late final Ticker factorTicker;
 
-  LrcTransitionTileController(this.line) {
+  LyricTransitionTileController([this.lrcLine, this.syncLine]) {
     positionStreamSub = playService.positionStream.listen(_updateProgress);
     factorTicker = Ticker((elapsed) {
       sizeFactor += k * 1 / 180;
@@ -290,8 +306,17 @@ class LrcTransitionTileController extends ChangeNotifier {
   }
 
   void _updateProgress(double position) {
-    final sinceStart = position * 1000 - line.start.inMilliseconds;
-    progress = max(sinceStart, 0) / line.length.inMilliseconds;
+    late int startInMs;
+    late int lengthInMs;
+    if (lrcLine != null) {
+      startInMs = lrcLine!.start.inMilliseconds;
+      lengthInMs = lrcLine!.length.inMilliseconds;
+    } else {
+      startInMs = syncLine!.start.inMilliseconds;
+      lengthInMs = syncLine!.length.inMilliseconds;
+    }
+    final sinceStart = position * 1000 - startInMs;
+    progress = max(sinceStart, 0) / lengthInMs;
     notifyListeners();
 
     if (progress >= 1) {

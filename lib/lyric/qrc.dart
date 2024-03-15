@@ -13,6 +13,22 @@ class Qrc extends Lyric {
 
       lines.add(qrcLine);
     }
+
+    // 添加空白
+    final List<QrcLine> fommatedLines = [];
+    for (int i = 0; i < lines.length - 1; ++i) {
+      fommatedLines.add(lines[i]);
+      final transitionStart = lines[i].start + lines[i].length;
+      final transitionLength = lines[i + 1].start - transitionStart;
+      if (transitionLength > const Duration(seconds: 5)) {
+        fommatedLines.add(QrcLine(transitionStart, transitionLength, []));
+      }
+    }
+    final lastLine = lines.lastOrNull;
+    if (lastLine != null) {
+      fommatedLines.add(lastLine);
+    }
+
     return Qrc(lines);
   }
 
