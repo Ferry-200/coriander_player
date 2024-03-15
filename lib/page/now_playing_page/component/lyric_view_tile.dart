@@ -79,21 +79,17 @@ class _SyncLineContent extends StatelessWidget {
         stream: PlayService.instance.positionStream,
         builder: (context, snapshot) {
           final posInMs = (snapshot.data ?? 0) * 1000;
-          final posFromLineStart = max(
-            posInMs - syncLine.start.inMilliseconds,
-            0,
-          );
           return RichText(
             text: TextSpan(
               children: List.generate(
                 syncLine.words.length,
                 (i) {
-                  final posFromWord = max(
-                    posFromLineStart - syncLine.words[i].start.inMilliseconds,
+                  final posFromWordStart = max(
+                    posInMs - syncLine.words[i].start.inMilliseconds,
                     0,
                   );
                   final progress = min(
-                    posFromWord / syncLine.words[i].length.inMilliseconds,
+                    posFromWordStart / syncLine.words[i].length.inMilliseconds,
                     1.0,
                   );
                   return WidgetSpan(
