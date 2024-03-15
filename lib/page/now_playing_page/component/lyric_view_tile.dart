@@ -83,41 +83,45 @@ class _SyncLineContent extends StatelessWidget {
             posInMs - syncLine.start.inMilliseconds,
             0,
           );
-          return Wrap(
-            children: List.generate(
-              syncLine.words.length,
-              (i) {
-                final posFromWord = max(
-                  posFromLineStart - syncLine.words[i].start.inMilliseconds,
-                  0,
-                );
-                final progress = min(
-                  posFromWord / syncLine.words[i].length.inMilliseconds,
-                  1.0,
-                );
-                return ShaderMask(
-                  blendMode: BlendMode.dstIn,
-                  shaderCallback: (bounds) {
-                    return LinearGradient(
-                      colors: [
-                        theme.palette.primary,
-                        theme.palette.primary,
-                        theme.palette.onSecondaryContainer.withOpacity(0.15),
-                        theme.palette.onSecondaryContainer.withOpacity(0.15),
-                      ],
-                      stops: [0, progress, progress, 1],
-                    ).createShader(bounds);
-                  },
-                  child: Text(
-                    syncLine.words[i].content,
-                    style: TextStyle(
-                      color: theme.palette.primary,
-                      fontSize: 22.0,
-                      fontWeight: FontWeight.w600,
+          return RichText(
+            text: TextSpan(
+              children: List.generate(
+                syncLine.words.length,
+                (i) {
+                  final posFromWord = max(
+                    posFromLineStart - syncLine.words[i].start.inMilliseconds,
+                    0,
+                  );
+                  final progress = min(
+                    posFromWord / syncLine.words[i].length.inMilliseconds,
+                    1.0,
+                  );
+                  return WidgetSpan(
+                    child: ShaderMask(
+                      blendMode: BlendMode.dstIn,
+                      shaderCallback: (bounds) {
+                        return LinearGradient(
+                          colors: [
+                            theme.palette.onSecondaryContainer,
+                            theme.palette.onSecondaryContainer,
+                            theme.palette.onSecondaryContainer.withOpacity(0.10),
+                            theme.palette.onSecondaryContainer.withOpacity(0.10),
+                          ],
+                          stops: [0, progress, progress, 1],
+                        ).createShader(bounds);
+                      },
+                      child: Text(
+                        syncLine.words[i].content,
+                        style: TextStyle(
+                          color: theme.palette.onSecondaryContainer,
+                          fontSize: 22.0,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           );
         },
