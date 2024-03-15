@@ -42,7 +42,7 @@ class KrcLine extends SyncLyricLine {
     final splitedContent = splitedLine[1].split("<");
     final List<KrcWord> words = [];
     for (final item in splitedContent) {
-      final qrcWord = KrcWord.fromWord(item);
+      final qrcWord = KrcWord.fromWord(item, start);
 
       if (qrcWord == null) continue;
       
@@ -56,7 +56,7 @@ class KrcLine extends SyncLyricLine {
 class KrcWord extends SyncLyricWord {
   KrcWord(super.start, super.length, super.content);
 
-  static KrcWord? fromWord(String word) {
+  static KrcWord? fromWord(String word, Duration lineStart) {
     final splitedWord = word.split(">");
     if(splitedWord.length != 2) return null;
     
@@ -66,7 +66,7 @@ class KrcWord extends SyncLyricWord {
 
     final Duration start = Duration(
       milliseconds: int.tryParse(splitedTime[0]) ?? 0,
-    );
+    ) + lineStart;
     final Duration length = Duration(
       milliseconds: int.tryParse(splitedTime[1]) ?? 0,
     );
