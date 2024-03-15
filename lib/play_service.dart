@@ -133,6 +133,35 @@ class PlayService with ChangeNotifier {
     );
   }
 
+  void useEmbeddedLyric() {
+    currentLyric.value = null;
+    _nextLyricLine = 0;
+    Lrc.fromAudioPath(nowPlaying!.path, separator: "┃").then((value) {
+      currentLyric.value = value;
+      _findCurrLyricLine();
+    });
+  }
+
+  /// 重新计算歌词进行到第几行
+  void _findCurrLyricLine() {
+    if (currentLyric.value == null) return;
+
+    final next = currentLyric.value!.lines.indexWhere(
+      (element) => element.start.inMilliseconds / 1000 > position,
+    );
+    _nextLyricLine = next == -1 ? currentLyric.value!.lines.length : next;
+    _lyricLineStreamController.add(max(_nextLyricLine - 1, 0));
+  }
+
+  void useOnlineLyric() {
+    currentLyric.value = null;
+    _nextLyricLine = 0;
+    getMostMatchedLyric(nowPlaying!).then((value) {
+      currentLyric.value = value;
+      _findCurrLyricLine();
+    });
+  }
+
   /// 播放当前播放列表的第几项，只能用在播放列表界面
   void playIndexOfPlaylist(int audioIndex) {
     _playAfterLoaded(audioIndex, playlist);
@@ -252,13 +281,7 @@ class PlayService with ChangeNotifier {
 
   /// update [_nextLyricLine]
   void seek(double position) {
-    if (currentLyric.value != null) {
-      final next = currentLyric.value!.lines.indexWhere(
-        (element) => element.start.inMilliseconds / 1000 > position,
-      );
-      _nextLyricLine = next == -1 ? currentLyric.value!.lines.length : next;
-      _lyricLineStreamController.add(max(_nextLyricLine - 1, 0));
-    }
+    _findCurrLyricLine();
     _bassPlayer.seek(position);
   }
 
