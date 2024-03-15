@@ -151,50 +151,70 @@ Future<List<SongSearchResult>> _uniSearch(Audio audio) async {
 }
 
 Future<Lrc?> _getNeteaseUnsyncLyric(String neteaseSongId) async {
-  final answer = await Netease.lyric(id: neteaseSongId);
-  final lrcText = answer.data;
-  if (lrcText is String) {
-    return Lrc.fromLrcText(lrcText, LrcSource.web);
+  try {
+    final answer = await Netease.lyric(id: neteaseSongId);
+    final lrcText = answer.data;
+    if (lrcText is String) {
+      return Lrc.fromLrcText(lrcText, LrcSource.web);
+    }
+  } catch (err) {
+    print(err);
   }
 
   return null;
 }
 
 Future<Lrc?> _getQQUnsyncLyric(int qqSongId) async {
-  final answer = await QQ.songLyric(songId: qqSongId);
-  final lrcText = answer.data["lyric"];
-  if (lrcText is String) {
-    return Lrc.fromLrcText(lrcText, LrcSource.web);
+  try {
+    final answer = await QQ.songLyric(songId: qqSongId);
+    final lrcText = answer.data["lyric"];
+    if (lrcText is String) {
+      return Lrc.fromLrcText(lrcText, LrcSource.web);
+    }
+  } catch (err) {
+    print(err);
   }
 
   return null;
 }
 
 Future<Lrc?> _getKugouUnsyncLyric(String kugouSongHash) async {
-  final answer = await KuGou.lrc(hash: kugouSongHash);
-  final lrcText = answer.data["data"]["lrc"];
-  if (lrcText is String) {
-    return Lrc.fromLrcText(lrcText, LrcSource.web);
+  try {
+    final answer = await KuGou.lrc(hash: kugouSongHash);
+    final lrcText = answer.data["data"]["lrc"];
+    if (lrcText is String) {
+      return Lrc.fromLrcText(lrcText, LrcSource.web);
+    }
+  } catch (err) {
+    print(err);
   }
 
   return null;
 }
 
 Future<Qrc?> _getQQSyncLyric(int qqSongId) async {
-  final answer = await QQ.songLyric3(songId: qqSongId);
-  final qrcText = answer.data["lyric"];
-  if (qrcText is String) {
-    return Qrc.fromQrcText(qrcText);
+  try {
+    final answer = await QQ.songLyric3(songId: qqSongId);
+    final qrcText = answer.data["lyric"];
+    if (qrcText is String) {
+      return Qrc.fromQrcText(qrcText);
+    }
+  } catch (err) {
+    print(err);
   }
 
   return null;
 }
 
 Future<Krc?> _getKugouSyncLyric(String kugouSongHash) async {
-  final answer = await KuGou.krc(hash: kugouSongHash);
-  final krcText = answer.data["lyric"];
-  if (krcText is String) {
-    return Krc.fromKrcText(krcText);
+  try {
+    final answer = await KuGou.krc(hash: kugouSongHash);
+    final krcText = answer.data["lyric"];
+    if (krcText is String) {
+      return Krc.fromKrcText(krcText);
+    }
+  } catch (err) {
+    print(err);
   }
 
   return null;
