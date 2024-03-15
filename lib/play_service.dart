@@ -254,15 +254,14 @@ class PlayService with ChangeNotifier {
 
   /// update [_nextLyricLine]
   void seek(double position) {
+    if (currentLyric.value != null) {
+      final next = currentLyric.value!.lines.indexWhere(
+        (element) => element.start.inMilliseconds / 1000 > position,
+      );
+      _nextLyricLine = next == -1 ? currentLyric.value!.lines.length : next;
+      _lyricLineStreamController.add(max(_nextLyricLine - 1, 0));
+    }
     _bassPlayer.seek(position);
-
-    if (currentLyric.value == null) return;
-
-    final next = currentLyric.value!.lines.indexWhere(
-      (element) => element.start.inMilliseconds / 1000 > position,
-    );
-    _nextLyricLine = next == -1 ? currentLyric.value!.lines.length : next;
-    _lyricLineStreamController.add(max(_nextLyricLine - 1, 0));
   }
 
   @override
