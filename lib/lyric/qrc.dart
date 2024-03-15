@@ -29,7 +29,7 @@ class Qrc extends Lyric {
       fommatedLines.add(lastLine);
     }
 
-    return Qrc(lines);
+    return Qrc(fommatedLines);
   }
 
   @override
