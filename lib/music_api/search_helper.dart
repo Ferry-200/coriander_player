@@ -158,7 +158,7 @@ Future<Lrc?> _getNeteaseUnsyncLyric(String neteaseSongId) async {
       return Lrc.fromLrcText(lrcText, LrcSource.web);
     }
   } catch (err) {
-    print(err);
+    // print(err);
   }
 
   return null;
@@ -172,7 +172,7 @@ Future<Lrc?> _getQQUnsyncLyric(int qqSongId) async {
       return Lrc.fromLrcText(lrcText, LrcSource.web);
     }
   } catch (err) {
-    print(err);
+    // print(err);
   }
 
   return null;
@@ -186,7 +186,7 @@ Future<Lrc?> _getKugouUnsyncLyric(String kugouSongHash) async {
       return Lrc.fromLrcText(lrcText, LrcSource.web);
     }
   } catch (err) {
-    print(err);
+    // print(err);
   }
 
   return null;
@@ -200,7 +200,7 @@ Future<Qrc?> _getQQSyncLyric(int qqSongId) async {
       return Qrc.fromQrcText(qrcText);
     }
   } catch (err) {
-    print(err);
+    // print(err);
   }
 
   return null;
@@ -214,7 +214,7 @@ Future<Krc?> _getKugouSyncLyric(String kugouSongHash) async {
       return Krc.fromKrcText(krcText);
     }
   } catch (err) {
-    print(err);
+    // print(err);
   }
 
   return null;

@@ -78,43 +78,6 @@ Future<Answer> _get(
   });
 }
 
-Future<Answer> _getImage(
-  String path, {
-  Map<String, dynamic> params = const {},
-  List<Cookie> cookie = const [],
-  Map<String, String> header = const {},
-}) async {
-  final options = _buildHeader(path, cookie);
-
-  if (header.isNotEmpty) {
-    options.addAll(header);
-  }
-
-  return HttpDio().img(path, params: params, headers: options).then((value) async {
-    try {
-      if (value?.statusCode == 200) {
-        var cookies = value?.headers[HttpHeaders.setCookieHeader] ?? [];
-        var ans = const Answer(site: MusicSite.QQ);
-        ans = ans.copy(cookie: cookies.map((str) => Cookie.fromSetCookieValue(str)).toList());
-
-        var content = base64.encode(value?.data);
-        print("data:image/png;base64,$content");
-
-        // print(cookies);
-
-        var data = {"domain": "data:image/png;base64,", "qr": content, "qrsig": ans.cookie.where((element) => element.name == "qrsig").first.value};
-
-        ans = ans.copy(code: value?.statusCode, data: data);
-        return Future.value(ans);
-      } else {
-        return Future.error(const Answer(site: MusicSite.QQ, code: 500, msg: "服务异常"));
-      }
-    } catch (e) {
-      print(e);
-      return Future.error(const Answer(site: MusicSite.QQ, code: 500, msg: "QQ对象转换异常"));
-    }
-  });
-}
 
 Future<Answer> _getString(
   String path, {
@@ -152,7 +115,7 @@ Future<Answer> _getString(
         return Future.error(const Answer(site: MusicSite.QQ, code: 500, msg: "服务异常"));
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return Future.error(const Answer(site: MusicSite.QQ, code: 500, msg: "QQ对象转换异常"));
     }
   });

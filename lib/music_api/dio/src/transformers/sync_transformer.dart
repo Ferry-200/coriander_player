@@ -107,7 +107,7 @@ class SyncTransformer extends Transformer {
       responseBody = options.responseDecoder!(
         responseBytes,
         options,
-        response..stream = Stream.empty(),
+        response..stream = const Stream.empty(),
       );
     } else if (responseBytes.isNotEmpty) {
       responseBody = utf8.decode(responseBytes, allowMalformed: true);

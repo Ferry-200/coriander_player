@@ -13,6 +13,7 @@ class AppException implements Exception {
     this.msg,
   ]);
 
+  @override
   String toString() {
     return "$code :$msg";
   }
