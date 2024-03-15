@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:coriander_player/lyric/lrc.dart';
+import 'package:coriander_player/lyric/lyric.dart';
 import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -42,30 +42,39 @@ class _LyricHorizontalScrollAreaState
   final playService = PlayService.instance;
   late StreamSubscription lyricLineStreamSubscription;
 
-  Lrc? lyric;
-  var currentLyricLine = "Enjoy Music";
+  Lyric? lyric;
+  var currContent = "Enjoy Music";
 
   @override
   void initState() {
     super.initState();
 
-    lyric = playService.nowPlayingLyric;
+    lyric = playService.currentLyric.value;
 
-    playService.addListener(_updateLyric);
+    playService.currentLyric.addListener(_updateLyric);
 
     lyricLineStreamSubscription = playService.lyricLineStream.listen((line) {
       if (lyric == null) return;
+      final currLine = lyric!.lines[line];
 
       setState(() {
-        currentLyricLine = (lyric!.lines[line] as LrcLine).content;
+        if (currLine is UnsyncLyricLine) {
+          currContent = currLine.content;
+        } else if (currLine is SyncLyricLine) {
+          currContent = currLine.content;
+        }
       });
 
       /// 减去启动延时和滚动结束停留时间
-      final lastTime =
-          lyric!.lines[min(line + 1, lyric!.lines.length - 1)].start -
-              lyric!.lines[line].start -
-              waitFor -
-              waitFor;
+      late final Duration lastTime;
+      if (currLine is UnsyncLyricLine) {
+        lastTime = lyric!.lines[min(line + 1, lyric!.lines.length - 1)].start -
+            currLine.start -
+            waitFor -
+            waitFor;
+      } else if (currLine is SyncLyricLine) {
+        lastTime = currLine.length - waitFor - waitFor;
+      }
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!scrollController.hasClients) return;
@@ -90,15 +99,20 @@ class _LyricHorizontalScrollAreaState
 
   /// 重新获取歌词
   void _updateLyric() {
-    lyric = playService.nowPlayingLyric;
+    lyric = playService.currentLyric.value;
     setState(() {
       if (lyric == null) {
-        currentLyricLine = "Enjoy Music";
+        currContent = "Enjoy Music";
       } else {
         if (lyric!.lines.isNotEmpty) {
-          currentLyricLine = (lyric!.lines.first as LrcLine).content;
+          final first = lyric!.lines.first;
+          if (first is UnsyncLyricLine) {
+            currContent = first.content;
+          } else if (first is SyncLyricLine) {
+            currContent = first.content;
+          }
         } else {
-          currentLyricLine = "Enjoy Music";
+          currContent = "Enjoy Music";
         }
       }
     });
@@ -116,7 +130,7 @@ class _LyricHorizontalScrollAreaState
         child: Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            currentLyricLine,
+            currContent,
             style: TextStyle(
               color: theme.palette.onSecondaryContainer,
             ),
@@ -130,7 +144,7 @@ class _LyricHorizontalScrollAreaState
   void dispose() {
     super.dispose();
     lyricLineStreamSubscription.cancel();
-    playService.removeListener(_updateLyric);
+    playService.currentLyric.removeListener(_updateLyric);
     scrollController.dispose();
   }
 }
