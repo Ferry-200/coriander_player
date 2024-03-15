@@ -102,10 +102,10 @@ class _SyncLineContent extends StatelessWidget {
                       shaderCallback: (bounds) {
                         return LinearGradient(
                           colors: [
-                            theme.palette.onSecondaryContainer,
-                            theme.palette.onSecondaryContainer,
-                            theme.palette.onSecondaryContainer.withOpacity(0.10),
-                            theme.palette.onSecondaryContainer.withOpacity(0.10),
+                            theme.palette.primary,
+                            theme.palette.primary,
+                            theme.palette.primary.withOpacity(0.10),
+                            theme.palette.primary.withOpacity(0.10),
                           ],
                           stops: [0, progress, progress, 1],
                         ).createShader(bounds);
@@ -113,7 +113,7 @@ class _SyncLineContent extends StatelessWidget {
                       child: Text(
                         syncLine.words[i].content,
                         style: TextStyle(
-                          color: theme.palette.onSecondaryContainer,
+                          color: theme.palette.primary,
                           fontSize: 22.0,
                           fontWeight: FontWeight.w600,
                         ),
