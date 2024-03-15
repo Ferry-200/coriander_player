@@ -113,14 +113,12 @@ class PlayService with ChangeNotifier {
     _bassPlayer.setSource(nowPlaying!.path);
 
     currentLyric.value = null;
-    getMostMatchedLyric(nowPlaying!).then((value) {
-      if (value == null) {
-        Lrc.fromAudioPath(nowPlaying!.path, separator: "┃").then((value) {
-          currentLyric.value = value;
-        });
-      } else {
-        currentLyric.value = value;
-      }
+    getMostMatchedLyric(nowPlaying!)
+        .timeout(const Duration(seconds: 5),
+            onTimeout: () =>
+                Lrc.fromAudioPath(nowPlaying!.path, separator: "┃"))
+        .then((value) {
+      currentLyric.value = value;
     });
     _nextLyricLine = 0;
 
