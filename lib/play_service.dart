@@ -4,9 +4,8 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:coriander_player/library/audio_library.dart';
-import 'package:coriander_player/lyric/krc.dart';
 import 'package:coriander_player/lyric/lrc.dart';
-import 'package:coriander_player/lyric/qrc.dart';
+import 'package:coriander_player/lyric/lyric.dart';
 import 'package:coriander_player/music_api/search_helper.dart';
 import 'package:coriander_player/src/bass/bass_player.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
@@ -47,7 +46,7 @@ class PlayService with ChangeNotifier {
   }
 
   Audio? nowPlaying;
-  Lrc? nowPlayingLyric;
+  ValueNotifier<Lyric?> currentLyric = ValueNotifier(null);
 
   /// 下一行歌词
   int _nextLyricLine = 0;
@@ -91,13 +90,13 @@ class PlayService with ChangeNotifier {
 
     /// update next lyric line here
     _positionStreamSub = positionStream.listen((pos) {
-      if (nowPlayingLyric == null) return;
-      if (_nextLyricLine >= nowPlayingLyric!.lines.length) return;
+      if (currentLyric.value == null) return;
+      if (_nextLyricLine >= currentLyric.value!.lines.length) return;
 
       if ((pos * 1000) >
-          nowPlayingLyric!.lines[_nextLyricLine].start.inMilliseconds) {
+          currentLyric.value!.lines[_nextLyricLine].start.inMilliseconds) {
         _nextLyricLine += 1;
-        _lyricLineStreamController.add(max(_nextLyricLine - 1, 0));
+        _lyricLineStreamController.add(_nextLyricLine - 1);
       }
     });
   }
@@ -113,18 +112,17 @@ class PlayService with ChangeNotifier {
     nowPlaying = playlist[audioIndex];
     _bassPlayer.setSource(nowPlaying!.path);
 
-    Lrc.fromAudioPath(nowPlaying!.path, separator: "┃").then((value) {
-      nowPlayingLyric = value;
-      notifyListeners();
+    currentLyric.value = null;
+    getMostMatchedLyric(nowPlaying!).then((value) {
+      if (value == null) {
+        Lrc.fromAudioPath(nowPlaying!.path, separator: "┃").then((value) {
+          currentLyric.value = value;
+        });
+      } else {
+        currentLyric.value = value;
+      }
     });
     _nextLyricLine = 0;
-
-    getMostMatchedLyric(nowPlaying!).then((value) {
-      if (value == null) print("null");
-      if (value is Lrc) print(value);
-      if (value is Qrc) print("Qrc: $value");
-      if (value is Krc) print("Krc: $value");
-    });
 
     _bassPlayer.start();
     notifyListeners();
@@ -258,12 +256,12 @@ class PlayService with ChangeNotifier {
   void seek(double position) {
     _bassPlayer.seek(position);
 
-    if (nowPlayingLyric == null) return;
+    if (currentLyric.value == null) return;
 
-    final next = nowPlayingLyric!.lines.indexWhere(
+    final next = currentLyric.value!.lines.indexWhere(
       (element) => element.start.inMilliseconds / 1000 > position,
     );
-    _nextLyricLine = next == -1 ? nowPlayingLyric!.lines.length : next;
+    _nextLyricLine = next == -1 ? currentLyric.value!.lines.length : next;
     _lyricLineStreamController.add(max(_nextLyricLine - 1, 0));
   }
 
