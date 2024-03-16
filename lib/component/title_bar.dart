@@ -245,9 +245,9 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
   }
 
   @override
-  void onWindowClose() {
+  Future<void> onWindowClose() async {
     super.onWindowClose();
-    savePlaylists();
+    await savePlaylists();
   }
 
   @override
@@ -285,10 +285,7 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
           },
         ),
         IconButton(
-          onPressed: () async {
-            await savePlaylists();
-            windowManager.close();
-          },
+          onPressed: windowManager.close,
           icon: Icon(
             Symbols.close,
             color: theme.palette.onSurface,
