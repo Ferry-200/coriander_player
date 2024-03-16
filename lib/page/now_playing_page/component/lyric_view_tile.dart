@@ -63,10 +63,10 @@ class _SyncLineContent extends StatelessWidget {
       }
       
       final List<Text> contents = [
-        buildText(syncLine.content, theme),
+        buildPrimaryText(syncLine.content, theme),
       ];
       if (syncLine.translation != null) {
-        contents.add(buildText(syncLine.translation!, theme));
+        contents.add(buildSecondaryText(syncLine.translation!, theme));
       }
 
       return Padding(
@@ -136,7 +136,7 @@ class _SyncLineContent extends StatelessWidget {
       )
     ];
     if (syncLine.translation != null) {
-      contents.add(buildText(syncLine.translation!, theme));
+      contents.add(buildSecondaryText(syncLine.translation!, theme));
     }
     return Padding(
       padding: const EdgeInsets.all(12.0),
@@ -147,13 +147,23 @@ class _SyncLineContent extends StatelessWidget {
     );
   }
 
-  Text buildText(String text, ThemeProvider theme) {
+  Text buildPrimaryText(String text, ThemeProvider theme) {
     return Text(
       text,
       style: TextStyle(
         color: theme.palette.onSecondaryContainer,
         fontSize: 22.0,
         fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+
+  Text buildSecondaryText(String text, ThemeProvider theme) {
+    return Text(
+      text,
+      style: TextStyle(
+        color: theme.palette.onSecondaryContainer,
+        fontSize: 18.0,
       ),
     );
   }
@@ -180,10 +190,10 @@ class _LrcLineContent extends StatelessWidget {
 
     final splited = lrcLine.content.split("┃");
     final List<Text> contents = [
-      buildText(splited.first, theme),
+      buildPrimaryText(splited.first, theme),
     ];
     for (var i = 1; i < splited.length; i++) {
-      contents.add(buildText(splited[i], theme));
+      contents.add(buildSecondaryText(splited[i], theme));
     }
 
     return Padding(
@@ -195,13 +205,23 @@ class _LrcLineContent extends StatelessWidget {
     );
   }
 
-  Text buildText(String text, ThemeProvider theme) {
+  Text buildPrimaryText(String text, ThemeProvider theme) {
     return Text(
       text,
       style: TextStyle(
         color: theme.palette.onSecondaryContainer,
         fontSize: 22.0,
         fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+
+  Text buildSecondaryText(String text, ThemeProvider theme) {
+    return Text(
+      text,
+      style: TextStyle(
+        color: theme.palette.onSecondaryContainer,
+        fontSize: 18.0,
       ),
     );
   }
