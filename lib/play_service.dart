@@ -281,8 +281,8 @@ class PlayService with ChangeNotifier {
 
   /// update [_nextLyricLine]
   void seek(double position) {
-    _findCurrLyricLine();
     _bassPlayer.seek(position);
+    _findCurrLyricLine();
   }
 
   @override
