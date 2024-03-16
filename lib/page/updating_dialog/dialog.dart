@@ -1,4 +1,3 @@
-import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/src/rust/api/tag_reader.dart';
@@ -11,7 +10,6 @@ import 'package:provider/provider.dart';
 
 /// 常规启动时，读取并更新索引
 Future<void> initAudioLibrary() async {
-  await AppSettings.readFromJson();
   final indexPath = (await getApplicationSupportDirectory()).path;
   await updateIndex(indexPath: indexPath);
   await AudioLibrary.initFromIndex();

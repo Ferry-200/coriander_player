@@ -179,6 +179,7 @@ class Audio {
         "title": title,
         "artist": artist,
         "album": album,
+        "track": track,
         "path": path,
         "modified": modified,
         "created": created,
