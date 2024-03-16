@@ -24,7 +24,8 @@ class LyricSourceLabel extends StatelessWidget {
             bool isEmbedded = false;
             if (lyric is Lrc) {
               decription = lyric.source.name;
-              isEmbedded = lyric.source == LrcSource.embedded;
+              isEmbedded = (lyric.source == LrcSource.embedded) ||
+                  (lyric.source == LrcSource.lrcFile);
             } else if (lyric is Krc) {
               decription = "Kugou";
             } else if (lyric is Qrc) {
