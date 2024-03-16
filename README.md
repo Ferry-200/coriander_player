@@ -15,3 +15,6 @@
 ### 安装
 1. 下载 [Release](https://github.com/Ferry-200/coriander_player/releases) 里的发行版，直接双击release.zip里的exe运行
 2. 下载 [Release](https://github.com/Ferry-200/coriander_player/releases) 里的 msix 文件，按照 [MSIX_install使用方法](MSIX_install.md) 安装
+
+### 感谢
+本项目引用了 [music_api](https://github.com/yhsj0919/music_api.git) 来实现歌曲的匹配和歌词的获取
