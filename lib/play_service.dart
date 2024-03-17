@@ -235,8 +235,8 @@ class PlayService with ChangeNotifier {
   }
 
   void _nextAudio_singleLoop() {
-    _bassPlayer.start();
-    notifyListeners();
+    if (_nowPlayingIndex == null) return;
+    _playAfterLoaded(_nowPlayingIndex!, playlist);
   }
 
   /// 手动下一曲时默认循环播放列表
