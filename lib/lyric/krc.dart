@@ -7,15 +7,19 @@ class Krc extends Lyric {
     final List<KrcLine> lines = [];
     final splited = krc.split("\n");
     for (final item in splited) {
-      final qrcLine = KrcLine.fromLine(item);
+      final krcLine = KrcLine.fromLine(item);
 
-      if (qrcLine == null) continue;
+      if (krcLine == null) continue;
 
-      lines.add(qrcLine);
+      lines.add(krcLine);
     }
 
     // 添加空白
     final List<KrcLine> fommatedLines = [];
+    final firstLine = lines.firstOrNull;
+    if (firstLine != null && firstLine.start > const Duration(seconds: 5)) {
+      fommatedLines.add(KrcLine(Duration.zero, firstLine.start, []));
+    }
     for (int i = 0; i < lines.length - 1; ++i) {
       fommatedLines.add(lines[i]);
       final transitionStart = lines[i].start + lines[i].length;

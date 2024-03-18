@@ -274,9 +274,8 @@ class PlayService with ChangeNotifier {
   /// 再次播放。在顺序播放完最后一曲时再次按播放时使用。
   /// 与[start]的差别在于它会通知重绘组件
   void playAgain() {
-    _bassPlayer.start();
-    _nextLyricLine = 0;
-    notifyListeners();
+    if (_nowPlayingIndex == null) return;
+    _playAfterLoaded(_nowPlayingIndex!, playlist);
   }
 
   /// update [_nextLyricLine]

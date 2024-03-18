@@ -27,10 +27,7 @@ abstract class SyncLyricLine extends LyricLine {
     for (final e in words) {
       buffer.write(e.content);
     }
-    content = words.fold(
-      "",
-      (previousValue, element) => previousValue + element.content,
-    );
+    content = buffer.toString();
   }
 
   @override

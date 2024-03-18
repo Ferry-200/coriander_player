@@ -16,6 +16,10 @@ class Qrc extends Lyric {
 
     // 添加空白
     final List<QrcLine> fommatedLines = [];
+    final firstLine = lines.firstOrNull;
+    if (firstLine != null && firstLine.start > const Duration(seconds: 5)) {
+      fommatedLines.add(QrcLine(Duration.zero, firstLine.start, []));
+    }
     for (int i = 0; i < lines.length - 1; ++i) {
       fommatedLines.add(lines[i]);
       final transitionStart = lines[i].start + lines[i].length;
