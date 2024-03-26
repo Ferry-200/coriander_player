@@ -115,9 +115,7 @@ class PlayService with ChangeNotifier {
     currentLyric.value = null;
     Lrc.fromAudioPath(nowPlaying!.path).then((value) {
       if (value == null) {
-        getMostMatchedLyric(nowPlaying!)
-            .timeout(const Duration(seconds: 5))
-            .then((value) {
+        getMostMatchedLyric(nowPlaying!).then((value) {
           currentLyric.value = value;
         });
       } else {
