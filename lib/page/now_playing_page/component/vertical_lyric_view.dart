@@ -25,7 +25,7 @@ class _VerticalLyricViewState extends State<VerticalLyricView> {
 
   Lyric? lyric;
   List<LyricViewTile> lyricTiles = [
-    LyricViewTile(line: LrcLine.blankLine, opacity: 1.0)
+    LyricViewTile(line: LrcLine.defaultLine, opacity: 1.0)
   ];
 
   /// 用来定位到当前歌词
@@ -46,7 +46,7 @@ class _VerticalLyricViewState extends State<VerticalLyricView> {
   void _initLyricView() {
     lyric = playService.currentLyric.value;
     if (lyric == null) {
-      lyricTiles = [LyricViewTile(line: LrcLine.blankLine, opacity: 1.0)];
+      lyricTiles = [LyricViewTile(line: LrcLine.defaultLine, opacity: 1.0)];
     } else {
       final next = lyric!.lines.indexWhere(
         (element) => element.start.inMilliseconds / 1000 > playService.position,
@@ -128,7 +128,7 @@ class _VerticalLyricViewState extends State<VerticalLyricView> {
     if (lyric == null) {
       lyricTiles = [
         LyricViewTile(
-          line: LrcLine.blankLine,
+          line: LrcLine.defaultLine,
           opacity: 1.0,
           onTap: () {},
         )

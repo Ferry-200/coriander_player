@@ -7,10 +7,10 @@ class LrcLine extends UnsyncLyricLine {
 
   LrcLine(super.start, super.content, {required this.isBlank, this.length = Duration.zero});
 
-  static LrcLine blankLine = LrcLine(
+  static LrcLine defaultLine = LrcLine(
     Duration.zero,
-    "",
-    isBlank: true,
+    "无歌词",
+    isBlank: false,
     length: Duration.zero,
   );
 
@@ -154,7 +154,7 @@ class Lrc extends Lyric {
   /// .mp3: parse from USLT frame
   /// .flac: parse from LYRICS comment
   /// other: parse from .lrc file content
-  static Future<Lrc?> fromAudioPath(String path, {String? separator}) async {
+  static Future<Lrc?> fromAudioPath(String path, {String? separator = "┃"}) async {
     final suffix = path.split(".").last.toLowerCase();
 
     if (suffix == "mp3") {

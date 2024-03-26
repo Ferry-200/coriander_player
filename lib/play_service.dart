@@ -113,12 +113,17 @@ class PlayService with ChangeNotifier {
     _bassPlayer.setSource(nowPlaying!.path);
 
     currentLyric.value = null;
-    getMostMatchedLyric(nowPlaying!)
-        .timeout(const Duration(seconds: 5),
-            onTimeout: () =>
-                Lrc.fromAudioPath(nowPlaying!.path, separator: "┃"))
-        .then((value) {
-      currentLyric.value = value;
+    Lrc.fromAudioPath(nowPlaying!.path).then((value) {
+      if (value == null) {
+        getMostMatchedLyric(nowPlaying!).timeout(
+          const Duration(seconds: 5),
+          onTimeout: () => Lrc.fromAudioPath(nowPlaying!.path),
+        ).then((value) {
+          currentLyric.value = value;
+        });
+      } else {
+        currentLyric.value = value;
+      }
     });
     _nextLyricLine = 0;
 
@@ -142,6 +147,15 @@ class PlayService with ChangeNotifier {
     });
   }
 
+  void useOnlineLyric() {
+    currentLyric.value = null;
+    _nextLyricLine = 0;
+    getMostMatchedLyric(nowPlaying!).then((value) {
+      currentLyric.value = value;
+      _findCurrLyricLine();
+    });
+  }
+
   /// 重新计算歌词进行到第几行
   void _findCurrLyricLine() {
     if (currentLyric.value == null) return;
@@ -151,15 +165,6 @@ class PlayService with ChangeNotifier {
     );
     _nextLyricLine = next == -1 ? currentLyric.value!.lines.length : next;
     _lyricLineStreamController.add(max(_nextLyricLine - 1, 0));
-  }
-
-  void useOnlineLyric() {
-    currentLyric.value = null;
-    _nextLyricLine = 0;
-    getMostMatchedLyric(nowPlaying!).then((value) {
-      currentLyric.value = value;
-      _findCurrLyricLine();
-    });
   }
 
   /// 播放当前播放列表的第几项，只能用在播放列表界面
@@ -273,10 +278,7 @@ class PlayService with ChangeNotifier {
 
   /// 再次播放。在顺序播放完最后一曲时再次按播放时使用。
   /// 与[start]的差别在于它会通知重绘组件
-  void playAgain() {
-    if (_nowPlayingIndex == null) return;
-    _playAfterLoaded(_nowPlayingIndex!, playlist);
-  }
+  void playAgain() => _nextAudio_singleLoop();
 
   /// update [_nextLyricLine]
   void seek(double position) {
