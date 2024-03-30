@@ -6,7 +6,7 @@ import 'bass.dart';
 import 'dart:ffi' as ffi;
 
 enum PlayerState {
-  /// stop() has been called
+  /// stop() has been called or the end of an audio has been reached
   stopped,
 
   /// start() has been called
@@ -84,7 +84,7 @@ class BassPlayer {
         _positionStreamController.add(position);
 
         /// check if the channel has completed
-        if (length - position < 0.01) {
+        if (playerState == PlayerState.stopped) {
           _playerStateStreamController.add(PlayerState.completed);
         }
       },
