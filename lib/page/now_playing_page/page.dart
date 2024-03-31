@@ -3,6 +3,7 @@
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/responsive_builder.dart';
 import 'package:coriander_player/page/now_playing_page/component/current_playlist_view.dart';
+import 'package:coriander_player/page/now_playing_page/component/lyric_source_view.dart';
 import 'package:coriander_player/page/now_playing_page/component/main_view.dart';
 import 'package:coriander_player/page/now_playing_page/component/title_bar.dart';
 import 'package:coriander_player/page/now_playing_page/component/vertical_lyric_view.dart';
@@ -455,6 +456,20 @@ class _MoreActions extends StatelessWidget {
                   color: theme.palette.onSurface,
                 ),
                 child: Text(nowPlaying.album),
+              ),
+              MenuItemButton(
+                style: menuItemStyle,
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => LyricSourceView(audio: nowPlaying),
+                  );
+                },
+                leadingIcon: Icon(
+                  Symbols.lyrics,
+                  color: theme.palette.onSurface,
+                ),
+                child: const Text("指定默认歌词"),
               ),
             ],
             builder: (context, controller, _) {

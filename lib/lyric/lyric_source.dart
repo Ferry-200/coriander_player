@@ -59,6 +59,7 @@ Future<void> readLyricSources() async {
   final Map lyricSourceJson = json.decode(lyricSourceStr);
 
   for (final item in lyricSourceJson.entries) {
+    if (File(item.key).existsSync() == false) continue;
     LYRIC_SOURCES[item.key] = LyricSource.fromMap(item.value);
   }
 }
@@ -71,7 +72,7 @@ Future<void> saveLyricSources() async {
   for (final item in LYRIC_SOURCES.entries) {
     lyricSourceMaps[item.key] = item.value.toMap();
   }
-  
+
   final lyricSourceJson = json.encode(lyricSourceMaps);
   final output = await File(lyricSourcePath).create();
   await output.writeAsString(lyricSourceJson);
