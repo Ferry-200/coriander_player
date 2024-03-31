@@ -54,7 +54,7 @@ class _LyricHorizontalScrollAreaState
     playService.currentLyric.addListener(_updateLyric);
 
     lyricLineStreamSubscription = playService.lyricLineStream.listen((line) {
-      if (lyric == null) return;
+      if (lyric == null || lyric!.lines.isEmpty) return;
       final currLine = lyric!.lines[line];
 
       setState(() {

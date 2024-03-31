@@ -155,7 +155,7 @@ class LyricSourceTile extends StatelessWidget {
             case ConnectionState.done:
               {
                 final lyric = snapshot.data;
-                if (lyric == null) {
+                if (lyric == null || lyric.lines.isEmpty) {
                   return Text("无歌词", style: subtitleStyle);
                 }
                 return StreamBuilder(
