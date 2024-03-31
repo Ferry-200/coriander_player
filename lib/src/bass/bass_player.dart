@@ -141,10 +141,10 @@ class BassPlayer {
   }
 
   /// if setSource has been called once,
-  /// it will stop current channel and free current stream.
+  /// it will pause current channel and free current stream.
   void setSource(String path) {
     if (_fstream != null) {
-      stop();
+      pause();
       freeFStream();
     }
     final pathPointer = path.toNativeUtf16() as ffi.Pointer<ffi.Void>;
