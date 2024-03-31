@@ -32,6 +32,7 @@ class LyricSourceLabel extends StatelessWidget {
               decription = "QQ";
             } else {
               decription = "无";
+              isEmbedded = true;
             }
             return TextButton(
               onPressed: isEmbedded
