@@ -144,7 +144,8 @@ class BassPlayer {
   /// it will pause current channel and free current stream.
   void setSource(String path) {
     if (_fstream != null) {
-      pause();
+      // pause();
+      _positionUpdater.cancel();
       freeFStream();
     }
     final pathPointer = path.toNativeUtf16() as ffi.Pointer<ffi.Void>;
