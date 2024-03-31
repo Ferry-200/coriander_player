@@ -1,5 +1,6 @@
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/library/playlist.dart';
+import 'package:coriander_player/lyric/lyric_source.dart';
 import 'package:coriander_player/src/rust/api/tag_reader.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
@@ -27,7 +28,7 @@ class _UpdatingDialogState extends State<UpdatingDialog> {
   @override
   void initState() {
     super.initState();
-    updateFuture = Future.wait([initAudioLibrary(), readPlaylists()]);
+    updateFuture = Future.wait([initAudioLibrary(), readPlaylists(), readLyricSources()]);
     updateFuture.whenComplete(() {
       context.go(app_paths.AUDIOS_PAGE);
     });

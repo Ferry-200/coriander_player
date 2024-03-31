@@ -428,7 +428,6 @@ class _MoreActions extends StatelessWidget {
                     onPressed: () {
                       final Artist artist = AudioLibrary.instance
                           .artistCollection[nowPlaying.splitedArtists[i]]!;
-                      // context.pop();
                       context.pushReplacement(
                         app_paths.ARTIST_DETAIL_PAGE,
                         extra: artist,
@@ -448,7 +447,6 @@ class _MoreActions extends StatelessWidget {
                 onPressed: () {
                   final Album album =
                       AudioLibrary.instance.albumCollection[nowPlaying.album]!;
-                  // context.pop();
                   context.pushReplacement(app_paths.ALBUM_DETAIL_PAGE,
                       extra: album);
                 },

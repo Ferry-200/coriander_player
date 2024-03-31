@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/lyric/lrc.dart';
 import 'package:coriander_player/lyric/lyric.dart';
+import 'package:coriander_player/lyric/lyric_source.dart';
 import 'package:coriander_player/music_api/search_helper.dart';
 import 'package:coriander_player/src/bass/bass_player.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
@@ -113,15 +114,37 @@ class PlayService with ChangeNotifier {
     _bassPlayer.setSource(nowPlaying!.path);
 
     currentLyric.value = null;
-    Lrc.fromAudioPath(nowPlaying!.path).then((value) {
-      if (value == null) {
-        getMostMatchedLyric(nowPlaying!).then((value) {
+
+    /// 读取本地默认歌词来源：
+    /// 1. 如果没有指定来源，按照现在的方式寻找歌词（本地 -> 在线）
+    /// 2. 如果指定来源，按照指定的来源获取
+    final lyricSource = LYRIC_SOURCES[nowPlaying!.path];
+    if (lyricSource == null) {
+      Lrc.fromAudioPath(nowPlaying!.path).then((value) {
+        if (value == null) {
+          getMostMatchedLyric(nowPlaying!).then((value) {
+            currentLyric.value = value;
+          });
+        } else {
+          currentLyric.value = value;
+        }
+      });
+    } else {
+      if (lyricSource.source == LyricSourceType.local) {
+        Lrc.fromAudioPath(nowPlaying!.path).then((value) {
           currentLyric.value = value;
         });
       } else {
-        currentLyric.value = value;
+        getOnlineLyric(
+          qqSongId: lyricSource.qqSongId,
+          kugouSongHash: lyricSource.kugouSongHash,
+          neteaseSongId: lyricSource.neteaseSongId,
+        ).then((value) {
+          currentLyric.value = value;
+        });
       }
-    });
+    }
+
     _nextLyricLine = 0;
 
     _bassPlayer.start();

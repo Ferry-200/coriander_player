@@ -124,7 +124,7 @@ class SongSearchResult {
   }
 }
 
-Future<List<SongSearchResult>> _uniSearch(Audio audio) async {
+Future<List<SongSearchResult>> uniSearch(Audio audio) async {
   final query = audio.title;
   List<SongSearchResult> result = [];
 
@@ -220,40 +220,47 @@ Future<Krc?> _getKugouSyncLyric(String kugouSongHash) async {
   return null;
 }
 
+Future<Lyric?> getOnlineLyric({
+  int? qqSongId,
+  String? kugouSongHash,
+  String? neteaseSongId,
+}) async {
+  if (qqSongId != null) {
+    final syncLyric = await _getQQSyncLyric(qqSongId);
+    if (syncLyric != null) return syncLyric;
+
+    final unsyncLyric = await _getQQUnsyncLyric(qqSongId);
+    if (unsyncLyric != null) return unsyncLyric;
+
+    return null;
+  } else if (kugouSongHash != null) {
+    final syncLyric = await _getKugouSyncLyric(kugouSongHash);
+    if (syncLyric != null) return syncLyric;
+
+    final unsyncLyric = await _getKugouUnsyncLyric(kugouSongHash);
+    if (unsyncLyric != null) return unsyncLyric;
+
+    return null;
+  } else if (neteaseSongId != null) {
+    final unsyncLyric = await _getNeteaseUnsyncLyric(neteaseSongId);
+    if (unsyncLyric != null) return unsyncLyric;
+
+    return null;
+  }
+  return null;
+}
+
 Future<Lyric?> getMostMatchedLyric(Audio audio) async {
-  final unisearchResult = await _uniSearch(audio);
+  final unisearchResult = await uniSearch(audio);
   if (unisearchResult.isEmpty) return null;
 
   final mostMatch = unisearchResult.first;
   switch (mostMatch.source) {
     case ResultSource.qq:
-      {
-        final syncLyric = await _getQQSyncLyric(mostMatch.qqSongId!);
-        if (syncLyric != null) return syncLyric;
-
-        final unsyncLyric = await _getQQUnsyncLyric(mostMatch.qqSongId!);
-        if (unsyncLyric != null) return unsyncLyric;
-
-        return null;
-      }
+      return getOnlineLyric(qqSongId: mostMatch.qqSongId);
     case ResultSource.kugou:
-      {
-        final syncLyric = await _getKugouSyncLyric(mostMatch.kugouSongHash!);
-        if (syncLyric != null) return syncLyric;
-
-        final unsyncLyric =
-            await _getKugouUnsyncLyric(mostMatch.kugouSongHash!);
-        if (unsyncLyric != null) return unsyncLyric;
-
-        return null;
-      }
+      return getOnlineLyric(kugouSongHash: mostMatch.kugouSongHash);
     case ResultSource.netease:
-      {
-        final unsyncLyric =
-            await _getNeteaseUnsyncLyric(mostMatch.neteaseSongId!);
-        if (unsyncLyric != null) return unsyncLyric;
-
-        return null;
-      }
+      return getOnlineLyric(neteaseSongId: mostMatch.neteaseSongId);
   }
 }

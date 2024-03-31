@@ -3,6 +3,7 @@
 import 'package:coriander_player/component/horizontal_lyric_view.dart';
 import 'package:coriander_player/component/responsive_builder.dart';
 import 'package:coriander_player/library/playlist.dart';
+import 'package:coriander_player/lyric/lyric_source.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -245,12 +246,6 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
   }
 
   @override
-  Future<void> onWindowClose() async {
-    super.onWindowClose();
-    await savePlaylists();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
     return Wrap(
@@ -285,7 +280,11 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
           },
         ),
         IconButton(
-          onPressed: windowManager.close,
+          onPressed: () async {
+            await savePlaylists();
+            await saveLyricSources();
+            windowManager.close();
+          },
           icon: Icon(
             Symbols.close,
             color: theme.palette.onSurface,
