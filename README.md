@@ -4,13 +4,11 @@
 一款使用 Material You 配色的本地音乐播放器
 
 ### 特色
-- 根据歌曲封面配色
-- 歌词栏
-- 美观的歌词界面
-- 跟 Apple Music 相似的间奏表示
-  ![间奏表示](for_readme/transition.png)
-- 逐字歌词！！！
-  ![逐字歌词](for_readme/sync_lyric.png)
+详见 [官网](https://ferry-200.github.io/coriander_player_website/#second)
+
+### 安装
+1. 下载 [Release](https://github.com/Ferry-200/coriander_player/releases) 里的发行版，直接双击release.zip里的exe运行
+2. 下载 [Release](https://github.com/Ferry-200/coriander_player/releases) 里的 msix 文件，按照 [MSIX_install使用方法](MSIX_install.md) 安装
 
 ### 歌词特性解释
 1. lrc歌词的间奏识别   
@@ -37,10 +35,6 @@
 
 ![选择默认歌词](for_readme/select_default_lyric.png)
 在这个界面中，你可以在本地歌词（如果有）和几个匹配程度高的在线歌词中选择一个作为默认歌词。之后再播放这首音乐时，软件会加载你指定的歌词。
-
-### 安装
-1. 下载 [Release](https://github.com/Ferry-200/coriander_player/releases) 里的发行版，直接双击release.zip里的exe运行
-2. 下载 [Release](https://github.com/Ferry-200/coriander_player/releases) 里的 msix 文件，按照 [MSIX_install使用方法](MSIX_install.md) 安装
 
 ### 感谢
 本项目引用了 [music_api](https://github.com/yhsj0919/music_api.git) 来实现歌曲的匹配和歌词的获取
