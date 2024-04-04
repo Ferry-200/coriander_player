@@ -4,7 +4,7 @@
 一款使用 Material You 配色的本地音乐播放器
 
 ### 特色
-详见 [官网](https://ferry-200.github.io/coriander_player_website/#second)
+详见 [斥资10元搭建的官网](coriander-player.fun)
 
 ### 安装
 1. 下载 [Release](https://github.com/Ferry-200/coriander_player/releases) 里的发行版，直接双击release.zip里的exe运行
