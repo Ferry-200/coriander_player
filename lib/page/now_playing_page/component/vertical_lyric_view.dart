@@ -170,13 +170,17 @@ class _VerticalLyricViewState extends State<VerticalLyricView> {
           type: MaterialType.transparency,
           child: ScrollConfiguration(
             behavior: scrollBehavier,
-            child: SingleChildScrollView(
+            child: CustomScrollView(
               controller: scrollController,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: lyricTiles,
-              ),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: lyricTiles,
+                  ),
+                ),
+                const SliverFillRemaining(),
+              ],
             ),
           ),
         ),
