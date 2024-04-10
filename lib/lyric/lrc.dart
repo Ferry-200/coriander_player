@@ -5,7 +5,8 @@ class LrcLine extends UnsyncLyricLine {
   bool isBlank;
   Duration length;
 
-  LrcLine(super.start, super.content, {required this.isBlank, this.length = Duration.zero});
+  LrcLine(super.start, super.content,
+      {required this.isBlank, this.length = Duration.zero});
 
   static LrcLine defaultLine = LrcLine(
     Duration.zero,
@@ -29,7 +30,12 @@ class LrcLine extends UnsyncLyricLine {
       line.indexOf("[") + 1,
       line.indexOf("]"),
     );
-    var content = line.substring(line.indexOf("]") + 1).trim();
+
+    // replace [mm:ss.msms...] with ""
+    var content = line
+        .substring(line.indexOf("]") + 1)
+        .trim()
+        .replaceAll(RegExp(r"\[[0-9][0-9]:[0-9][0-9]\.[0-9][0-9][0-9]*\]"), "");
 
     var timeList = lrcTimeString.split(":");
     int? minute;
@@ -154,7 +160,8 @@ class Lrc extends Lyric {
   /// .mp3: parse from USLT frame
   /// .flac: parse from LYRICS comment
   /// other: parse from .lrc file content
-  static Future<Lrc?> fromAudioPath(String path, {String? separator = "┃"}) async {
+  static Future<Lrc?> fromAudioPath(String path,
+      {String? separator = "┃"}) async {
     final suffix = path.split(".").last.toLowerCase();
 
     if (suffix == "mp3") {
