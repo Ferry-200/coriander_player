@@ -12,6 +12,10 @@
 1. 下载 [Release](https://github.com/Ferry-200/coriander_player/releases) 里的发行版，直接双击release.zip里的exe运行
 2. 下载 [Release](https://github.com/Ferry-200/coriander_player/releases) 里的 msix 文件，按照 [MSIX_install使用方法](MSIX_install.md) 安装
 
+### 编译
+1. 开发 flutter 需要的环境
+2. 编译后要把 BASS 音频库和 BASSFLAC 插件放在 exe 相同目录下
+
 ### 歌词特性解释
 1. lrc歌词的间奏识别   
    在一些lrc歌词中，会使用 **只有时间标签而内容为空** 的一行来表示上一行的结束。如：
