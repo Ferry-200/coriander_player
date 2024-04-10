@@ -1,7 +1,7 @@
 name: coriander_player
 description: A new Flutter project.
 publish_to: 'none'
-version: 0.1.0
+version: 0.8.0
 
 environment:
   sdk: '>=3.1.4 <4.0.0'
@@ -48,5 +48,5 @@ msix_config:
   display_name: Coriander Player
   publisher_display_name: Ferry
   identity_name: ferry.coriander-player
-  msix_version: 1.0.0.7
+  msix_version: 1.0.0.8
   logo_path: D:\FlutterApps\coriander_player\windows\runner\resources\app_icon.ico
