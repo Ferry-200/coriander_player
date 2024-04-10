@@ -37,6 +37,9 @@ class BassPlayer {
   late final StreamController<double> _positionStreamController;
   late final StreamController<PlayerState> _playerStateStreamController;
 
+  /// store the plugin handle and we can free it when exit
+  List<int> pluginHandles = [];
+
   /// audio's length in seconds
   double get length => _fstream == null
       ? double.maxFinite
@@ -126,6 +129,27 @@ class BassPlayer {
         throw const FormatException("Some other mystery problem!");
     }
 
+    // load bassflac plugin to support flac
+    final flacPluginPath =
+        "bassflac.dll".toNativeUtf16() as ffi.Pointer<ffi.Char>;
+    final hplugin = _bass.BASS_PluginLoad(flacPluginPath, BASS_UNICODE);
+
+    if (hplugin == 0) {
+      switch (_bass.BASS_ErrorGetCode()) {
+        case BASS_ERROR_FILEOPEN:
+          throw const FormatException("The file could not be opened.");
+        case BASS_ERROR_FILEFORM:
+          throw const FormatException("The file is not a plugin.");
+        case BASS_ERROR_VERSION:
+          throw const FormatException(
+              "The plugin requires a different BASS version.");
+        case BASS_ERROR_ALREADY:
+          throw const FormatException("The plugin is already loaded.");
+      }
+    } else {
+      pluginHandles.add(hplugin);
+    }
+
     _positionStreamController = StreamController.broadcast(
       onListen: () {},
       onCancel: () {
@@ -149,8 +173,10 @@ class BassPlayer {
       freeFStream();
     }
     final pathPointer = path.toNativeUtf16() as ffi.Pointer<ffi.Void>;
+
     /// 设置 flags 为 BASS_UNICODE 才可以找到文件。
-    _fstream = _bass.BASS_StreamCreateFile(FALSE, pathPointer, 0, 0, BASS_UNICODE);
+    _fstream =
+        _bass.BASS_StreamCreateFile(FALSE, pathPointer, 0, 0, BASS_UNICODE);
     switch (_bass.BASS_ErrorGetCode()) {
       case BASS_ERROR_INIT:
         throw const FormatException(
@@ -294,6 +320,9 @@ class BassPlayer {
   ///
   /// Also free the bass.dll.
   void free() {
+    for (var hplugin in pluginHandles) {
+      _bass.BASS_PluginFree(hplugin);
+    }
     _bass.BASS_Free();
     switch (_bass.BASS_ErrorGetCode()) {
       case BASS_ERROR_INIT:
