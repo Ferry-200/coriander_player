@@ -12,6 +12,15 @@
 1. 下载 [Release](https://github.com/Ferry-200/coriander_player/releases) 里的发行版，直接双击release.zip里的exe运行
 2. 下载 [Release](https://github.com/Ferry-200/coriander_player/releases) 里的 msix 文件，按照 [MSIX_install使用方法](MSIX_install.md) 安装
 
+### 提供建议、提交 Bug 或者提 PR
+我也处于学习和适应 Github 工作流的阶段，所以目前不设置太多的要求。你只需要注意以下几点：
+1. 如果你想收到属于你的或不属于你的建议的消息（也就是可以忍受消息轰炸），
+   可以去 [征求新功能](https://github.com/Ferry-200/coriander_player/issues/6) 回复。
+   如果你不小心回复了，但又不想被继续打扰，可以在这个议题的消息管理中取消 ![消息管理](for_readme/receive_notification.png) 
+2. 如果你只想收到属于你建议的消息，可以创建一个新的 issue。
+3. 如果你提交 PR，由于我正在学习相关知识，可能会在处理 PR 时和你沟通如何操作分支之类的问题。
+
+
 ### 编译
 1. 开发 flutter 需要的环境
 2. 编译后要把 BASS 音频库和 BASSFLAC 插件放在 exe 相同目录下
