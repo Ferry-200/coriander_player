@@ -1,3 +1,4 @@
+import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/lyric/lyric.dart';
 import 'package:coriander_player/src/rust/api/tag_reader.dart';
 
@@ -160,17 +161,24 @@ class Lrc extends Lyric {
   /// .mp3: parse from USLT frame
   /// .flac: parse from LYRICS comment
   /// other: parse from .lrc file content
-  static Future<Lrc?> fromAudioPath(String path,
+  static Future<Lrc?> fromAudioPath(Audio belongTo,
       {String? separator = "┃"}) async {
+    final path = belongTo.path;
     final suffix = path.split(".").last.toLowerCase();
+    Lrc? lyric;
 
     if (suffix == "mp3") {
-      return _fromMp3(path, separator);
+      lyric = await _fromMp3(path, separator);
     } else if (suffix == "flac") {
-      return _fromFlac(path, separator);
+      lyric = await _fromFlac(path, separator);
     } else {
-      return _fromLrcFile(path, separator);
+      lyric = await _fromLrcFile(path, separator);
     }
+
+    if (lyric != null) {
+      lyric.belongTo = belongTo;
+    }
+    return lyric;
   }
 
   static Future<Lrc?> _fromLrcFile(String path, String? separator) {

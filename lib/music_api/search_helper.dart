@@ -221,46 +221,54 @@ Future<Krc?> _getKugouSyncLyric(String kugouSongHash) async {
 }
 
 Future<Lyric?> getOnlineLyric({
+  Audio? belongTo,
   int? qqSongId,
   String? kugouSongHash,
   String? neteaseSongId,
 }) async {
+  Lyric? lyric;
   if (qqSongId != null) {
-    final syncLyric = await _getQQSyncLyric(qqSongId);
-    if (syncLyric != null) return syncLyric;
-
-    final unsyncLyric = await _getQQUnsyncLyric(qqSongId);
-    if (unsyncLyric != null) return unsyncLyric;
-
-    return null;
+    lyric = (await _getQQSyncLyric(qqSongId)) ??
+        (await _getQQUnsyncLyric(qqSongId));
   } else if (kugouSongHash != null) {
-    final syncLyric = await _getKugouSyncLyric(kugouSongHash);
-    if (syncLyric != null) return syncLyric;
-
-    final unsyncLyric = await _getKugouUnsyncLyric(kugouSongHash);
-    if (unsyncLyric != null) return unsyncLyric;
-
-    return null;
+    lyric = (await _getKugouSyncLyric(kugouSongHash)) ??
+        (await _getKugouUnsyncLyric(kugouSongHash));
   } else if (neteaseSongId != null) {
-    final unsyncLyric = await _getNeteaseUnsyncLyric(neteaseSongId);
-    if (unsyncLyric != null) return unsyncLyric;
-
-    return null;
+    lyric = await _getNeteaseUnsyncLyric(neteaseSongId);
   }
-  return null;
+  if (lyric != null && belongTo != null) {
+    lyric.belongTo = belongTo;
+  }
+  return lyric;
 }
 
 Future<Lyric?> getMostMatchedLyric(Audio audio) async {
   final unisearchResult = await uniSearch(audio);
   if (unisearchResult.isEmpty) return null;
 
+  Lyric? lyric;
+
   final mostMatch = unisearchResult.first;
   switch (mostMatch.source) {
     case ResultSource.qq:
-      return getOnlineLyric(qqSongId: mostMatch.qqSongId);
+      lyric = await getOnlineLyric(
+        belongTo: audio,
+        qqSongId: mostMatch.qqSongId,
+      );
+      break;
     case ResultSource.kugou:
-      return getOnlineLyric(kugouSongHash: mostMatch.kugouSongHash);
+      lyric = await getOnlineLyric(
+        belongTo: audio,
+        kugouSongHash: mostMatch.kugouSongHash,
+      );
+      break;
     case ResultSource.netease:
-      return getOnlineLyric(neteaseSongId: mostMatch.neteaseSongId);
+      lyric = await getOnlineLyric(
+        belongTo: audio,
+        neteaseSongId: mostMatch.neteaseSongId,
+      );
+      break;
   }
+
+  return lyric;
 }

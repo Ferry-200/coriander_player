@@ -104,14 +104,14 @@ class PlayService with ChangeNotifier {
 
   Future<Lyric?> _getLyricDefault({required bool localFirst}) async {
     if (localFirst) {
-      return (await Lrc.fromAudioPath(nowPlaying!.path)) ??
+      return (await Lrc.fromAudioPath(nowPlaying!)) ??
           (await getMostMatchedLyric(nowPlaying!));
     }
     return (await getMostMatchedLyric(nowPlaying!).timeout(
           const Duration(seconds: 5),
-          onTimeout: () async => await Lrc.fromAudioPath(nowPlaying!.path),
+          onTimeout: () async => await Lrc.fromAudioPath(nowPlaying!),
         )) ??
-        (await Lrc.fromAudioPath(nowPlaying!.path));
+        (await Lrc.fromAudioPath(nowPlaying!));
   }
 
   /// 1. 更新[_nowPlayingIndex]为[audioIndex]
@@ -133,20 +133,27 @@ class PlayService with ChangeNotifier {
     final lyricSource = LYRIC_SOURCES[nowPlaying!.path];
     if (lyricSource == null) {
       _getLyricDefault(localFirst: true).then((value) {
-        currentLyric.value = value;
+        if (value != null && value.belongTo == nowPlaying) {
+          currentLyric.value = value;
+        }
       });
     } else {
       if (lyricSource.source == LyricSourceType.local) {
-        Lrc.fromAudioPath(nowPlaying!.path).then((value) {
-          currentLyric.value = value;
+        Lrc.fromAudioPath(nowPlaying!).then((value) {
+          if (value != null && value.belongTo == nowPlaying) {
+            currentLyric.value = value;
+          }
         });
       } else {
         getOnlineLyric(
+          belongTo: nowPlaying!,
           qqSongId: lyricSource.qqSongId,
           kugouSongHash: lyricSource.kugouSongHash,
           neteaseSongId: lyricSource.neteaseSongId,
         ).then((value) {
-          currentLyric.value = value;
+          if (value != null && value.belongTo == nowPlaying) {
+            currentLyric.value = value;
+          }
         });
       }
     }
@@ -167,9 +174,11 @@ class PlayService with ChangeNotifier {
   void useEmbeddedLyric() {
     currentLyric.value = null;
     _nextLyricLine = 0;
-    Lrc.fromAudioPath(nowPlaying!.path).then((value) {
-      currentLyric.value = value;
-      _findCurrLyricLine();
+    Lrc.fromAudioPath(nowPlaying!).then((value) {
+      if (value != null && value.belongTo == nowPlaying) {
+        currentLyric.value = value;
+        _findCurrLyricLine();
+      }
     });
   }
 
@@ -177,8 +186,10 @@ class PlayService with ChangeNotifier {
     currentLyric.value = null;
     _nextLyricLine = 0;
     getMostMatchedLyric(nowPlaying!).then((value) {
-      currentLyric.value = value;
-      _findCurrLyricLine();
+      if (value != null && value.belongTo == nowPlaying) {
+        currentLyric.value = value;
+        _findCurrLyricLine();
+      }
     });
   }
 

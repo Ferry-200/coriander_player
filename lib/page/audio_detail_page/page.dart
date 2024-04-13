@@ -23,7 +23,7 @@ class AudioDetailPage extends StatelessWidget {
     );
     final album = AudioLibrary.instance.albumCollection[audio.album]!;
     const space = SizedBox(height: 16.0);
-    final lyric = Lrc.fromAudioPath(audio.path, separator: "\n");
+    final lyric = Lrc.fromAudioPath(audio, separator: "\n");
 
     return Material(
       color: theme.palette.surface,
