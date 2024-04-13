@@ -102,6 +102,18 @@ class PlayService with ChangeNotifier {
     });
   }
 
+  Future<Lyric?> _getLyricDefault({required bool localFirst}) async {
+    if (localFirst) {
+      return (await Lrc.fromAudioPath(nowPlaying!.path)) ??
+          (await getMostMatchedLyric(nowPlaying!));
+    }
+    return (await getMostMatchedLyric(nowPlaying!).timeout(
+          const Duration(seconds: 5),
+          onTimeout: () async => await Lrc.fromAudioPath(nowPlaying!.path),
+        )) ??
+        (await Lrc.fromAudioPath(nowPlaying!.path));
+  }
+
   /// 1. 更新[_nowPlayingIndex]为[audioIndex]
   /// 2. 更新[nowPlaying]为playlist[_nowPlayingIndex]
   /// 3. _bassPlayer.setSource
@@ -120,14 +132,8 @@ class PlayService with ChangeNotifier {
     /// 2. 如果指定来源，按照指定的来源获取
     final lyricSource = LYRIC_SOURCES[nowPlaying!.path];
     if (lyricSource == null) {
-      Lrc.fromAudioPath(nowPlaying!.path).then((value) {
-        if (value == null) {
-          getMostMatchedLyric(nowPlaying!).then((value) {
-            currentLyric.value = value;
-          });
-        } else {
-          currentLyric.value = value;
-        }
+      _getLyricDefault(localFirst: true).then((value) {
+        currentLyric.value = value;
       });
     } else {
       if (lyricSource.source == LyricSourceType.local) {
@@ -161,7 +167,7 @@ class PlayService with ChangeNotifier {
   void useEmbeddedLyric() {
     currentLyric.value = null;
     _nextLyricLine = 0;
-    Lrc.fromAudioPath(nowPlaying!.path, separator: "┃").then((value) {
+    Lrc.fromAudioPath(nowPlaying!.path).then((value) {
       currentLyric.value = value;
       _findCurrLyricLine();
     });
