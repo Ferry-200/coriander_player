@@ -52,4 +52,6 @@
 在这个界面中，你可以在本地歌词（如果有）和几个匹配程度高的在线歌词中选择一个作为默认歌词。之后再播放这首音乐时，软件会加载你指定的歌词。
 
 ### 感谢
-本项目引用了 [music_api](https://github.com/yhsj0919/music_api.git) 来实现歌曲的匹配和歌词的获取
+[music_api](https://github.com/yhsj0919/music_api.git)：实现歌曲的匹配和歌词的获取
+[Lofty](https://crates.io/crates/lofty)：歌曲标签获取
+[BASS](https://www.un4seen.com/bass.html)：播放乐曲
