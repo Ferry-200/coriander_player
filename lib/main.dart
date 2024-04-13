@@ -10,9 +10,9 @@ import 'package:window_manager/window_manager.dart';
 Future<void> initWindow() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
-  WindowOptions windowOptions = const WindowOptions(
-    minimumSize: Size(500, 500),
-    size: Size(1280, 720),
+  WindowOptions windowOptions = WindowOptions(
+    minimumSize: const Size(500, 500),
+    size: AppSettings.instance.windowSize,
     center: true,
     backgroundColor: Colors.transparent,
     skipTaskbar: false,
@@ -24,8 +24,7 @@ Future<void> initWindow() async {
   });
 }
 
-Future<bool> judgeWelcome() async {
-  final supportPath = (await getApplicationSupportDirectory()).path;
+Future<bool> judgeWelcome(String supportPath) async {
   final indexExists = File("$supportPath\\index.json").existsSync();
   final settingsExists = File("$supportPath\\settings.json").existsSync();
   return !indexExists || !settingsExists;
@@ -37,7 +36,7 @@ Future<void> main() async {
   if (File("$supportPath\\settings.json").existsSync()) {
     await AppSettings.readFromJson();
   }
-  final welcome = await judgeWelcome();
+  final welcome = await judgeWelcome(supportPath);
   await initWindow();
 
   runApp(Entry(welcome: welcome));

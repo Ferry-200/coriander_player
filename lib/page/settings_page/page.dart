@@ -81,12 +81,12 @@ class __ThemeSelectState extends State<_ThemeSelect> {
               );
               return MouseRegion(
                 child: GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     setState(() {
                       settings.defaultTheme = themeCollection[i];
                     });
                     theme.changeTheme(themeItem);
-                    settings.saveSettings();
+                    await settings.saveSettings();
                   },
                   child: Stack(
                     alignment: Alignment.center,
@@ -149,11 +149,11 @@ class __DynamicThemeSwitchState extends State<_DynamicThemeSwitch> {
         ),
         Switch(
           value: settings.dynamicTheme,
-          onChanged: (_) {
+          onChanged: (_) async {
             setState(() {
               settings.dynamicTheme = !settings.dynamicTheme;
             });
-            settings.saveSettings();
+            await settings.saveSettings();
           },
           hoverColor: theme.palette.onSurface.withOpacity(0.08),
           activeColor: theme.palette.primary,
@@ -205,14 +205,14 @@ class __ThemeModeControlState extends State<_ThemeModeControl> {
             child: Row(
               children: [
                 GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     if (settings.themeMode == Brightness.light) return;
 
                     setState(() {
                       settings.themeMode = Brightness.light;
                     });
                     theme.toggleThemeMode();
-                    settings.saveSettings();
+                    await settings.saveSettings();
                   },
                   child: DecoratedBox(
                     decoration: BoxDecoration(
@@ -239,14 +239,14 @@ class __ThemeModeControlState extends State<_ThemeModeControl> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     if (settings.themeMode == Brightness.dark) return;
 
                     setState(() {
                       settings.themeMode = Brightness.dark;
                     });
                     theme.toggleThemeMode();
-                    settings.saveSettings();
+                    await settings.saveSettings();
                   },
                   child: DecoratedBox(
                     decoration: BoxDecoration(

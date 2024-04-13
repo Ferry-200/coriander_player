@@ -1,3 +1,4 @@
+import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/lyric/lyric_source.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
@@ -131,6 +132,7 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
             onPressed: () async {
               await savePlaylists();
               await saveLyricSources();
+              await AppSettings.instance.saveSettings();
               windowManager.close();
             },
             icon: Icon(
