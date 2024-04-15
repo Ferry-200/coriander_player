@@ -8,11 +8,13 @@ class PageScaffold extends StatelessWidget {
   const PageScaffold({
     super.key,
     required this.title,
+    this.subtitle,
     required this.actions,
     required this.body,
   });
 
   final String title;
+  final String? subtitle;
   final List<Widget> actions;
   final Widget body;
 
@@ -22,33 +24,91 @@ class PageScaffold extends StatelessWidget {
 
     late List<Widget> rowChildren;
     if (actions.isEmpty) {
-      rowChildren = [
-        Expanded(
-          child: Text(
-            title,
-            style: TextStyle(
-              fontSize: 32.0,
-              color: theme.palette.onSurface,
+      if (subtitle == null) {
+        rowChildren = [
+          Expanded(
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 32.0,
+                color: theme.palette.onSurface,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
-            overflow: TextOverflow.ellipsis,
           ),
-        ),
-      ];
+        ];
+      } else {
+        rowChildren = [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 28.0,
+                    color: theme.palette.onSurface,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  subtitle!,
+                  style: TextStyle(
+                    fontSize: 14.0,
+                    color: theme.palette.onSurface,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                )
+              ],
+            ),
+          ),
+        ];
+      }
     } else {
-      rowChildren = [
-        Expanded(
-          child: Text(
-            title,
-            style: TextStyle(
-              fontSize: 32.0,
-              color: theme.palette.onSurface,
+      if (subtitle == null) {
+        rowChildren = [
+          Expanded(
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 32.0,
+                color: theme.palette.onSurface,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
-            overflow: TextOverflow.ellipsis,
           ),
-        ),
-        const SizedBox(width: 16.0),
-        Wrap(spacing: 8.0, children: actions)
-      ];
+          const SizedBox(width: 16.0),
+          Wrap(spacing: 8.0, children: actions)
+        ];
+      } else {
+        rowChildren = [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 28.0,
+                    color: theme.palette.onSurface,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  subtitle!,
+                  style: TextStyle(
+                    fontSize: 14.0,
+                    color: theme.palette.onSurface,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                )
+              ],
+            ),
+          ),
+          const SizedBox(width: 16.0),
+          Wrap(spacing: 8.0, children: actions)
+        ];
+      }
     }
 
     return ResponsiveBuilder(builder: (context, screenType) {

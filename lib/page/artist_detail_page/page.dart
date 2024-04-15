@@ -67,6 +67,13 @@ class ArtistDetailPage extends StatelessWidget {
                             ),
                           ),
                         ),
+                        Text(
+                          "${artist.works.length} 首乐曲",
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            color: theme.palette.onSurface,
+                          ),
+                        ),
                         const SizedBox(height: 8.0),
                         const Wrap(
                           spacing: 8.0,

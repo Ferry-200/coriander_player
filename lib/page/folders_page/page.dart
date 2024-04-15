@@ -57,6 +57,7 @@ class FolderDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return PageScaffold(
       title: folder.path,
+      subtitle: "${folder.audios.length} 首乐曲",
       actions: const [],
       body: Material(
         type: MaterialType.transparency,

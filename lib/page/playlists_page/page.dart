@@ -351,6 +351,7 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage> {
     final theme = Provider.of<ThemeProvider>(context);
     return PageScaffold(
       title: widget.playlist.name,
+      subtitle: "${widget.playlist.audios.length} 首乐曲",
       actions: [
         FilledButton.icon(
           onPressed: () {

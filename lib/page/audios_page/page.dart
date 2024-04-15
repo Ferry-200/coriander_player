@@ -36,6 +36,7 @@ class AudiosPage extends StatelessWidget {
 
         return PageScaffold(
           title: "音乐",
+          subtitle: "${pageController.list.length} 首乐曲",
           actions: const [
             _ShuffleAndPlay(),
             _SortMethodComboBox(),
