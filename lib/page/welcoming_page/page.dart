@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/title_bar.dart';
@@ -25,22 +27,21 @@ class WelcomingPage extends StatelessWidget {
         preferredSize: Size.fromHeight(48.0),
         child: _TitleBar(),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Column(
-            children: [
-              Text(
-                "你的音乐都在那些文件夹呢？",
-                style: TextStyle(
-                  color: theme.palette.onSurface,
-                  fontSize: 22,
-                ),
+      body: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "你的音乐都在那些文件夹呢？",
+              style: TextStyle(
+                color: theme.palette.onSurface,
+                fontSize: 22,
               ),
-              const SizedBox(height: 32.0),
-              const _AudioFolderEdit(),
-            ],
-          ),
+            ),
+            const SizedBox(height: 32.0),
+            const _AudioFolderEdit(),
+          ],
         ),
       ),
     );
@@ -77,7 +78,6 @@ class __AudioFolderEditState extends State<_AudioFolderEdit> {
 
     return Column(
       mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         ConstrainedBox(
           constraints: const BoxConstraints(maxHeight: 300.0),
@@ -102,6 +102,28 @@ class __AudioFolderEditState extends State<_AudioFolderEdit> {
               onPressed: _addPath,
               icon: const Icon(Symbols.create_new_folder),
               label: const Text("添加"),
+              style: theme.secondaryButtonStyle,
+            ),
+            const SizedBox(width: 8.0),
+            FilledButton.icon(
+              onPressed: () async {
+                String? selectedDirectory =
+                    await FilePicker.platform.getDirectoryPath();
+                if (selectedDirectory == null) return;
+                final dirs = Directory(selectedDirectory)
+                    .listSync()
+                    .where(
+                      (element) =>
+                          element.statSync().type ==
+                          FileSystemEntityType.directory,
+                    )
+                    .map((e) => e.path);
+                setState(() {
+                  folderPaths.addAll(dirs);
+                });
+              },
+              icon: const Icon(Symbols.folder),
+              label: const Text("从父文件夹中添加路径"),
               style: theme.secondaryButtonStyle,
             ),
             const SizedBox(width: 8.0),
