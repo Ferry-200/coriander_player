@@ -140,6 +140,9 @@ class Audio {
   /// 0: 没有track
   int track;
 
+  /// audio's duration in secs
+  int duration;
+
   /// absolute path
   String path;
 
@@ -158,6 +161,7 @@ class Audio {
     this.artist,
     this.album,
     this.track,
+    this.duration,
     this.path,
     this.modified,
     this.created,
@@ -169,7 +173,8 @@ class Audio {
         map["title"],
         map["artist"],
         map["album"],
-        map["track"],
+        map["track"] ?? 0,
+        map["duration"] ?? 0,
         map["path"],
         map["modified"],
         map["created"],
@@ -180,6 +185,7 @@ class Audio {
         "artist": artist,
         "album": album,
         "track": track,
+        "duration": duration,
         "path": path,
         "modified": modified,
         "created": created,

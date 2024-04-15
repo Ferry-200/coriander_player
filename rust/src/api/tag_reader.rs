@@ -18,6 +18,7 @@ struct Metadata {
     artist: String,
     album: String,
     track: u32,
+    duration: u64,
     path: String,
     modified: u64,
     created: u64,
@@ -30,6 +31,7 @@ impl Metadata {
             "artist": from.artist,
             "album": from.album,
             "track": from.track,
+            "duration": from.duration,
             "path": from.path,
             "modified": from.modified,
             "created": from.created
@@ -52,6 +54,7 @@ impl Metadata {
         let artist: Cow<'_, str>;
         let album: Cow<'_, str>;
         let track: u32;
+        let duration: u64 = tagged_file.properties().duration().as_secs();
 
         if let Some(primary_tag) = tagged_file.primary_tag() {
             title = primary_tag.title().unwrap_or(UNKNOWN);
@@ -94,6 +97,7 @@ impl Metadata {
             artist: artist.to_string(),
             album: album.to_string(),
             track,
+            duration,
             path: path.clone(),
             modified,
             created,
@@ -164,14 +168,6 @@ impl AudioFolder {
             audios,
         });
     }
-}
-
-/// for [IndexMessage]
-pub enum IndexMessageType {
-    Normal,
-    Error,
-    End,
-    EndWithErr,
 }
 
 /// 扫描给定的多个目录，建立索引并导出到index_path/index.json

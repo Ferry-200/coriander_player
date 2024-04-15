@@ -243,6 +243,15 @@ class AudioTile extends StatelessWidget {
                       ],
                     ),
                   ),
+                  const SizedBox(width: 8.0),
+                  Text(
+                    "${audio.duration ~/ 60}:${audio.duration % 60}",
+                    style: TextStyle(
+                      color: focus
+                          ? theme.palette.primary
+                          : theme.palette.onSurface,
+                    ),
+                  ),
                 ],
               ),
             );
