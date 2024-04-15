@@ -64,16 +64,24 @@ class Entry extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: ThemeProvider.instance,
-      builder: (context, _) => MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          useMaterial3: true,
-          platform: TargetPlatform.windows,
-        ),
-        localizationsDelegates: const [GlobalMaterialLocalizations.delegate],
-        supportedLocales: supportedLocales,
-        routerConfig: config,
-      ),
+      builder: (context, _) {
+        final theme = Provider.of<ThemeProvider>(context);
+        return MaterialApp.router(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            useMaterial3: true,
+            platform: TargetPlatform.windows,
+            scrollbarTheme: ScrollbarThemeData(
+              thumbColor: MaterialStatePropertyAll(theme.palette.outline),
+              trackColor:
+                  MaterialStatePropertyAll(theme.palette.outlineVariant),
+            ),
+          ),
+          localizationsDelegates: const [GlobalMaterialLocalizations.delegate],
+          supportedLocales: supportedLocales,
+          routerConfig: config,
+        );
+      },
     );
   }
 
