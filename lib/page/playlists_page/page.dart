@@ -1,6 +1,5 @@
 import 'package:coriander_player/component/audio_tile.dart';
 import 'package:coriander_player/page/page_scaffold.dart';
-import 'page_controller.dart';
 import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
@@ -10,110 +9,113 @@ import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
 
-class PlaylistsPage extends StatelessWidget {
+class PlaylistsPage extends StatefulWidget {
   const PlaylistsPage({super.key});
 
-  void newPlaylist(
-    BuildContext context,
-    PlayListsPageController pageController,
-  ) {
+  @override
+  State<PlaylistsPage> createState() => _PlaylistsPageState();
+}
+
+class _PlaylistsPageState extends State<PlaylistsPage> {
+  void newPlaylist(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context, listen: false);
-    showDialog(
+    showDialog<String>(
       context: context,
       builder: (context) => _NewPlaylistDialog(theme: theme),
     ).then((value) {
       if (value != null) {
-        pageController.newPlaylist(value as String);
+        setState(() {
+          PLAYLISTS.add(Playlist(value, []));
+        });
       }
     });
   }
 
   void editPlaylist(
     BuildContext context,
-    PlayListsPageController pageController,
     Playlist playlist,
   ) {
     final theme = Provider.of<ThemeProvider>(context, listen: false);
-    showDialog(
+    showDialog<String>(
       context: context,
       builder: (context) => _EditPlaylistDialog(theme: theme),
     ).then((value) {
       if (value != null) {
-        pageController.editPlaylist(playlist, value as String);
+        setState(() {
+          playlist.name = value;
+        });
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => PlayListsPageController(),
-      builder: (context, _) {
-        final theme = Provider.of<ThemeProvider>(context);
-        final pageController = Provider.of<PlayListsPageController>(context);
+    final theme = Provider.of<ThemeProvider>(context);
 
-        return PageScaffold(
-          title: "歌单",
-          actions: [
-            FilledButton.icon(
-              onPressed: () => newPlaylist(context, pageController),
-              icon: const Icon(Symbols.add),
-              label: const Text("新建歌单"),
-              style: theme.primaryButtonStyle,
+    return PageScaffold(
+      title: "歌单",
+      actions: [
+        FilledButton.icon(
+          onPressed: () => newPlaylist(context),
+          icon: const Icon(Symbols.add),
+          label: const Text("新建歌单"),
+          style: theme.primaryButtonStyle,
+        ),
+      ],
+      body: Material(
+        type: MaterialType.transparency,
+        child: ListView.builder(
+          padding: const EdgeInsets.only(bottom: 96.0),
+          itemCount: PLAYLISTS.length,
+          itemBuilder: (context, i) => ListTile(
+            title: Text(PLAYLISTS[i].name),
+            subtitle: Text("${PLAYLISTS[i].audios.length}首乐曲"),
+            trailing: Wrap(
+              spacing: 8.0,
+              children: [
+                editPlaylistBtn(context, i, theme),
+                removePlaylistBtn(i, theme),
+              ],
             ),
-          ],
-          body: Material(
-            type: MaterialType.transparency,
-            child: ListView.builder(
-              padding: const EdgeInsets.only(bottom: 96.0),
-              itemCount: PLAYLISTS.length,
-              itemBuilder: (context, i) => ListTile(
-                title: Text(PLAYLISTS[i].name),
-                subtitle: Text("${PLAYLISTS[i].audios.length}首乐曲"),
-                trailing: Wrap(
-                  spacing: 8.0,
-                  children: [
-                    IconButton(
-                      onPressed: () => editPlaylist(
-                        context,
-                        pageController,
-                        PLAYLISTS[i],
-                      ),
-                      hoverColor: theme.palette.onSurface.withOpacity(0.08),
-                      highlightColor: theme.palette.onSurface.withOpacity(0.12),
-                      splashColor: theme.palette.onSurface.withOpacity(0.12),
-                      icon: Icon(
-                        Symbols.edit,
-                        color: theme.palette.onSurface,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () => pageController.removePlaylist(
-                        PLAYLISTS[i],
-                      ),
-                      hoverColor: theme.palette.error.withOpacity(0.08),
-                      highlightColor: theme.palette.error.withOpacity(0.12),
-                      splashColor: theme.palette.error.withOpacity(0.12),
-                      icon: Icon(
-                        Symbols.delete,
-                        color: theme.palette.error,
-                      ),
-                    ),
-                  ],
-                ),
-                textColor: theme.palette.onSurface,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                onTap: () => context.push(
-                  app_paths.PLAYLIST_DETAIL_PAGE,
-                  extra: PLAYLISTS[i],
-                ),
-              ),
+            textColor: theme.palette.onSurface,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            onTap: () => context.push(
+              app_paths.PLAYLIST_DETAIL_PAGE,
+              extra: PLAYLISTS[i],
             ),
           ),
-        );
-      },
+        ),
+      ),
+    );
+  }
+
+  IconButton removePlaylistBtn(int i, ThemeProvider theme) {
+    return IconButton(
+      onPressed: () => setState(() {
+        PLAYLISTS.remove(PLAYLISTS[i]);
+      }),
+      hoverColor: theme.palette.error.withOpacity(0.08),
+      highlightColor: theme.palette.error.withOpacity(0.12),
+      splashColor: theme.palette.error.withOpacity(0.12),
+      icon: Icon(
+        Symbols.delete,
+        color: theme.palette.error,
+      ),
+    );
+  }
+
+  IconButton editPlaylistBtn(BuildContext context, int i, ThemeProvider theme) {
+    return IconButton(
+      onPressed: () => editPlaylist(context, PLAYLISTS[i]),
+      hoverColor: theme.palette.onSurface.withOpacity(0.08),
+      highlightColor: theme.palette.onSurface.withOpacity(0.12),
+      splashColor: theme.palette.onSurface.withOpacity(0.12),
+      icon: Icon(
+        Symbols.edit,
+        color: theme.palette.onSurface,
+      ),
     );
   }
 }
