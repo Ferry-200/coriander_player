@@ -1,0 +1,103 @@
+import 'package:coriander_player/library/audio_library.dart';
+import 'package:coriander_player/page/uni_page_controller.dart';
+import 'package:coriander_player/page/uni_page.dart';
+import 'package:coriander_player/theme/theme_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
+import 'package:provider/provider.dart';
+
+import 'package:coriander_player/app_paths.dart' as app_paths;
+
+class FoldersPage extends StatelessWidget {
+  const FoldersPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final contentList = List<AudioFolder>.from(AudioLibrary.instance.folders);
+    return UniPage<AudioFolder>(
+      title: "文件夹",
+      subtitle: "${contentList.length} 个文件夹",
+      contentList: contentList,
+      contentBuilder: (context, item, i) => AudioFolderTile(audioFolder: item),
+      enableShufflePlay: false,
+      enableSortBy: true,
+      enableSortOrder: true,
+      enableContentViewSwitch: true,
+      defaultContentView: ContentView.list,
+      sortMethods: [
+        SortMethodDesc(
+          icon: Symbols.title,
+          name: "路径",
+          method: (list, order) {
+            switch (order) {
+              case SortOrder.ascending:
+                list.sort((a, b) => a.path.compareTo(b.path));
+                break;
+              case SortOrder.decending:
+                list.sort((a, b) => b.path.compareTo(a.path));
+                break;
+            }
+          },
+        ),
+        SortMethodDesc(
+          icon: Symbols.edit,
+          name: "修改日期",
+          method: (list, order) {
+            switch (order) {
+              case SortOrder.ascending:
+                list.sort((a, b) => a.modified.compareTo(b.modified));
+                break;
+              case SortOrder.decending:
+                list.sort((a, b) => b.modified.compareTo(a.modified));
+                break;
+            }
+          },
+        ),
+        SortMethodDesc(
+          icon: Symbols.music_note,
+          name: "歌曲数量",
+          method: (list, order) {
+            switch (order) {
+              case SortOrder.ascending:
+                list.sort((a, b) => a.audios.length.compareTo(b.audios.length));
+                break;
+              case SortOrder.decending:
+                list.sort((a, b) => b.audios.length.compareTo(a.audios.length));
+                break;
+            }
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class AudioFolderTile extends StatelessWidget {
+  final AudioFolder audioFolder;
+  const AudioFolderTile({
+    super.key,
+    required this.audioFolder,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.watch<ThemeProvider>();
+    return ListTile(
+      title: Text(audioFolder.path),
+      subtitle: Text(
+        "修改日期：${DateTime.fromMillisecondsSinceEpoch(audioFolder.modified * 1000).toString()}",
+      ),
+      textColor: theme.palette.onSurface,
+      hoverColor: theme.palette.onSurface.withOpacity(0.08),
+      splashColor: theme.palette.onSurface.withOpacity(0.12),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      onTap: () => context.push(
+        app_paths.FOLDER_DETAIL_PAGE,
+        extra: audioFolder,
+      ),
+    );
+  }
+}

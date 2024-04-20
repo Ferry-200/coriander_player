@@ -1,12 +1,13 @@
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/app_shell.dart';
 import 'package:coriander_player/page/album_detail_page/page.dart';
-import 'package:coriander_player/page/albums_page/page.dart';
+import 'package:coriander_player/page/albums_page.dart';
 import 'package:coriander_player/page/artist_detail_page/page.dart';
-import 'package:coriander_player/page/artists_page/page.dart';
+import 'package:coriander_player/page/artists_page.dart';
 import 'package:coriander_player/page/audio_detail_page/page.dart';
-import 'package:coriander_player/page/audios_page/page.dart';
-import 'package:coriander_player/page/folders_page/page.dart';
+import 'package:coriander_player/page/audios_page.dart';
+import 'package:coriander_player/page/folder_detail_page.dart';
+import 'package:coriander_player/page/folders_page.dart';
 import 'package:coriander_player/page/now_playing_page/page.dart';
 import 'package:coriander_player/page/playlists_page/page.dart';
 import 'package:coriander_player/page/search_page/search_page.dart';
@@ -98,11 +99,11 @@ class Entry extends StatelessWidget {
             pageBuilder: (context, state) {
               /// such as /audios?target=20, push to audios page
               /// then scroll to the 20th audio of the [AudioLibrary] allAudios list.
-              if (state.uri.hasQuery) {
-                final targetStr = state.uri.queryParameters["target"];
-                final target = int.tryParse(targetStr ?? "") ?? 0;
-                return SlideTransitionPage(child: AudiosPage(target: target));
-              }
+              // if (state.uri.hasQuery) {
+              //   final targetStr = state.uri.queryParameters["target"];
+              //   final target = int.tryParse(targetStr ?? "") ?? 0;
+              //   return SlideTransitionPage(child: AudiosPage(target: target));
+              // }
               return const SlideTransitionPage(child: AudiosPage());
             },
             routes: [

@@ -1,53 +1,44 @@
-import 'package:coriander_player/component/album_tile.dart';
-import 'page_controller.dart';
-import 'package:coriander_player/page/page_scaffold.dart';
+import 'package:coriander_player/library/audio_library.dart';
+import 'package:coriander_player/page/uni_page_controller.dart';
+import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
-class AlbumsPage extends StatelessWidget {
-  const AlbumsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => AlbumsPageController(),
-      builder: (context, _) {
-        final pageController = Provider.of<AlbumsPageController>(context);
-        return PageScaffold(
-          title: "专辑",
-          actions: const [_ToggleListOrder(), _SortMethodComboBox()],
-          body: Material(
-            type: MaterialType.transparency,
-            child: GridView.builder(
-              padding: const EdgeInsets.only(bottom: 96.0),
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 300,
-                mainAxisExtent: 64,
-                mainAxisSpacing: 8.0,
-                crossAxisSpacing: 8.0,
-              ),
-              itemCount: pageController.albumCollection.length,
-              itemBuilder: (context, i) {
-                final album = pageController.albumCollection[i];
-                return AlbumTile(album: album);
-              },
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _SortMethodComboBox extends StatelessWidget {
-  const _SortMethodComboBox();
+class ShufflePlay<T> extends StatelessWidget {
+  final List<T> contentList;
+  const ShufflePlay({super.key, required this.contentList});
 
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
-    final pageController = Provider.of<AlbumsPageController>(context);
+    return FilledButton.icon(
+      onPressed: () =>
+          PlayService.instance.shuffleAndPlay(contentList as List<Audio>),
+      icon: const Icon(Symbols.shuffle),
+      label: const Text("随机播放"),
+      style: theme.primaryButtonStyle,
+    );
+  }
+}
+
+class SortMethodComboBox<T> extends StatelessWidget {
+  final List<T> contentList;
+  final List<SortMethodDesc<T>> sortMethods;
+  final SortMethodDesc<T> currSortMethod;
+  final void Function(SortMethodDesc<T> sortMethod) setSortMethod;
+  const SortMethodComboBox({
+    super.key,
+    required this.sortMethods,
+    required this.contentList,
+    required this.currSortMethod,
+    required this.setSortMethod,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Provider.of<ThemeProvider>(context);
 
     final menuItemStyle = ButtonStyle(
       backgroundColor: MaterialStatePropertyAll(
@@ -84,38 +75,19 @@ class _SortMethodComboBox extends StatelessWidget {
       /// 这样可以指定菜单栏的大小
       crossAxisUnconstrained: false,
       style: menuStyle,
-      menuChildren: [
-        MenuItemButton(
-          style: menuItemStyle,
-          onPressed: pageController.sortByName,
-          leadingIcon: Icon(
-            Symbols.title,
-            color: theme.palette.onSecondaryContainer,
-          ),
-          child: const Text("标题"),
-        ),
-        MenuItemButton(
+      menuChildren: List.generate(
+        sortMethods.length,
+        (i) => MenuItemButton(
           style: menuItemStyle,
           leadingIcon: Icon(
-            Symbols.artist,
+            sortMethods[i].icon,
             color: theme.palette.onSecondaryContainer,
           ),
-          onPressed: pageController.sortByArtist,
-          child: const Text("艺术家"),
+          child: Text(sortMethods[i].name),
+          onPressed: () => setSortMethod(sortMethods[i]),
         ),
-        MenuItemButton(
-          style: menuItemStyle,
-          leadingIcon: Icon(
-            Symbols.filter_list_off,
-            color: theme.palette.onSecondaryContainer,
-          ),
-          onPressed: pageController.sortByOrigin,
-          child: const Text("默认"),
-        ),
-      ],
+      ),
       builder: (context, menuController, _) {
-        final theme = Provider.of<ThemeProvider>(context);
-
         final isOpen = menuController.isOpen;
 
         final openBorderRadius = BorderRadius.circular(20.0);
@@ -148,7 +120,7 @@ class _SortMethodComboBox extends StatelessWidget {
                     const SizedBox(width: 8.0),
                     Expanded(
                       child: Text(
-                        pageController.sortMethod.methodName,
+                        currSortMethod.name,
                         style: TextStyle(
                           color: theme.palette.onSecondaryContainer,
                         ),
@@ -171,21 +143,39 @@ class _SortMethodComboBox extends StatelessWidget {
   }
 }
 
-class _ToggleListOrder extends StatelessWidget {
-  const _ToggleListOrder();
+class SortOrderSwitch<T> extends StatelessWidget {
+  final SortOrder sortOrder;
+  final void Function(SortOrder order) setSortOrder;
+  const SortOrderSwitch({super.key, required this.sortOrder, required this.setSortOrder});
 
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
-    final pageController = Provider.of<AlbumsPageController>(context);
-
+    var isAscending = sortOrder == SortOrder.ascending;
     return IconButton(
-      onPressed: pageController.toggleOrder,
-      icon: Icon(
-        pageController.order == ListOrder.ascending
-            ? Symbols.arrow_upward
-            : Symbols.arrow_downward,
+      onPressed: () => setSortOrder(
+        isAscending ? SortOrder.decending : SortOrder.ascending,
       ),
+      icon: Icon(isAscending ? Symbols.arrow_upward : Symbols.arrow_downward),
+      style: theme.secondaryIconButtonStyle,
+    );
+  }
+}
+
+class ContentViewSwitch<T> extends StatelessWidget {
+  final ContentView contentView;
+  final void Function(ContentView contentView) setContentView;
+  const ContentViewSwitch({super.key, required this.contentView, required this.setContentView});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Provider.of<ThemeProvider>(context);
+    var isListView = contentView == ContentView.list;
+    return IconButton(
+      onPressed: () => setContentView(
+        isListView ? ContentView.table : ContentView.list,
+      ),
+      icon: Icon(isListView ? Symbols.list : Symbols.table),
       style: theme.secondaryIconButtonStyle,
     );
   }
