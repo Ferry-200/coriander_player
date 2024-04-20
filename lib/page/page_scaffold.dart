@@ -25,86 +25,20 @@ class PageScaffold extends StatelessWidget {
     late List<Widget> rowChildren;
     if (actions.isEmpty) {
       if (subtitle == null) {
-        rowChildren = [
-          Expanded(
-            child: Text(
-              title,
-              style: TextStyle(
-                fontSize: 32.0,
-                color: theme.palette.onSurface,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ];
+        rowChildren = [onlyTitle(theme)];
       } else {
-        rowChildren = [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 28.0,
-                    color: theme.palette.onSurface,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  subtitle!,
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    color: theme.palette.onSurface,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                )
-              ],
-            ),
-          ),
-        ];
+        rowChildren = [withSubtitle(theme)];
       }
     } else {
       if (subtitle == null) {
         rowChildren = [
-          Expanded(
-            child: Text(
-              title,
-              style: TextStyle(
-                fontSize: 32.0,
-                color: theme.palette.onSurface,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
+          onlyTitle(theme),
           const SizedBox(width: 16.0),
           Wrap(spacing: 8.0, children: actions)
         ];
       } else {
         rowChildren = [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 28.0,
-                    color: theme.palette.onSurface,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  subtitle!,
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    color: theme.palette.onSurface,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                )
-              ],
-            ),
-          ),
+          withSubtitle(theme),
           const SizedBox(width: 16.0),
           Wrap(spacing: 8.0, children: actions)
         ];
@@ -143,5 +77,44 @@ class PageScaffold extends StatelessWidget {
         ),
       );
     });
+  }
+
+  Expanded onlyTitle(ThemeProvider theme) {
+    return Expanded(
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 32.0,
+          color: theme.palette.onSurface,
+        ),
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+
+  Expanded withSubtitle(ThemeProvider theme) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 28.0,
+              color: theme.palette.onSurface,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+          Text(
+            subtitle!,
+            style: TextStyle(
+              fontSize: 14.0,
+              color: theme.palette.onSurface,
+            ),
+            overflow: TextOverflow.ellipsis,
+          )
+        ],
+      ),
+    );
   }
 }
