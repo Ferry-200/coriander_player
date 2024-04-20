@@ -45,7 +45,7 @@ class AudioSearchResultPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   onTap: () {
-                    context.push("/audios?target=${result[i].value}");
+                    context.push(app_paths.AUDIO_DETAIL_PAGE, extra: result[i].key);
                   },
                 );
               },

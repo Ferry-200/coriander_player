@@ -53,7 +53,7 @@ class UnionSearchResultPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8.0),
               ),
               onTap: () {
-                context.push("/audios?target=${audios[i].value}");
+                context.push(app_paths.AUDIO_DETAIL_PAGE, extra: audios[i].key);
               },
             );
           },
