@@ -97,13 +97,9 @@ class Entry extends StatelessWidget {
           GoRoute(
             path: app_paths.AUDIOS_PAGE,
             pageBuilder: (context, state) {
-              /// such as /audios?target=20, push to audios page
-              /// then scroll to the 20th audio of the [AudioLibrary] allAudios list.
-              // if (state.uri.hasQuery) {
-              //   final targetStr = state.uri.queryParameters["target"];
-              //   final target = int.tryParse(targetStr ?? "") ?? 0;
-              //   return SlideTransitionPage(child: AudiosPage(target: target));
-              // }
+              if (state.extra != null) {
+                return SlideTransitionPage(child: AudiosPage(locateTo: state.extra as Audio));
+              }
               return const SlideTransitionPage(child: AudiosPage());
             },
             routes: [
@@ -206,7 +202,7 @@ class Entry extends StatelessWidget {
               GoRoute(
                 path: "audioresult",
                 pageBuilder: (context, state) {
-                  final result = state.extra as List<MapEntry<Audio, int>>;
+                  final result = state.extra as List<Audio>;
                   return SlideTransitionPage(
                     child: AudioSearchResultPage(result: result),
                   );

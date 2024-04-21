@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 class AudiosPage extends StatelessWidget {
-  const AudiosPage({super.key});
+  final Audio? locateTo;
+  const AudiosPage({super.key, this.locateTo});
 
   @override
   Widget build(BuildContext context) {
@@ -18,12 +19,14 @@ class AudiosPage extends StatelessWidget {
       contentBuilder: (context, item, i) => AudioTile(
         audioIndex: i,
         playlist: contentList,
+        focus: item == locateTo,
       ),
       enableShufflePlay: true,
       enableSortMethod: true,
       enableSortOrder: true,
       enableContentViewSwitch: true,
       defaultContentView: ContentView.list,
+      locateTo: locateTo,
       sortMethods: [
         SortMethodDesc(
           icon: Symbols.title,

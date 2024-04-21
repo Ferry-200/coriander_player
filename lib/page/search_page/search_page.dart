@@ -10,7 +10,7 @@ class UnionSearchResult {
   String query;
 
   /// key: audio, value: position
-  Map<Audio, int> audios = {};
+  List<Audio> audios = [];
   List<Artist> artists = [];
   List<Album> album = [];
 
@@ -34,7 +34,7 @@ class _SearchPageState extends State<SearchPage> {
 
     for (int i = 0; i < library.audioCollection.length; i++) {
       if (library.audioCollection[i].title.contains(query)) {
-        result.audios[library.audioCollection[i]] = i;
+        result.audios.add(library.audioCollection[i]);
       }
     }
 

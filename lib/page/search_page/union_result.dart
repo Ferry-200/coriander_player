@@ -15,8 +15,6 @@ class UnionSearchResultPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
 
-    final audios = result.audios.entries.toList();
-
     final List<Widget> slivers = [
       SliverAppBar(
         automaticallyImplyLeading: false,
@@ -25,7 +23,7 @@ class UnionSearchResultPage extends StatelessWidget {
         foregroundColor: theme.palette.onSurface,
       )
     ];
-    if (audios.isNotEmpty) {
+    if (result.audios.isNotEmpty) {
       slivers.add(SliverToBoxAdapter(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -43,9 +41,9 @@ class UnionSearchResultPage extends StatelessWidget {
           itemCount: min(3, result.audios.length),
           itemBuilder: (context, i) {
             return ListTile(
-              title: Text(audios[i].key.title),
+              title: Text(result.audios[i].title),
               subtitle:
-                  Text("${audios[i].key.artist} - ${audios[i].key.album}"),
+                  Text("${result.audios[i].artist} - ${result.audios[i].album}"),
               textColor: theme.palette.onSurface,
               hoverColor: theme.palette.onSurface.withOpacity(0.08),
               splashColor: theme.palette.onSurface.withOpacity(0.12),
@@ -53,14 +51,14 @@ class UnionSearchResultPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8.0),
               ),
               onTap: () {
-                context.push(app_paths.AUDIO_DETAIL_PAGE, extra: audios[i].key);
+                context.push(app_paths.AUDIOS_PAGE, extra: result.audios[i]);
               },
             );
           },
         ),
       );
     }
-    if (audios.length > 3) {
+    if (result.audios.length > 3) {
       slivers.add(SliverToBoxAdapter(
         child: ListTile(
           title: const Text("查看更多"),
@@ -73,7 +71,7 @@ class UnionSearchResultPage extends StatelessWidget {
           onTap: () {
             context.push(
               app_paths.AUDIO_SEARCH_RESULT_PAGE,
-              extra: audios,
+              extra: result.audios,
             );
           },
         ),

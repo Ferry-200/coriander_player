@@ -16,11 +16,11 @@ const gridDelegate = SliverGridDelegateWithMaxCrossAxisExtent(
 
 /// `AudiosPage`, `ArtistsPage`, `AlbumsPage`, `FoldersPage`, `FolderDetailPage` 页面的主要组件，
 /// 提供随机播放以及更改排序方式、排序顺序、内容视图的支持。
-/// 
+///
 /// `enableShufflePlay` 只能在 `T` 是 `Audio` 时为 `ture`
-/// 
+///
 /// `enableSortMethod` 为 `true` 时，`sortMethods` 不可为空且必须包含一个 `SortMethodDesc`
-/// 
+///
 /// `defaultContentView` 表示默认的内容视图。如果设置为 `ContentView.list`，就以单行列表视图展示内容；
 /// 如果是 `ContentView.table`，就以最大 300 * 64 的子组件以 8 为间距组成的表格展示内容。
 class UniPage<T> extends StatefulWidget {
@@ -36,6 +36,7 @@ class UniPage<T> extends StatefulWidget {
     required this.enableContentViewSwitch,
     required this.defaultContentView,
     this.sortMethods,
+    this.locateTo,
   });
 
   final String title;
@@ -52,6 +53,8 @@ class UniPage<T> extends StatefulWidget {
 
   final List<SortMethodDesc<T>>? sortMethods;
 
+  final T? locateTo;
+
   @override
   State<UniPage<T>> createState() => _UniPageState<T>();
 }
@@ -61,11 +64,17 @@ class _UniPageState<T> extends State<UniPage<T>> {
   late SortMethodDesc<T>? currSortMethod = widget.sortMethods?.first;
   SortOrder currSortOrder = SortOrder.ascending;
   late ContentView currContentView = widget.defaultContentView;
+  late ScrollController scrollController;
 
   @override
   void initState() {
     super.initState();
     currSortMethod?.method(currContentList, currSortOrder);
+    int targetAt = 0;
+    if (widget.locateTo != null) {
+      targetAt = currContentList.indexOf(widget.locateTo as T);
+    }
+    scrollController = ScrollController(initialScrollOffset: targetAt * 64);
   }
 
   void setSortMethod(SortMethodDesc<T> sortMethod) {
@@ -123,6 +132,7 @@ class _UniPageState<T> extends State<UniPage<T>> {
         type: MaterialType.transparency,
         child: switch (currContentView) {
           ContentView.list => ListView.builder(
+              controller: scrollController,
               padding: const EdgeInsets.only(bottom: 96.0),
               itemCount: currContentList.length,
               itemBuilder: (context, i) => widget.contentBuilder(
@@ -132,6 +142,7 @@ class _UniPageState<T> extends State<UniPage<T>> {
               ),
             ),
           ContentView.table => GridView.builder(
+              controller: scrollController,
               padding: const EdgeInsets.only(bottom: 96.0),
               gridDelegate: gridDelegate,
               itemCount: currContentList.length,

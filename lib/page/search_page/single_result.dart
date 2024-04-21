@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 class AudioSearchResultPage extends StatelessWidget {
   const AudioSearchResultPage({super.key, required this.result});
 
-  final List<MapEntry<Audio, int>> result;
+  final List<Audio> result;
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +35,9 @@ class AudioSearchResultPage extends StatelessWidget {
               itemCount: result.length,
               itemBuilder: (context, i) {
                 return ListTile(
-                  title: Text(result[i].key.title),
+                  title: Text(result[i].title),
                   subtitle:
-                      Text("${result[i].key.artist} - ${result[i].key.album}"),
+                      Text("${result[i].artist} - ${result[i].album}"),
                   textColor: theme.palette.onSurface,
                   hoverColor: theme.palette.onSurface.withOpacity(0.08),
                   splashColor: theme.palette.onSurface.withOpacity(0.12),
@@ -45,7 +45,7 @@ class AudioSearchResultPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   onTap: () {
-                    context.push(app_paths.AUDIO_DETAIL_PAGE, extra: result[i].key);
+                    context.push(app_paths.AUDIOS_PAGE, extra: result[i]);
                   },
                 );
               },
