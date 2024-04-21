@@ -2,10 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:github/github.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:window_manager/window_manager.dart';
 
 class AppSettings {
+  static final github = GitHub();
+  static const String version = "1.0.0";
   Brightness themeMode = Brightness.light;
   bool dynamicTheme = true;
   int defaultTheme = 4290545753;
