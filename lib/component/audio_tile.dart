@@ -48,7 +48,7 @@ class AudioTile extends StatelessWidget {
     return SizedBox(
       height: 64.0,
       child: InkWell(
-        borderRadius: BorderRadius.circular(12.0),
+        borderRadius: BorderRadius.circular(8.0),
         onTap: () {
           try {
             PlayService.instance.play(audioIndex, playlist);
