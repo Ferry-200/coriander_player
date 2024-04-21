@@ -20,7 +20,7 @@ class AudiosPage extends StatelessWidget {
         playlist: contentList,
       ),
       enableShufflePlay: true,
-      enableSortBy: true,
+      enableSortMethod: true,
       enableSortOrder: true,
       enableContentViewSwitch: true,
       defaultContentView: ContentView.list,

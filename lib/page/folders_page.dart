@@ -21,7 +21,7 @@ class FoldersPage extends StatelessWidget {
       contentList: contentList,
       contentBuilder: (context, item, i) => AudioFolderTile(audioFolder: item),
       enableShufflePlay: false,
-      enableSortBy: true,
+      enableSortMethod: true,
       enableSortOrder: true,
       enableContentViewSwitch: true,
       defaultContentView: ContentView.list,

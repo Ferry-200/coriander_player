@@ -14,6 +14,15 @@ const gridDelegate = SliverGridDelegateWithMaxCrossAxisExtent(
   crossAxisSpacing: 8.0,
 );
 
+/// `AudiosPage`, `ArtistsPage`, `AlbumsPage`, `FoldersPage`, `FolderDetailPage` 页面的主要组件，
+/// 提供随机播放以及更改排序方式、排序顺序、内容视图的支持。
+/// 
+/// `enableShufflePlay` 只能在 `T` 是 `Audio` 时为 `ture`
+/// 
+/// `enableSortMethod` 为 `true` 时，`sortMethods` 不可为空且必须包含一个 `SortMethodDesc`
+/// 
+/// `defaultContentView` 表示默认的内容视图。如果设置为 `ContentView.list`，就以单行列表视图展示内容；
+/// 如果是 `ContentView.table`，就以最大 300 * 64 的子组件以 8 为间距组成的表格展示内容。
 class UniPage<T> extends StatefulWidget {
   const UniPage({
     super.key,
@@ -22,7 +31,7 @@ class UniPage<T> extends StatefulWidget {
     required this.contentList,
     required this.contentBuilder,
     required this.enableShufflePlay,
-    required this.enableSortBy,
+    required this.enableSortMethod,
     required this.enableSortOrder,
     required this.enableContentViewSwitch,
     required this.defaultContentView,
@@ -36,7 +45,7 @@ class UniPage<T> extends StatefulWidget {
   final ContentBuilder<T> contentBuilder;
 
   final bool enableShufflePlay;
-  final bool enableSortBy;
+  final bool enableSortMethod;
   final bool enableSortOrder;
   final bool enableContentViewSwitch;
   final ContentView defaultContentView;
@@ -48,34 +57,34 @@ class UniPage<T> extends StatefulWidget {
 }
 
 class _UniPageState<T> extends State<UniPage<T>> {
-  late List<T> contentList = widget.contentList;
+  late List<T> currContentList = widget.contentList;
   late SortMethodDesc<T>? currSortMethod = widget.sortMethods?.first;
-  SortOrder sortOrder = SortOrder.ascending;
-  late ContentView contentView = widget.defaultContentView;
+  SortOrder currSortOrder = SortOrder.ascending;
+  late ContentView currContentView = widget.defaultContentView;
 
   @override
   void initState() {
     super.initState();
-    currSortMethod?.method(contentList, sortOrder);
+    currSortMethod?.method(currContentList, currSortOrder);
   }
 
   void setSortMethod(SortMethodDesc<T> sortMethod) {
     setState(() {
       currSortMethod = sortMethod;
-      this.currSortMethod?.method(contentList, sortOrder);
+      currSortMethod?.method(currContentList, currSortOrder);
     });
   }
 
   void setSortOrder(SortOrder sortOrder) {
     setState(() {
-      this.sortOrder = sortOrder;
-      this.currSortMethod?.method(contentList, sortOrder);
+      currSortOrder = sortOrder;
+      currSortMethod?.method(currContentList, currSortOrder);
     });
   }
 
   void setContentView(ContentView contentView) {
     setState(() {
-      this.contentView = contentView;
+      currContentView = contentView;
     });
   }
 
@@ -83,25 +92,25 @@ class _UniPageState<T> extends State<UniPage<T>> {
   Widget build(BuildContext context) {
     final List<Widget> actions = [];
     if (widget.enableShufflePlay) {
-      actions.add(ShufflePlay<T>(contentList: contentList));
+      actions.add(ShufflePlay<T>(contentList: currContentList));
     }
-    if (widget.enableSortBy) {
+    if (widget.enableSortMethod) {
       actions.add(SortMethodComboBox<T>(
         sortMethods: widget.sortMethods!,
-        contentList: contentList,
+        contentList: currContentList,
         currSortMethod: currSortMethod!,
         setSortMethod: setSortMethod,
       ));
     }
     if (widget.enableSortOrder) {
       actions.add(SortOrderSwitch<T>(
-        sortOrder: sortOrder,
+        sortOrder: currSortOrder,
         setSortOrder: setSortOrder,
       ));
     }
     if (widget.enableContentViewSwitch) {
       actions.add(ContentViewSwitch<T>(
-        contentView: contentView,
+        contentView: currContentView,
         setContentView: setContentView,
       ));
     }
@@ -112,23 +121,23 @@ class _UniPageState<T> extends State<UniPage<T>> {
       actions: actions,
       body: Material(
         type: MaterialType.transparency,
-        child: switch (contentView) {
+        child: switch (currContentView) {
           ContentView.list => ListView.builder(
               padding: const EdgeInsets.only(bottom: 96.0),
-              itemCount: contentList.length,
+              itemCount: currContentList.length,
               itemBuilder: (context, i) => widget.contentBuilder(
                 context,
-                contentList[i],
+                currContentList[i],
                 i,
               ),
             ),
           ContentView.table => GridView.builder(
               padding: const EdgeInsets.only(bottom: 96.0),
               gridDelegate: gridDelegate,
-              itemCount: contentList.length,
+              itemCount: currContentList.length,
               itemBuilder: (context, i) => widget.contentBuilder(
                 context,
-                contentList[i],
+                currContentList[i],
                 i,
               ),
             ),

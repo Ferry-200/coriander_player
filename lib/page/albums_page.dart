@@ -17,7 +17,7 @@ class AlbumsPage extends StatelessWidget {
       contentList: contentList,
       contentBuilder: (context, item, i) => AlbumTile(album: item),
       enableShufflePlay: false,
-      enableSortBy: true,
+      enableSortMethod: true,
       enableSortOrder: true,
       enableContentViewSwitch: true,
       defaultContentView: ContentView.table,

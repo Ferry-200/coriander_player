@@ -17,7 +17,7 @@ class ArtistsPage extends StatelessWidget {
       contentList: contentList,
       contentBuilder: (_, item, __) => ArtistTile(artist: item),
       enableShufflePlay: false,
-      enableSortBy: true,
+      enableSortMethod: true,
       enableSortOrder: true,
       enableContentViewSwitch: true,
       defaultContentView: ContentView.table,
