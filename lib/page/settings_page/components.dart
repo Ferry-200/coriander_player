@@ -26,27 +26,10 @@ class _CheckForUpdateState extends State<CheckForUpdate> {
     final theme = Provider.of<ThemeProvider>(context);
 
     final List<Widget> children = [
-      Text(
-        "检查更新",
-        style: TextStyle(color: theme.palette.onSurface, fontSize: 18.0),
-      ),
-    ];
-    if (isChecking) {
-      children.add(const SizedBox(width: 16.0));
-      children.add(SizedBox(
-        width: 16.0,
-        height: 16.0,
-        child: CircularProgressIndicator(
-          color: theme.palette.primary,
-          backgroundColor: theme.palette.primaryContainer,
-        ),
-      ));
-    }
-    return Material(
-      type: MaterialType.transparency,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(8.0),
-        onTap: () async {
+      FilledButton.icon(
+        icon: const Icon(Symbols.update),
+        label: const Text("检查更新"),
+        onPressed: () async {
           setState(() {
             isChecking = true;
           });
@@ -82,12 +65,25 @@ class _CheckForUpdateState extends State<CheckForUpdate> {
             isChecking = false;
           });
         },
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: children,
-          ),
+        
+        style: theme.primaryButtonStyle,
+      ),
+    ];
+    if (isChecking) {
+      children.add(const SizedBox(width: 16.0));
+      children.add(SizedBox(
+        width: 16.0,
+        height: 16.0,
+        child: CircularProgressIndicator(
+          color: theme.palette.primary,
+          backgroundColor: theme.palette.primaryContainer,
         ),
+      ));
+    }
+    return Material(
+      type: MaterialType.transparency,
+      child: Row(
+        children: children,
       ),
     );
   }
