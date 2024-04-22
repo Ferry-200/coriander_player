@@ -31,15 +31,18 @@ class MiniNowPlaying extends StatelessWidget {
             width: 600.0,
             child: DecoratedBox(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(8),
                 boxShadow: kElevationToShadow[4],
               ),
-              child: LayoutBuilder(builder: (context, constraints) {
-                return RectangleProgressIndicator(
-                  size: Size(constraints.maxWidth, constraints.maxHeight),
-                  child: const _NowPlayingForeground(),
-                );
-              }),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: LayoutBuilder(builder: (context, constraints) {
+                  return RectangleProgressIndicator(
+                    size: Size(constraints.maxWidth, constraints.maxHeight),
+                    child: const _NowPlayingForeground(),
+                  );
+                }),
+              ),
             ),
           ),
         ),
@@ -57,10 +60,10 @@ class _NowPlayingForeground extends StatelessWidget {
 
     return Material(
       type: MaterialType.transparency,
-      borderRadius: BorderRadius.circular(12.0),
+      borderRadius: BorderRadius.circular(8.0),
       child: InkWell(
         onTap: () => context.push(app_paths.NOW_PLAYING_PAGE),
-        borderRadius: BorderRadius.circular(12.0),
+        borderRadius: BorderRadius.circular(8.0),
         hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
         highlightColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
         splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
