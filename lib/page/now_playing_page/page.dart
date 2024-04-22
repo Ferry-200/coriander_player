@@ -245,87 +245,64 @@ class _NowPlayingBody_Large extends StatefulWidget {
 class __NowPlayingBody_LargeState extends State<_NowPlayingBody_Large> {
   final playlistView = const Expanded(
     child: Align(
-      alignment: Alignment.centerLeft,
+      alignment: Alignment.center,
       child: CurrentPlaylistView(),
     ),
   );
 
   late final lyricView = Expanded(
     child: Align(
-      alignment: Alignment.centerLeft,
+      alignment: Alignment.center,
       child: VerticalLyricView(key: widget.lyricViewKey),
     ),
   );
 
-  Widget mainView(Alignment alignment) => Expanded(
-        child: Align(
-          alignment: alignment,
-          child: NowPlayingMainView(
-            pageControlls: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const _ToggleShuffle(),
-                const _TogglePlayMode(),
-                _LyricViewBtn(onTap: openLyricView),
-                _PlaylistViewBtn(onTap: openPlaylistView),
-                const _MoreActions(),
-              ],
-            ),
-          ),
-        ),
-      );
-
   void openPlaylistView() {
-    if (_viewMode == _ViewMode.withPlaylist) {
-      setState(() {
-        _viewMode = _ViewMode.onlyMain;
-      });
-    } else {
-      setState(() {
-        _viewMode = _ViewMode.withPlaylist;
-      });
-    }
+    setState(() {
+      _viewMode = _viewMode == _ViewMode.withPlaylist
+          ? _ViewMode.onlyMain
+          : _ViewMode.withPlaylist;
+    });
   }
 
   void openLyricView() {
-    if (_viewMode == _ViewMode.withLyric) {
-      setState(() {
-        _viewMode = _ViewMode.onlyMain;
-      });
-    } else {
-      setState(() {
-        _viewMode = _ViewMode.withLyric;
-      });
-    }
+    setState(() {
+      _viewMode = _viewMode == _ViewMode.withLyric
+          ? _ViewMode.onlyMain
+          : _ViewMode.withLyric;
+    });
   }
 
-  List<Widget> views = [];
+  static const spacer = SizedBox(width: 48.0);
 
   @override
   Widget build(BuildContext context) {
-    switch (_viewMode) {
-      case _ViewMode.onlyMain:
-        views = [mainView(Alignment.center)];
-        break;
-      case _ViewMode.withLyric:
-        views = [
-          mainView(Alignment.centerRight),
-          const SizedBox(width: 48.0),
-          lyricView,
-        ];
-        break;
-      case _ViewMode.withPlaylist:
-        views = [
-          mainView(Alignment.centerRight),
-          const SizedBox(width: 48.0),
-          playlistView,
-        ];
-        break;
-    }
+    final mainView = Expanded(
+      child: Align(
+        alignment: Alignment.center,
+        child: NowPlayingMainView(
+          pageControlls: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const _ToggleShuffle(),
+              const _TogglePlayMode(),
+              _LyricViewBtn(onTap: openLyricView),
+              _PlaylistViewBtn(onTap: openPlaylistView),
+              const _MoreActions(),
+            ],
+          ),
+        ),
+      ),
+    );
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 48.0, vertical: 16.0),
       child: Row(
-        children: views,
+        children: switch (_viewMode) {
+          _ViewMode.onlyMain => [mainView],
+          _ViewMode.withLyric => [mainView, spacer, lyricView],
+          _ViewMode.withPlaylist => [mainView, spacer, playlistView],
+        },
       ),
     );
   }
