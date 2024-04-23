@@ -12,6 +12,149 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+class UseSystemThemeSwitch extends StatefulWidget {
+  const UseSystemThemeSwitch({super.key});
+
+  @override
+  State<UseSystemThemeSwitch> createState() => _UseSystemThemeSwitchState();
+}
+
+class _UseSystemThemeSwitchState extends State<UseSystemThemeSwitch> {
+  final settings = AppSettings.instance;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Provider.of<ThemeProvider>(context);
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "启动时使用系统主题",
+          style: TextStyle(
+            color: theme.palette.onSurface,
+            fontSize: 18.0,
+          ),
+        ),
+        Switch(
+          value: settings.useSystemTheme,
+          onChanged: (_) async {
+            setState(() {
+              settings.useSystemTheme = !settings.useSystemTheme;
+            });
+            await settings.saveSettings();
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class UseSystemThemeModeSwitch extends StatefulWidget {
+  const UseSystemThemeModeSwitch({super.key});
+
+  @override
+  State<UseSystemThemeModeSwitch> createState() =>
+      _UseSystemThemeModeSwitchState();
+}
+
+class _UseSystemThemeModeSwitchState extends State<UseSystemThemeModeSwitch> {
+  final settings = AppSettings.instance;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Provider.of<ThemeProvider>(context);
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "启动时使用系统主题模式",
+          style: TextStyle(
+            color: theme.palette.onSurface,
+            fontSize: 18.0,
+          ),
+        ),
+        Switch(
+          value: settings.useSystemThemeMode,
+          onChanged: (_) async {
+            setState(() {
+              settings.useSystemThemeMode = !settings.useSystemThemeMode;
+            });
+            await settings.saveSettings();
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class DefaultLyricSourceControl extends StatefulWidget {
+  const DefaultLyricSourceControl({super.key});
+
+  @override
+  State<DefaultLyricSourceControl> createState() =>
+      _DefaultLyricSourceControlState();
+}
+
+class _DefaultLyricSourceControlState extends State<DefaultLyricSourceControl> {
+  final settings = AppSettings.instance;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Provider.of<ThemeProvider>(context);
+
+    final leftForeColor = settings.localLyricFirst
+        ? theme.palette.onSecondaryContainer
+        : theme.palette.onSurface;
+    final rightForeColor = !settings.localLyricFirst
+        ? theme.palette.onSecondaryContainer
+        : theme.palette.onSurface;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "首选歌词来源",
+          style: TextStyle(
+            color: theme.palette.onSurface,
+            fontSize: 18.0,
+          ),
+        ),
+        SegmentedButton<bool>(
+          showSelectedIcon: false,
+          segments: [
+            ButtonSegment<bool>(
+              value: true,
+              icon: Icon(Symbols.cloud_off, color: leftForeColor),
+              label: Text(
+                "本地",
+                style: TextStyle(color: leftForeColor),
+              ),
+            ),
+            ButtonSegment<bool>(
+              value: false,
+              icon: Icon(Symbols.cloud, color: rightForeColor),
+              label: Text(
+                "在线",
+                style: TextStyle(color: rightForeColor),
+              ),
+            ),
+          ],
+          selected: {settings.localLyricFirst},
+          onSelectionChanged: (newSelection) {
+            if (newSelection.first == settings.localLyricFirst) return;
+
+            setState(() {
+              settings.localLyricFirst = newSelection.first;
+            });
+            settings.saveSettings();
+          },
+        ),
+      ],
+    );
+  }
+}
+
 class CheckForUpdate extends StatefulWidget {
   const CheckForUpdate({super.key});
 
@@ -334,13 +477,6 @@ class _DynamicThemeSwitchState extends State<DynamicThemeSwitch> {
             });
             await settings.saveSettings();
           },
-          hoverColor: theme.palette.onSurface.withOpacity(0.08),
-          activeColor: theme.palette.primary,
-          activeTrackColor: theme.palette.primaryContainer,
-          inactiveThumbColor: theme.palette.outline,
-          inactiveTrackColor: theme.palette.surfaceContainer,
-          trackOutlineColor: MaterialStatePropertyAll(theme.palette.outline),
-          trackOutlineWidth: const MaterialStatePropertyAll(1.0),
         ),
       ],
     );
@@ -361,6 +497,13 @@ class _ThemeModeControlState extends State<ThemeModeControl> {
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
 
+    final leftForeColor = settings.themeMode == Brightness.light
+        ? theme.palette.onSecondaryContainer
+        : theme.palette.onSurface;
+    final rightForeColor = settings.themeMode == Brightness.dark
+        ? theme.palette.onSecondaryContainer
+        : theme.palette.onSurface;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -371,90 +514,29 @@ class _ThemeModeControlState extends State<ThemeModeControl> {
             fontSize: 18.0,
           ),
         ),
-        DecoratedBox(
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: theme.palette.outline,
-              strokeAlign: BorderSide.strokeAlignOutside,
+        SegmentedButton<Brightness>(
+          showSelectedIcon: false,
+          segments: [
+            ButtonSegment<Brightness>(
+              value: Brightness.light,
+              icon: Icon(Symbols.light_mode, color: leftForeColor),
             ),
-            borderRadius: BorderRadius.circular(16.0),
-          ),
-          child: MouseRegion(
-            cursor: MaterialStateMouseCursor.clickable,
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: () async {
-                    if (settings.themeMode == Brightness.light) return;
-
-                    setState(() {
-                      settings.themeMode = Brightness.light;
-                    });
-                    theme.toggleThemeMode();
-                    await settings.saveSettings();
-                  },
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: settings.themeMode == Brightness.light
-                          ? theme.palette.primary
-                          : theme.palette.surfaceContainer,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(16.0),
-                        bottomLeft: Radius.circular(16.0),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0,
-                        vertical: 4.0,
-                      ),
-                      child: Icon(
-                        Symbols.light_mode,
-                        color: settings.themeMode == Brightness.light
-                            ? theme.palette.onPrimary
-                            : theme.palette.onSurface,
-                      ),
-                    ),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () async {
-                    if (settings.themeMode == Brightness.dark) return;
-
-                    setState(() {
-                      settings.themeMode = Brightness.dark;
-                    });
-                    theme.toggleThemeMode();
-                    await settings.saveSettings();
-                  },
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: settings.themeMode == Brightness.dark
-                          ? theme.palette.primary
-                          : theme.palette.surfaceContainer,
-                      borderRadius: const BorderRadius.only(
-                        topRight: Radius.circular(16.0),
-                        bottomRight: Radius.circular(16.0),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0,
-                        vertical: 4.0,
-                      ),
-                      child: Icon(
-                        Symbols.dark_mode,
-                        color: settings.themeMode == Brightness.dark
-                            ? theme.palette.onPrimary
-                            : theme.palette.onSurface,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            ButtonSegment<Brightness>(
+              value: Brightness.dark,
+              icon: Icon(Symbols.dark_mode, color: rightForeColor),
             ),
-          ),
-        )
+          ],
+          selected: {settings.themeMode},
+          onSelectionChanged: (newSelection) {
+            if (newSelection.first == settings.themeMode) return;
+
+            setState(() {
+              settings.themeMode = newSelection.first;
+            });
+            theme.toggleThemeMode();
+            settings.saveSettings();
+          },
+        ),
       ],
     );
   }
