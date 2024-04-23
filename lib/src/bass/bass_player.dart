@@ -175,8 +175,9 @@ class BassPlayer {
     final pathPointer = path.toNativeUtf16() as ffi.Pointer<ffi.Void>;
 
     /// 设置 flags 为 BASS_UNICODE 才可以找到文件。
-    _fstream =
-        _bass.BASS_StreamCreateFile(FALSE, pathPointer, 0, 0, BASS_UNICODE);
+    _fstream = _bass.BASS_StreamCreateFile(
+        FALSE, pathPointer, 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
+
     switch (_bass.BASS_ErrorGetCode()) {
       case BASS_ERROR_INIT:
         throw const FormatException(
