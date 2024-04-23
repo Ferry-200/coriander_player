@@ -71,11 +71,27 @@ class Entry extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             useMaterial3: true,
+            colorScheme:
+                ColorScheme.fromSeed(seedColor: Color(theme.palette.seed)),
             platform: TargetPlatform.windows,
             scrollbarTheme: ScrollbarThemeData(
               thumbColor: MaterialStatePropertyAll(theme.palette.outline),
               trackColor:
                   MaterialStatePropertyAll(theme.palette.outlineVariant),
+            ),
+            segmentedButtonTheme: SegmentedButtonThemeData(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateColor.resolveWith(
+                  (states) => states.contains(MaterialState.selected)
+                      ? theme.palette.secondaryContainer
+                      : theme.palette.surface,
+                ),
+                foregroundColor: MaterialStateColor.resolveWith(
+                  (states) => states.contains(MaterialState.selected)
+                      ? theme.palette.onSecondaryContainer
+                      : theme.palette.onSurface,
+                ),
+              ),
             ),
           ),
           localizationsDelegates: const [GlobalMaterialLocalizations.delegate],
@@ -98,7 +114,8 @@ class Entry extends StatelessWidget {
             path: app_paths.AUDIOS_PAGE,
             pageBuilder: (context, state) {
               if (state.extra != null) {
-                return SlideTransitionPage(child: AudiosPage(locateTo: state.extra as Audio));
+                return SlideTransitionPage(
+                    child: AudiosPage(locateTo: state.extra as Audio));
               }
               return const SlideTransitionPage(child: AudiosPage());
             },
