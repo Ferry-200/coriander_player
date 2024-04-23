@@ -1,5 +1,7 @@
 import 'package:coriander_player/page/page_scaffold.dart';
-import 'package:coriander_player/page/settings_page/components.dart';
+import 'package:coriander_player/page/settings_page/check_update.dart';
+import 'package:coriander_player/page/settings_page/other_settings.dart';
+import 'package:coriander_player/page/settings_page/theme_settings.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
