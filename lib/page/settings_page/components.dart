@@ -35,7 +35,7 @@ class _CheckForUpdateState extends State<CheckForUpdate> {
                 setState(() {
                   isChecking = true;
                 });
-                
+
                 final newest = await AppSettings.github.repositories
                     .listReleases(
                         RepositorySlug("Ferry-200", "coriander_player"))
@@ -258,6 +258,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
                 brightness: settings.themeMode,
               );
               return MouseRegion(
+                cursor: MaterialStateMouseCursor.clickable,
                 child: GestureDetector(
                   onTap: () async {
                     setState(() {
