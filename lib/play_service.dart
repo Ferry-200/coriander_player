@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/lyric/lrc.dart';
 import 'package:coriander_player/lyric/lyric.dart';
@@ -132,7 +133,7 @@ class PlayService with ChangeNotifier {
     /// 2. 如果指定来源，按照指定的来源获取
     final lyricSource = LYRIC_SOURCES[nowPlaying!.path];
     if (lyricSource == null) {
-      _getLyricDefault(localFirst: true).then((value) {
+      _getLyricDefault(localFirst: AppSettings.instance.localLyricFirst).then((value) {
         if (value != null && value.belongTo == nowPlaying) {
           currentLyric.value = value;
         }
