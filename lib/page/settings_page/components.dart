@@ -29,43 +29,46 @@ class _CheckForUpdateState extends State<CheckForUpdate> {
       FilledButton.icon(
         icon: const Icon(Symbols.update),
         label: const Text("检查更新"),
-        onPressed: () async {
-          setState(() {
-            isChecking = true;
-          });
-          final newest = await AppSettings.github.repositories
-              .listReleases(RepositorySlug("Ferry-200", "coriander_player"))
-              .first;
-          final newestVer = int.tryParse(
-                newest.tagName?.substring(1).replaceAll(".", "") ?? "",
-              ) ??
-              0;
-          final currVer =
-              int.tryParse(AppSettings.version.replaceAll(".", "")) ?? 0;
-          if (newestVer > currVer) {
-            if (context.mounted) {
-              showDialog(
-                context: context,
-                builder: (context) => NewestUpdateView(release: newest),
-              );
-            }
-          } else {
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(
-                  "无新版本",
-                  style: TextStyle(color: theme.palette.onSecondary),
-                ),
-                backgroundColor: theme.palette.secondary,
-              ));
-            }
-          }
+        onPressed: isChecking
+            ? null
+            : () async {
+                setState(() {
+                  isChecking = true;
+                });
+                
+                final newest = await AppSettings.github.repositories
+                    .listReleases(
+                        RepositorySlug("Ferry-200", "coriander_player"))
+                    .first;
+                final newestVer = int.tryParse(
+                      newest.tagName?.substring(1).replaceAll(".", "") ?? "",
+                    ) ??
+                    0;
+                final currVer =
+                    int.tryParse(AppSettings.version.replaceAll(".", "")) ?? 0;
+                if (newestVer > currVer) {
+                  if (context.mounted) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => NewestUpdateView(release: newest),
+                    );
+                  }
+                } else {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(
+                        "无新版本",
+                        style: TextStyle(color: theme.palette.onSecondary),
+                      ),
+                      backgroundColor: theme.palette.secondary,
+                    ));
+                  }
+                }
 
-          setState(() {
-            isChecking = false;
-          });
-        },
-        
+                setState(() {
+                  isChecking = false;
+                });
+              },
         style: theme.primaryButtonStyle,
       ),
     ];
