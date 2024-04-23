@@ -33,7 +33,7 @@ class WelcomingPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "你的音乐都在那些文件夹呢？",
+              "你的音乐都在哪些文件夹呢？",
               style: TextStyle(
                 color: theme.palette.onSurface,
                 fontSize: 22,

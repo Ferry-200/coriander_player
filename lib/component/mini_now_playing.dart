@@ -119,7 +119,7 @@ class _NowPlayingForeground extends StatelessWidget {
                         Text(
                           nowPlaying != null
                               ? nowPlaying.title
-                              : "Coriander Music",
+                              : "Coriander Player",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -131,7 +131,7 @@ class _NowPlayingForeground extends StatelessWidget {
                         Text(
                           nowPlaying != null
                               ? "${nowPlaying.artist} - ${nowPlaying.album}"
-                              : "Enjoy your music.",
+                              : "Enjoy music",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
