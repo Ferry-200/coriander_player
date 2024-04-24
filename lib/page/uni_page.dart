@@ -1,7 +1,6 @@
 import 'package:coriander_player/page/uni_page_components.dart';
 import 'package:coriander_player/page/uni_page_controller.dart';
 import 'package:coriander_player/page/page_scaffold.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 
 typedef ContentBuilder<T> = Widget Function(
@@ -60,7 +59,6 @@ class UniPage<T> extends StatefulWidget {
 }
 
 class _UniPageState<T> extends State<UniPage<T>> {
-  late List<T> currContentList = widget.contentList;
   late SortMethodDesc<T>? currSortMethod = widget.sortMethods?.first;
   SortOrder currSortOrder = SortOrder.ascending;
   late ContentView currContentView = widget.defaultContentView;
@@ -69,25 +67,31 @@ class _UniPageState<T> extends State<UniPage<T>> {
   @override
   void initState() {
     super.initState();
-    currSortMethod?.method(currContentList, currSortOrder);
+    currSortMethod?.method(widget.contentList, currSortOrder);
     int targetAt = 0;
     if (widget.locateTo != null) {
-      targetAt = currContentList.indexOf(widget.locateTo as T);
+      targetAt = widget.contentList.indexOf(widget.locateTo as T);
     }
     scrollController = ScrollController(initialScrollOffset: targetAt * 64);
+  }
+
+  @override
+  void didUpdateWidget(covariant UniPage<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    currSortMethod?.method(widget.contentList, currSortOrder);
   }
 
   void setSortMethod(SortMethodDesc<T> sortMethod) {
     setState(() {
       currSortMethod = sortMethod;
-      currSortMethod?.method(currContentList, currSortOrder);
+      currSortMethod?.method(widget.contentList, currSortOrder);
     });
   }
 
   void setSortOrder(SortOrder sortOrder) {
     setState(() {
       currSortOrder = sortOrder;
-      currSortMethod?.method(currContentList, currSortOrder);
+      currSortMethod?.method(widget.contentList, currSortOrder);
     });
   }
 
@@ -101,12 +105,12 @@ class _UniPageState<T> extends State<UniPage<T>> {
   Widget build(BuildContext context) {
     final List<Widget> actions = [];
     if (widget.enableShufflePlay) {
-      actions.add(ShufflePlay<T>(contentList: currContentList));
+      actions.add(ShufflePlay<T>(contentList: widget.contentList));
     }
     if (widget.enableSortMethod) {
       actions.add(SortMethodComboBox<T>(
         sortMethods: widget.sortMethods!,
-        contentList: currContentList,
+        contentList: widget.contentList,
         currSortMethod: currSortMethod!,
         setSortMethod: setSortMethod,
       ));
@@ -134,10 +138,10 @@ class _UniPageState<T> extends State<UniPage<T>> {
           ContentView.list => ListView.builder(
               controller: scrollController,
               padding: const EdgeInsets.only(bottom: 96.0),
-              itemCount: currContentList.length,
+              itemCount: widget.contentList.length,
               itemBuilder: (context, i) => widget.contentBuilder(
                 context,
-                currContentList[i],
+                widget.contentList[i],
                 i,
               ),
             ),
@@ -145,10 +149,10 @@ class _UniPageState<T> extends State<UniPage<T>> {
               controller: scrollController,
               padding: const EdgeInsets.only(bottom: 96.0),
               gridDelegate: gridDelegate,
-              itemCount: currContentList.length,
+              itemCount: widget.contentList.length,
               itemBuilder: (context, i) => widget.contentBuilder(
                 context,
-                currContentList[i],
+                widget.contentList[i],
                 i,
               ),
             ),
@@ -156,30 +160,4 @@ class _UniPageState<T> extends State<UniPage<T>> {
       ),
     );
   }
-
-  Expanded onlyTitle(ThemeProvider theme) => Expanded(
-        child: Text(
-          widget.title,
-          style: TextStyle(fontSize: 32.0, color: theme.palette.onSurface),
-          overflow: TextOverflow.ellipsis,
-        ),
-      );
-
-  Expanded withSubtitle(ThemeProvider theme) => Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.title,
-              style: TextStyle(fontSize: 28.0, color: theme.palette.onSurface),
-              overflow: TextOverflow.ellipsis,
-            ),
-            Text(
-              widget.subtitle!,
-              style: TextStyle(fontSize: 14.0, color: theme.palette.onSurface),
-              overflow: TextOverflow.ellipsis,
-            )
-          ],
-        ),
-      );
 }
