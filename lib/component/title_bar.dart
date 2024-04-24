@@ -126,18 +126,19 @@ class _TitleBar_Large extends StatelessWidget {
       child: Row(
         children: [
           const _NavBackBtn(),
+          const SizedBox(width: 8.0),
           Expanded(
             child: DragToMoveArea(
               child: Row(
                 children: [
                   SizedBox(
-                    width: 236,
+                    width: 228,
                     child: Row(
                       children: [
-                        Icon(
-                          Symbols.music_note,
-                          color: theme.palette.onSurface,
-                          size: 24.0,
+                        Image.asset(
+                          "app_icon.ico",
+                          width: 24,
+                          height: 24,
                         ),
                         const SizedBox(width: 8.0),
                         Text(
