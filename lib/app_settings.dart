@@ -20,7 +20,7 @@ Brightness getWindowsColorMode() {
 
 class AppSettings {
   static final github = GitHub();
-  static const String version = "1.0.0";
+  static const String version = "1.0.1";
 
   /// 主题模式：亮 / 暗
   Brightness themeMode = getWindowsColorMode();
