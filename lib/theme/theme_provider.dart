@@ -85,4 +85,32 @@ class ThemeProvider extends ChangeNotifier {
           palette.onSecondaryContainer.withOpacity(0.08),
         ),
       );
+
+  ButtonStyle get menuItemStyle => ButtonStyle(
+        backgroundColor: MaterialStatePropertyAll(palette.secondaryContainer),
+        foregroundColor: MaterialStatePropertyAll(palette.onSecondaryContainer),
+        padding: const MaterialStatePropertyAll(
+          EdgeInsets.symmetric(horizontal: 16.0),
+        ),
+        overlayColor: MaterialStatePropertyAll(
+          palette.onSecondaryContainer.withOpacity(0.08),
+        ),
+      );
+
+  MenuStyle get menuStyleWithFixedSize => MenuStyle(
+        backgroundColor: MaterialStatePropertyAll(palette.secondaryContainer),
+        surfaceTintColor: MaterialStatePropertyAll(palette.secondaryContainer),
+        shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        )),
+        fixedSize: const MaterialStatePropertyAll(Size.fromWidth(149.0)),
+      );
+
+  MenuStyle get menuStyle => MenuStyle(
+        shape: MaterialStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        ),
+        backgroundColor: MaterialStatePropertyAll(palette.surfaceContainer),
+        surfaceTintColor: MaterialStatePropertyAll(palette.surfaceContainer),
+      );
 }

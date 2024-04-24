@@ -40,45 +40,14 @@ class SortMethodComboBox<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
 
-    final menuItemStyle = ButtonStyle(
-      backgroundColor: MaterialStatePropertyAll(
-        theme.palette.secondaryContainer,
-      ),
-      foregroundColor: MaterialStatePropertyAll(
-        theme.palette.onSecondaryContainer,
-      ),
-      padding: const MaterialStatePropertyAll(
-        EdgeInsets.symmetric(horizontal: 16.0),
-      ),
-      overlayColor: MaterialStatePropertyAll(
-        theme.palette.onSecondaryContainer.withOpacity(0.08),
-      ),
-    );
-
-    final menuStyle = MenuStyle(
-      backgroundColor: MaterialStatePropertyAll(
-        theme.palette.secondaryContainer,
-      ),
-      surfaceTintColor: MaterialStatePropertyAll(
-        theme.palette.secondaryContainer,
-      ),
-      shape: const MaterialStatePropertyAll(RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20.0),
-          bottomRight: Radius.circular(20.0),
-        ),
-      )),
-      fixedSize: const MaterialStatePropertyAll(Size.fromWidth(149.0)),
-    );
-
     return MenuAnchor(
       /// 这样可以指定菜单栏的大小
       crossAxisUnconstrained: false,
-      style: menuStyle,
+      style: theme.menuStyleWithFixedSize,
       menuChildren: List.generate(
         sortMethods.length,
         (i) => MenuItemButton(
-          style: menuItemStyle,
+          style: theme.menuItemStyle,
           leadingIcon: Icon(
             sortMethods[i].icon,
             color: theme.palette.onSecondaryContainer,
@@ -90,12 +59,7 @@ class SortMethodComboBox<T> extends StatelessWidget {
       builder: (context, menuController, _) {
         final isOpen = menuController.isOpen;
 
-        final openBorderRadius = BorderRadius.circular(20.0);
-        const closeBorderRadius = BorderRadius.only(
-          topLeft: Radius.circular(20.0),
-          topRight: Radius.circular(20.0),
-        );
-        final borderRadius = isOpen ? closeBorderRadius : openBorderRadius;
+        final borderRadius = BorderRadius.circular(20.0);
 
         return SizedBox(
           height: 40.0,
@@ -103,7 +67,6 @@ class SortMethodComboBox<T> extends StatelessWidget {
           child: Material(
             borderRadius: borderRadius,
             color: theme.palette.secondaryContainer,
-            elevation: isOpen ? 4.0 : 0,
             child: InkWell(
               hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
               borderRadius: borderRadius,
@@ -146,7 +109,8 @@ class SortMethodComboBox<T> extends StatelessWidget {
 class SortOrderSwitch<T> extends StatelessWidget {
   final SortOrder sortOrder;
   final void Function(SortOrder order) setSortOrder;
-  const SortOrderSwitch({super.key, required this.sortOrder, required this.setSortOrder});
+  const SortOrderSwitch(
+      {super.key, required this.sortOrder, required this.setSortOrder});
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +129,8 @@ class SortOrderSwitch<T> extends StatelessWidget {
 class ContentViewSwitch<T> extends StatelessWidget {
   final ContentView contentView;
   final void Function(ContentView contentView) setContentView;
-  const ContentViewSwitch({super.key, required this.contentView, required this.setContentView});
+  const ContentViewSwitch(
+      {super.key, required this.contentView, required this.setContentView});
 
   @override
   Widget build(BuildContext context) {
