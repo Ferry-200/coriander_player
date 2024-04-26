@@ -50,25 +50,31 @@ impl Metadata {
             Err(_) => return None,
         };
 
-        let title: Cow<'_, str>;
+        let title: String;
         let artist: Cow<'_, str>;
         let album: Cow<'_, str>;
         let track: u32;
         let duration: u64 = tagged_file.properties().duration().as_secs();
 
         if let Some(primary_tag) = tagged_file.primary_tag() {
-            title = primary_tag.title().unwrap_or(UNKNOWN);
+            title = match primary_tag.title() {
+                Some(value) => value.to_string(),
+                None => path.clone(),
+            };
             artist = primary_tag.artist().unwrap_or(UNKNOWN);
             album = primary_tag.album().unwrap_or(UNKNOWN);
             track = primary_tag.track().unwrap_or(0);
         } else {
             if let Some(tag) = tagged_file.first_tag() {
-                title = tag.title().unwrap_or(UNKNOWN);
+                title = match tag.title(){
+                    Some(value) => value.to_string(),
+                    None => path.clone(),
+                };
                 artist = tag.artist().unwrap_or(UNKNOWN);
                 album = tag.album().unwrap_or(UNKNOWN);
                 track = tag.track().unwrap_or(0);
             } else {
-                title = UNKNOWN;
+                title = path.clone();
                 artist = UNKNOWN;
                 album = UNKNOWN;
                 track = 0;
@@ -93,7 +99,7 @@ impl Metadata {
             .as_secs();
 
         return Some(Metadata {
-            title: title.to_string(),
+            title,
             artist: artist.to_string(),
             album: album.to_string(),
             track,
