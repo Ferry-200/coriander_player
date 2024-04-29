@@ -10,8 +10,9 @@ import 'package:coriander_player/lyric/lyric.dart';
 import 'package:coriander_player/lyric/lyric_source.dart';
 import 'package:coriander_player/music_api/search_helper.dart';
 import 'package:coriander_player/src/bass/bass_player.dart';
+import 'package:coriander_player/src/rust/api/smtc_flutter.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
-import 'package:coriander_player/windows_toast.dart';
+// import 'package:coriander_player/windows_toast.dart';
 import 'package:flutter/widgets.dart';
 
 enum PlayMode {
@@ -28,11 +29,13 @@ enum PlayMode {
 /// 确保只有在切换歌曲时通知listener
 class PlayService with ChangeNotifier {
   final BassPlayer _bassPlayer = BassPlayer();
+  final _smtc = SmtcFlutter();
 
   PlayService._() {
     _lyricLineStreamController = StreamController.broadcast(onListen: () {
       _lyricLineStreamController.add(_nextLyricLine);
     });
+    _subscriptionStreams();
   }
 
   static PlayService? _instance;
@@ -40,10 +43,7 @@ class PlayService with ChangeNotifier {
   /// 第一次调用时，创建_instance，订阅stream
   /// 之后直接返回instance
   static PlayService get instance {
-    if (_instance == null) {
-      _instance = PlayService._();
-      _instance!._subscriptionStreams();
-    }
+    _instance ??= PlayService._();
     return _instance!;
   }
 
@@ -82,11 +82,30 @@ class PlayService with ChangeNotifier {
 
   late StreamSubscription _playerStateStreamSub;
   late StreamSubscription _positionStreamSub;
+  late StreamSubscription _smtcEventStreamSub;
 
   void _subscriptionStreams() {
     _playerStateStreamSub = playerStateStream.listen((event) {
       if (event == PlayerState.completed) {
         _autoNextAudio();
+      }
+    });
+
+    _smtcEventStreamSub = _smtc.subscribeToControlEvents().listen((event) {
+      switch (event) {
+        case SMTCControlEvent.play:
+          start();
+          break;
+        case SMTCControlEvent.pause:
+          pause();
+          break;
+        case SMTCControlEvent.previous:
+          lastAudio();
+          break;
+        case SMTCControlEvent.next:
+          nextAudio();
+          break;
+        case SMTCControlEvent.unknown:
       }
     });
 
@@ -133,7 +152,8 @@ class PlayService with ChangeNotifier {
     /// 2. 如果指定来源，按照指定的来源获取
     final lyricSource = LYRIC_SOURCES[nowPlaying!.path];
     if (lyricSource == null) {
-      _getLyricDefault(localFirst: AppSettings.instance.localLyricFirst).then((value) {
+      _getLyricDefault(localFirst: AppSettings.instance.localLyricFirst)
+          .then((value) {
         if (value != null && value.belongTo == nowPlaying) {
           currentLyric.value = value;
         }
@@ -165,10 +185,12 @@ class PlayService with ChangeNotifier {
     notifyListeners();
     ThemeProvider.instance.setPalleteFromAudio(nowPlaying!);
 
-    sendWindowsNotification(
-      title: "正在播放",
-      content:
-          "${nowPlaying!.title}\n${nowPlaying!.artist} - ${nowPlaying!.album}",
+    _smtc.updateState(state: SMTCState.playing);
+    _smtc.updateDisplay(
+      title: nowPlaying!.title,
+      artist: nowPlaying!.artist,
+      album: nowPlaying!.album,
+      path: nowPlaying!.path,
     );
   }
 
@@ -309,10 +331,16 @@ class PlayService with ChangeNotifier {
   }
 
   /// 暂停
-  void pause() => _bassPlayer.pause();
+  void pause() {
+    _bassPlayer.pause();
+    _smtc.updateState(state: SMTCState.paused);
+  }
 
   /// 恢复播放
-  void start() => _bassPlayer.start();
+  void start() {
+    _bassPlayer.start();
+    _smtc.updateState(state: SMTCState.playing);
+  }
 
   /// 再次播放。在顺序播放完最后一曲时再次按播放时使用。
   /// 与[start]的差别在于它会通知重绘组件
@@ -331,5 +359,7 @@ class PlayService with ChangeNotifier {
     _lyricLineStreamController.close();
     _playerStateStreamSub.cancel();
     _positionStreamSub.cancel();
+    _smtcEventStreamSub.cancel();
+    _smtc.close();
   }
 }
