@@ -1,11 +1,11 @@
 import 'package:coriander_player/app_settings.dart';
+import 'package:coriander_player/src/rust/api/utils.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:github/github.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class CheckForUpdate extends StatefulWidget {
   const CheckForUpdate({super.key});
@@ -146,7 +146,7 @@ class NewestUpdateView extends StatelessWidget {
                 data: release.body ?? "",
                 onTapLink: (text, href, title) {
                   if (href != null) {
-                    launchUrlString(href);
+                    launchInBrowser(uri: href);
                   }
                 },
                 padding: EdgeInsets.zero,
@@ -188,7 +188,7 @@ class NewestUpdateView extends StatelessWidget {
                   TextButton.icon(
                     onPressed: () {
                       if (release.htmlUrl != null) {
-                        launchUrlString(release.htmlUrl!);
+                        launchInBrowser(uri: release.htmlUrl!);
                       }
 
                       Navigator.pop(context);

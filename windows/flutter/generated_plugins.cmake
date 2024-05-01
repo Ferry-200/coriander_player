@@ -4,7 +4,6 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   screen_retriever
-  url_launcher_windows
   window_manager
 )
 

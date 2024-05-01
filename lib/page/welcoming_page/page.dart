@@ -4,9 +4,9 @@ import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/title_bar.dart';
 import 'package:coriander_player/src/rust/api/tag_reader.dart';
+import 'package:coriander_player/src/rust/api/utils.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -65,7 +65,7 @@ class __AudioFolderEditState extends State<_AudioFolderEdit> {
   }
 
   void _addPath() async {
-    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+    String? selectedDirectory = await pickSingleFolder();
     if (selectedDirectory == null) return;
     setState(() {
       folderPaths.add(selectedDirectory);
@@ -107,8 +107,7 @@ class __AudioFolderEditState extends State<_AudioFolderEdit> {
             const SizedBox(width: 8.0),
             FilledButton.icon(
               onPressed: () async {
-                String? selectedDirectory =
-                    await FilePicker.platform.getDirectoryPath();
+                String? selectedDirectory = await pickSingleFolder();
                 if (selectedDirectory == null) return;
                 final dirs = Directory(selectedDirectory)
                     .listSync()
@@ -158,8 +157,10 @@ class __SaveButtonState extends State<_SaveButton> {
     setState(() {
       isSaving = false;
     });
-    if (context.mounted) {
-      context.go(app_paths.AUDIOS_PAGE);
+    
+    final ctx = context;
+    if (ctx.mounted) {
+      ctx.go(app_paths.AUDIOS_PAGE);
     }
   }
 

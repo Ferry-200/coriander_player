@@ -1,8 +1,8 @@
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/src/rust/api/tag_reader.dart';
+import 'package:coriander_player/src/rust/api/utils.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:path_provider/path_provider.dart';
@@ -107,8 +107,7 @@ class _AudioLibraryEditFieldState extends State<AudioLibraryEditField> {
                 children: [
                   IconButton(
                     onPressed: () async {
-                      String? selectedDirectory =
-                          await FilePicker.platform.getDirectoryPath();
+                      String? selectedDirectory = await pickSingleFolder();
                       if (selectedDirectory == null) return;
                       setState(() {
                         audioLibrary.folders.add(

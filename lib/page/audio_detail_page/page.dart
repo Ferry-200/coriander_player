@@ -1,15 +1,12 @@
-import 'dart:ffi' as ffi;
-
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/album_tile.dart';
 import 'package:coriander_player/component/artist_tile.dart';
 import 'package:coriander_player/lyric/lrc.dart';
+import 'package:coriander_player/src/rust/api/utils.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
-import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
-import 'package:win32/win32.dart';
 
 class AudioDetailPage extends StatelessWidget {
   const AudioDetailPage({super.key, required this.audio});
@@ -124,16 +121,10 @@ class AudioDetailPage extends StatelessWidget {
                   ),
                 ),
                 TextButton(
-                  onPressed: () {
-                    final result = ShellExecute(
-                      NULL,
-                      "open".toNativeUtf16(),
-                      "explorer.exe".toNativeUtf16(),
-                      "/select,${audio.path}".toNativeUtf16(),
-                      ffi.nullptr,
-                      SW_SHOWDEFAULT,
-                    );
-                    if (result <= 32) {
+                  onPressed: () async {
+                    final result = await showInExplorer(path: audio.path);
+
+                    if (!result && context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(

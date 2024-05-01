@@ -21,7 +21,6 @@ dependencies:
     sdk: flutter
   ffi: ^2.1.0
   path: ^1.8.3
-  file_picker: ^8.0.2
   material_symbols_icons: ^4.2719.1
   windows_ui: ^0.2.0
 
@@ -35,8 +34,6 @@ dependencies:
   
   github: ^9.24.0
   flutter_markdown: ^0.7.1
-  url_launcher: ^6.2.6
-  win32: ^5.2.0
 
 dev_dependencies:
   flutter_test:

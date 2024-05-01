@@ -16,5 +16,11 @@ windows = { version = "0.56.0", features = [
     "Storage",
     "Storage_Streams",
     "Storage_FileProperties",
+    "Storage_Pickers",
     "Foundation",
+    "Foundation_Collections",
+    "System",
+    "Win32_UI_Shell",
+    "Win32_System_WinRT",
+    "Win32_UI_WindowsAndMessaging"
 ] }
