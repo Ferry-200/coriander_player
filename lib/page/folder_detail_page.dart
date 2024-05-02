@@ -1,6 +1,5 @@
 import 'package:coriander_player/component/audio_tile.dart';
 import 'package:coriander_player/library/audio_library.dart';
-import 'package:coriander_player/page/uni_page_controller.dart';
 import 'package:coriander_player/page/uni_page.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';

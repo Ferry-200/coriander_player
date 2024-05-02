@@ -1,5 +1,5 @@
 import 'package:coriander_player/library/audio_library.dart';
-import 'package:coriander_player/page/uni_page_controller.dart';
+import 'package:coriander_player/page/uni_page.dart';
 import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
