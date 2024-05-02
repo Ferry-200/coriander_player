@@ -31,7 +31,10 @@ fn _show_in_explorer(path: String) -> Result<bool, windows::core::Error> {
 }
 
 pub fn pick_single_folder() -> Option<String> {
-    Some(_pick_single_folder().unwrap())
+    match _pick_single_folder() {
+        Ok(value) => Some(value),
+        Err(_) => None,
+    }
 }
 
 fn _pick_single_folder() -> Result<String, windows::core::Error> {

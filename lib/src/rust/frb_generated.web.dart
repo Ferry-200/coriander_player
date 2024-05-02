@@ -4,6 +4,7 @@
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
 import 'api/smtc_flutter.dart';
+import 'api/system_theme.dart';
 import 'api/tag_reader.dart';
 import 'api/utils.dart';
 import 'dart:async';
@@ -43,6 +44,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       dynamic raw);
 
   @protected
+  RustStreamSink<SystemTheme> dco_decode_StreamSink_system_theme_Sse(
+      dynamic raw);
+
+  @protected
   String dco_decode_String(dynamic raw);
 
   @protected
@@ -64,10 +69,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List? dco_decode_opt_list_prim_u_8_strict(dynamic raw);
 
   @protected
+  (int, int, int, int) dco_decode_record_u_8_u_8_u_8_u_8(dynamic raw);
+
+  @protected
   SMTCControlEvent dco_decode_smtc_control_event(dynamic raw);
 
   @protected
   SMTCState dco_decode_smtc_state(dynamic raw);
+
+  @protected
+  SystemTheme dco_decode_system_theme(dynamic raw);
 
   @protected
   int dco_decode_u_8(dynamic raw);
@@ -98,6 +109,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       SseDeserializer deserializer);
 
   @protected
+  RustStreamSink<SystemTheme> sse_decode_StreamSink_system_theme_Sse(
+      SseDeserializer deserializer);
+
+  @protected
   String sse_decode_String(SseDeserializer deserializer);
 
   @protected
@@ -119,10 +134,17 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List? sse_decode_opt_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
+  (int, int, int, int) sse_decode_record_u_8_u_8_u_8_u_8(
+      SseDeserializer deserializer);
+
+  @protected
   SMTCControlEvent sse_decode_smtc_control_event(SseDeserializer deserializer);
 
   @protected
   SMTCState sse_decode_smtc_state(SseDeserializer deserializer);
+
+  @protected
+  SystemTheme sse_decode_system_theme(SseDeserializer deserializer);
 
   @protected
   int sse_decode_u_8(SseDeserializer deserializer);
@@ -153,6 +175,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       RustStreamSink<SMTCControlEvent> self, SseSerializer serializer);
 
   @protected
+  void sse_encode_StreamSink_system_theme_Sse(
+      RustStreamSink<SystemTheme> self, SseSerializer serializer);
+
+  @protected
   void sse_encode_String(String self, SseSerializer serializer);
 
   @protected
@@ -176,11 +202,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       Uint8List? self, SseSerializer serializer);
 
   @protected
+  void sse_encode_record_u_8_u_8_u_8_u_8(
+      (int, int, int, int) self, SseSerializer serializer);
+
+  @protected
   void sse_encode_smtc_control_event(
       SMTCControlEvent self, SseSerializer serializer);
 
   @protected
   void sse_encode_smtc_state(SMTCState self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_system_theme(SystemTheme self, SseSerializer serializer);
 
   @protected
   void sse_encode_u_8(int self, SseSerializer serializer);

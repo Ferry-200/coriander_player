@@ -22,7 +22,6 @@ dependencies:
   ffi: ^2.1.0
   path: ^1.8.3
   material_symbols_icons: ^4.2719.1
-  windows_ui: ^0.2.0
 
   # music_api
   encrypt: ^5.0.3

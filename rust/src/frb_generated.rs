@@ -32,7 +32,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.0.0-dev.32";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 2020727836;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 711307370;
 
 // Section: executor
 
@@ -217,6 +217,71 @@ fn wire_SmtcFlutter_update_state_impl(
                     Result::<_, ()>::Ok(crate::api::smtc_flutter::SMTCFlutter::update_state(
                         &api_that, api_state,
                     ))
+                })())
+            }
+        },
+    )
+}
+fn wire_system_theme_get_system_theme_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "system_theme_get_system_theme",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            deserializer.end();
+            transform_result_sse((move || {
+                Result::<_, ()>::Ok(crate::api::system_theme::SystemTheme::get_system_theme())
+            })())
+        },
+    )
+}
+fn wire_system_theme_on_system_theme_changed_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "system_theme_on_system_theme_changed",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_sink = <StreamSink<
+                crate::api::system_theme::SystemTheme,
+                flutter_rust_bridge::for_generated::SseCodec,
+            >>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse((move || {
+                    Result::<_, ()>::Ok(
+                        crate::api::system_theme::SystemTheme::on_system_theme_changed(api_sink),
+                    )
                 })())
             }
         },
@@ -555,6 +620,19 @@ impl SseDecode
     }
 }
 
+impl SseDecode
+    for StreamSink<
+        crate::api::system_theme::SystemTheme,
+        flutter_rust_bridge::for_generated::SseCodec,
+    >
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <String>::sse_decode(deserializer);
+        return StreamSink::deserialize(inner);
+    }
+}
+
 impl SseDecode for String {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -623,6 +701,17 @@ impl SseDecode for Option<Vec<u8>> {
     }
 }
 
+impl SseDecode for (u8, u8, u8, u8) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_field0 = <u8>::sse_decode(deserializer);
+        let mut var_field1 = <u8>::sse_decode(deserializer);
+        let mut var_field2 = <u8>::sse_decode(deserializer);
+        let mut var_field3 = <u8>::sse_decode(deserializer);
+        return (var_field0, var_field1, var_field2, var_field3);
+    }
+}
+
 impl SseDecode for crate::api::smtc_flutter::SMTCControlEvent {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -646,6 +735,18 @@ impl SseDecode for crate::api::smtc_flutter::SMTCState {
             0 => crate::api::smtc_flutter::SMTCState::Paused,
             1 => crate::api::smtc_flutter::SMTCState::Playing,
             _ => unreachable!("Invalid variant for SMTCState: {}", inner),
+        };
+    }
+}
+
+impl SseDecode for crate::api::system_theme::SystemTheme {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_fore = <(u8, u8, u8, u8)>::sse_decode(deserializer);
+        let mut var_accent = <(u8, u8, u8, u8)>::sse_decode(deserializer);
+        return crate::api::system_theme::SystemTheme {
+            fore: var_fore,
+            accent: var_accent,
         };
     }
 }
@@ -682,15 +783,16 @@ fn pde_ffi_dispatcher_primary_impl(
         2 => wire_SmtcFlutter_subscribe_to_control_events_impl(port, ptr, rust_vec_len, data_len),
         4 => wire_SmtcFlutter_update_display_impl(port, ptr, rust_vec_len, data_len),
         3 => wire_SmtcFlutter_update_state_impl(port, ptr, rust_vec_len, data_len),
-        6 => wire_build_index_from_paths_impl(port, ptr, rust_vec_len, data_len),
-        10 => wire_load_cover_bytes_impl(port, ptr, rust_vec_len, data_len),
-        8 => wire_load_lyric_from_flac_impl(port, ptr, rust_vec_len, data_len),
-        9 => wire_load_lyric_from_lrc_impl(port, ptr, rust_vec_len, data_len),
-        7 => wire_load_lyric_from_mp3_impl(port, ptr, rust_vec_len, data_len),
-        11 => wire_update_index_impl(port, ptr, rust_vec_len, data_len),
-        14 => wire_launch_in_browser_impl(port, ptr, rust_vec_len, data_len),
-        13 => wire_pick_single_folder_impl(port, ptr, rust_vec_len, data_len),
-        12 => wire_show_in_explorer_impl(port, ptr, rust_vec_len, data_len),
+        7 => wire_system_theme_on_system_theme_changed_impl(port, ptr, rust_vec_len, data_len),
+        8 => wire_build_index_from_paths_impl(port, ptr, rust_vec_len, data_len),
+        12 => wire_load_cover_bytes_impl(port, ptr, rust_vec_len, data_len),
+        10 => wire_load_lyric_from_flac_impl(port, ptr, rust_vec_len, data_len),
+        11 => wire_load_lyric_from_lrc_impl(port, ptr, rust_vec_len, data_len),
+        9 => wire_load_lyric_from_mp3_impl(port, ptr, rust_vec_len, data_len),
+        13 => wire_update_index_impl(port, ptr, rust_vec_len, data_len),
+        16 => wire_launch_in_browser_impl(port, ptr, rust_vec_len, data_len),
+        15 => wire_pick_single_folder_impl(port, ptr, rust_vec_len, data_len),
+        14 => wire_show_in_explorer_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -704,6 +806,7 @@ fn pde_ffi_dispatcher_sync_impl(
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
         1 => wire_SmtcFlutter_new_impl(ptr, rust_vec_len, data_len),
+        6 => wire_system_theme_get_system_theme_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -768,6 +871,27 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api::smtc_flutter::SMTCState>
         self
     }
 }
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::system_theme::SystemTheme {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.fore.into_into_dart().into_dart(),
+            self.accent.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::system_theme::SystemTheme
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::system_theme::SystemTheme>
+    for crate::api::system_theme::SystemTheme
+{
+    fn into_into_dart(self) -> crate::api::system_theme::SystemTheme {
+        self
+    }
+}
 
 impl SseEncode for SMTCFlutter {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -790,6 +914,18 @@ impl SseEncode
 impl SseEncode
     for StreamSink<
         crate::api::smtc_flutter::SMTCControlEvent,
+        flutter_rust_bridge::for_generated::SseCodec,
+    >
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        unimplemented!("")
+    }
+}
+
+impl SseEncode
+    for StreamSink<
+        crate::api::system_theme::SystemTheme,
         flutter_rust_bridge::for_generated::SseCodec,
     >
 {
@@ -860,6 +996,16 @@ impl SseEncode for Option<Vec<u8>> {
     }
 }
 
+impl SseEncode for (u8, u8, u8, u8) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <u8>::sse_encode(self.0, serializer);
+        <u8>::sse_encode(self.1, serializer);
+        <u8>::sse_encode(self.2, serializer);
+        <u8>::sse_encode(self.3, serializer);
+    }
+}
+
 impl SseEncode for crate::api::smtc_flutter::SMTCControlEvent {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -892,6 +1038,14 @@ impl SseEncode for crate::api::smtc_flutter::SMTCState {
             },
             serializer,
         );
+    }
+}
+
+impl SseEncode for crate::api::system_theme::SystemTheme {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <(u8, u8, u8, u8)>::sse_encode(self.fore, serializer);
+        <(u8, u8, u8, u8)>::sse_encode(self.accent, serializer);
     }
 }
 

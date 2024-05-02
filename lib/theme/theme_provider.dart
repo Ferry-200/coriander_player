@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/library/audio_library.dart';
+import 'package:coriander_player/src/rust/api/system_theme.dart';
 import 'package:coriander_player/theme/color_palette.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +14,35 @@ class ThemeProvider extends ChangeNotifier {
 
   static ThemeProvider? _instance;
 
-  ThemeProvider._();
+  late StreamSubscription<SystemTheme> _systemThemeChangedStreamSub;
+  ThemeProvider._() {
+    _systemThemeChangedStreamSub =
+        SystemTheme.onSystemThemeChanged().listen((event) {
+      final isDarkMode =
+          (((5 * event.fore.$3) + (2 * event.fore.$2) + event.fore.$4) >
+              (8 * 128));
+      final themeMode = isDarkMode ? Brightness.dark : Brightness.light;
+      final seed = Color.fromARGB(
+        event.accent.$1,
+        event.accent.$2,
+        event.accent.$3,
+        event.accent.$4,
+      ).value;
+
+      print(themeMode);
+      print(seed);
+
+      palette = ColorPalette.fromSeed(seedValue: seed, brightness: themeMode);
+
+      notifyListeners();
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _systemThemeChangedStreamSub.cancel();
+  }
 
   static ThemeProvider get instance {
     _instance ??= ThemeProvider._();

@@ -1,32 +1,20 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
-
+import 'package:coriander_player/src/rust/api/system_theme.dart';
 import 'package:github/github.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:windows_ui/windows_ui.dart' as winui;
-
-Color getWindowsAccentColor() {
-  final c = winui.UISettings().getColorValue(winui.UIColorType.accent);
-  return Color.fromARGB(c.a, c.r, c.g, c.b);
-}
-
-Brightness getWindowsColorMode() {
-  final fore = winui.UISettings().getColorValue(winui.UIColorType.foreground);
-  final isDarkMode = (((5 * fore.g) + (2 * fore.r) + fore.b) > (8 * 128));
-  return isDarkMode ? Brightness.dark : Brightness.light;
-}
 
 class AppSettings {
   static final github = GitHub();
   static const String version = "1.0.1";
 
   /// 主题模式：亮 / 暗
-  Brightness themeMode = getWindowsColorMode();
+  late Brightness themeMode;
 
   /// 启动时 / 封面主题色不适合当主题时的主题
-  int defaultTheme = getWindowsAccentColor().value;
+  late int defaultTheme;
 
   /// 跟随歌曲封面的动态主题
   bool dynamicTheme = true;
@@ -49,7 +37,21 @@ class AppSettings {
 
   static AppSettings get instance => _instance;
 
-  AppSettings._();
+  AppSettings._() {
+    final systemTheme = SystemTheme.getSystemTheme();
+
+    final isDarkMode = (((5 * systemTheme.fore.$3) +
+            (2 * systemTheme.fore.$2) +
+            systemTheme.fore.$4) >
+        (8 * 128));
+    themeMode = isDarkMode ? Brightness.dark : Brightness.light;
+    defaultTheme = Color.fromARGB(
+      systemTheme.accent.$1,
+      systemTheme.accent.$2,
+      systemTheme.accent.$3,
+      systemTheme.accent.$4,
+    ).value;
+  }
 
   static Future<void> readFromJson() async {
     final supportPath = (await getApplicationSupportDirectory()).path;

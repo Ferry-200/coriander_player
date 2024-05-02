@@ -21,6 +21,6 @@ windows = { version = "0.56.0", features = [
     "Foundation_Collections",
     "System",
     "Win32_UI_Shell",
-    "Win32_System_WinRT",
-    "Win32_UI_WindowsAndMessaging"
+    "Win32_UI_WindowsAndMessaging",
+    "UI_ViewManagement",
 ] }
