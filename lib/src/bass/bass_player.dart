@@ -168,7 +168,6 @@ class BassPlayer {
   /// it will pause current channel and free current stream.
   void setSource(String path) {
     if (_fstream != null) {
-      // pause();
       _positionUpdater.cancel();
       freeFStream();
     }
@@ -239,6 +238,11 @@ class BassPlayer {
   /// do nothing if [setSource] hasn't been called
   void pause() {
     if (_fstream != null) {
+
+      final channelInfo = malloc.allocate<BASS_CHANNELINFO>(ffi.sizeOf<BASS_CHANNELINFO>());
+      _bass.BASS_ChannelGetInfo(_fstream!, channelInfo);
+      print(channelInfo.ref.ctype);
+
       _bass.BASS_ChannelPause(_fstream!);
       _playerStateStreamController.add(PlayerState.paused);
       switch (_bass.BASS_ErrorGetCode()) {
