@@ -129,7 +129,7 @@ class BassPlayer {
         throw const FormatException("Some other mystery problem!");
     }
 
-    // load bassflac plugin to support flac
+    // load bassflac add-on to avoid using os codec
     final flacPluginPath =
         "bassflac.dll".toNativeUtf16() as ffi.Pointer<ffi.Char>;
     final hplugin = _bass.BASS_PluginLoad(flacPluginPath, BASS_UNICODE);
@@ -175,7 +175,7 @@ class BassPlayer {
 
     /// 设置 flags 为 BASS_UNICODE 才可以找到文件。
     _fstream = _bass.BASS_StreamCreateFile(
-        FALSE, pathPointer, 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
+        FALSE, pathPointer, 0, 0, BASS_UNICODE | BASS_SAMPLE_FLOAT);
 
     switch (_bass.BASS_ErrorGetCode()) {
       case BASS_ERROR_INIT:
@@ -238,11 +238,6 @@ class BassPlayer {
   /// do nothing if [setSource] hasn't been called
   void pause() {
     if (_fstream != null) {
-
-      final channelInfo = malloc.allocate<BASS_CHANNELINFO>(ffi.sizeOf<BASS_CHANNELINFO>());
-      _bass.BASS_ChannelGetInfo(_fstream!, channelInfo);
-      print(channelInfo.ref.ctype);
-
       _bass.BASS_ChannelPause(_fstream!);
       _playerStateStreamController.add(PlayerState.paused);
       switch (_bass.BASS_ErrorGetCode()) {
