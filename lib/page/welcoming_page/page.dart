@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:coriander_player/app_settings.dart';
+import 'package:coriander_player/component/folder_tile.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/title_bar.dart';
 import 'package:coriander_player/src/rust/api/tag_reader.dart';
@@ -86,7 +87,7 @@ class __AudioFolderEditState extends State<_AudioFolderEdit> {
               mainAxisSize: MainAxisSize.min,
               children: List.generate(
                 folderPaths.length,
-                (i) => _FolderChip(
+                (i) => FolderTile(
                   path: folderPaths[i],
                   onDelete: () => _deletePath(i),
                 ),
@@ -182,57 +183,6 @@ class __SaveButtonState extends State<_SaveButton> {
           : const Icon(Symbols.save),
       label: const Text("保存"),
       style: theme.primaryButtonStyle,
-    );
-  }
-}
-
-class _FolderChip extends StatelessWidget {
-  const _FolderChip({
-    required this.path,
-    required this.onDelete,
-  });
-
-  final String path;
-  final void Function() onDelete;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: theme.palette.surface,
-          border: Border.all(color: theme.palette.outline),
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                path,
-                style: TextStyle(
-                  color: theme.palette.onSurface,
-                  fontSize: 16.0,
-                ),
-              ),
-              IconButton(
-                onPressed: onDelete,
-                hoverColor: theme.palette.error.withOpacity(0.08),
-                highlightColor: theme.palette.error.withOpacity(0.12),
-                splashColor: theme.palette.error.withOpacity(0.12),
-                icon: Icon(
-                  Symbols.delete,
-                  color: theme.palette.error,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:coriander_player/app_settings.dart';
+import 'package:coriander_player/component/folder_tile.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/src/rust/api/tag_reader.dart';
 import 'package:coriander_player/src/rust/api/utils.dart';
@@ -137,8 +138,8 @@ class _AudioLibraryEditFieldState extends State<AudioLibraryEditField> {
               mainAxisSize: MainAxisSize.min,
               children: List.generate(
                 audioLibrary.folders.length,
-                (i) => _FolderChip(
-                  audioFolder: audioLibrary.folders[i],
+                (i) => FolderTile(
+                  path: audioLibrary.folders[i].path,
                   onDelete: () {
                     setState(() {
                       audioLibrary.folders.removeAt(i);
@@ -205,57 +206,6 @@ class __BuildIndexButtonState extends State<_BuildIndexButton> {
               Symbols.refresh,
               color: theme.palette.onSurface,
             ),
-    );
-  }
-}
-
-class _FolderChip extends StatelessWidget {
-  const _FolderChip({
-    required this.audioFolder,
-    required this.onDelete,
-  });
-
-  final AudioFolder audioFolder;
-  final void Function() onDelete;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: theme.palette.surface,
-          border: Border.all(color: theme.palette.outline),
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                audioFolder.path,
-                style: TextStyle(
-                  color: theme.palette.onSurface,
-                  fontSize: 16.0,
-                ),
-              ),
-              IconButton(
-                onPressed: onDelete,
-                hoverColor: theme.palette.error.withOpacity(0.08),
-                highlightColor: theme.palette.error.withOpacity(0.12),
-                splashColor: theme.palette.error.withOpacity(0.12),
-                icon: Icon(
-                  Symbols.delete,
-                  color: theme.palette.error,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
