@@ -28,12 +28,7 @@ class ThemeProvider extends ChangeNotifier {
         event.accent.$3,
         event.accent.$4,
       ).value;
-
-      print(themeMode);
-      print(seed);
-
       palette = ColorPalette.fromSeed(seedValue: seed, brightness: themeMode);
-
       notifyListeners();
     });
   }
@@ -143,5 +138,18 @@ class ThemeProvider extends ChangeNotifier {
         ),
         backgroundColor: MaterialStatePropertyAll(palette.surfaceContainer),
         surfaceTintColor: MaterialStatePropertyAll(palette.surfaceContainer),
+      );
+
+  InputDecoration inputDecoration(String labelText) => InputDecoration(
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: palette.outline, width: 2),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: palette.primary, width: 2),
+        ),
+        labelText: labelText,
+        labelStyle: TextStyle(color: palette.onSurfaceVariant),
+        floatingLabelStyle: TextStyle(color: palette.primary),
+        focusColor: palette.primary,
       );
 }

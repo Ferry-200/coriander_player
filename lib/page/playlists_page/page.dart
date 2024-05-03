@@ -161,26 +161,8 @@ class _NewPlaylistDialog extends StatelessWidget {
                   Navigator.pop(context, value);
                 },
                 cursorColor: theme.palette.primary,
-                decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: theme.palette.outline,
-                      width: 2,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: theme.palette.primary,
-                      width: 2,
-                    ),
-                  ),
-                  labelText: "歌单名称",
-                  labelStyle: TextStyle(
-                    color: theme.palette.onSurfaceVariant,
-                  ),
-                  floatingLabelStyle: TextStyle(color: theme.palette.primary),
-                  focusColor: theme.palette.primary,
-                ),
+                style: TextStyle(color: theme.palette.onSurface),
+                decoration: theme.inputDecoration("歌单名称"),
               ),
               const SizedBox(height: 16.0),
               Row(
@@ -270,26 +252,8 @@ class _EditPlaylistDialog extends StatelessWidget {
                   Navigator.pop(context, value);
                 },
                 cursorColor: theme.palette.primary,
-                decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: theme.palette.outline,
-                      width: 2,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: theme.palette.primary,
-                      width: 2,
-                    ),
-                  ),
-                  labelText: "新歌单名称",
-                  labelStyle: TextStyle(
-                    color: theme.palette.onSurfaceVariant,
-                  ),
-                  floatingLabelStyle: TextStyle(color: theme.palette.primary),
-                  focusColor: theme.palette.primary,
-                ),
+                style: TextStyle(color: theme.palette.onSurface),
+                decoration: theme.inputDecoration("新歌单名称"),
               ),
               const SizedBox(height: 16.0),
               Row(
