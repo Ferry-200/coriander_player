@@ -52,12 +52,6 @@ class BassPlayer {
       : _bass.BASS_ChannelBytes2Seconds(
           _fstream!, _bass.BASS_ChannelGetPosition(_fstream!, BASS_POS_BYTE));
 
-  /// update every 200ms
-  Stream<double> get positionStream => _positionStreamController.stream;
-
-  Stream<PlayerState> get playerStateStream =>
-      _playerStateStreamController.stream;
-
   PlayerState get playerState {
     if (_fstream == null) {
       return PlayerState.unknown;
@@ -79,11 +73,16 @@ class BassPlayer {
     }
   }
 
+  /// update every 200ms
+  Stream<double> get positionStream => _positionStreamController.stream;
+
+  Stream<PlayerState> get playerStateStream =>
+      _playerStateStreamController.stream;
+
   Timer _getPositionUpdater() {
     return Timer.periodic(
       const Duration(milliseconds: 33),
       (timer) {
-        final position = this.position;
         _positionStreamController.add(position);
 
         /// check if the channel has completed
@@ -151,7 +150,6 @@ class BassPlayer {
     }
 
     _positionStreamController = StreamController.broadcast(
-      onListen: () {},
       onCancel: () {
         _positionUpdater.cancel();
       },
