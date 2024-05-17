@@ -19,7 +19,7 @@ class SettingsPage extends StatelessWidget {
           SizedBox(height: 16.0),
           DefaultLyricSourceControl(),
           SizedBox(height: 16.0),
-          ThemeSelector(),
+          // ThemeSelector(),
           SizedBox(height: 16.0),
           ThemeModeControl(),
           SizedBox(height: 16.0),

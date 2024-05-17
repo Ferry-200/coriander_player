@@ -1,11 +1,9 @@
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/src/rust/api/utils.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:github/github.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:provider/provider.dart';
 
 class CheckForUpdate extends StatefulWidget {
   const CheckForUpdate({super.key});
@@ -18,8 +16,6 @@ class _CheckForUpdateState extends State<CheckForUpdate> {
   bool isChecking = false;
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
-
     final List<Widget> children = [
       FilledButton.icon(
         icon: const Icon(Symbols.update),
@@ -33,14 +29,17 @@ class _CheckForUpdateState extends State<CheckForUpdate> {
 
                 final newest = await AppSettings.github.repositories
                     .listReleases(
-                        RepositorySlug("Ferry-200", "coriander_player"))
+                      RepositorySlug("Ferry-200", "coriander_player"),
+                    )
                     .first;
                 final newestVer = int.tryParse(
                       newest.tagName?.substring(1).replaceAll(".", "") ?? "",
                     ) ??
                     0;
-                final currVer =
-                    int.tryParse(AppSettings.version.replaceAll(".", "")) ?? 0;
+                final currVer = int.tryParse(
+                      AppSettings.version.replaceAll(".", ""),
+                    ) ??
+                    0;
                 if (newestVer > currVer) {
                   if (context.mounted) {
                     showDialog(
@@ -50,12 +49,8 @@ class _CheckForUpdateState extends State<CheckForUpdate> {
                   }
                 } else {
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(
-                        "无新版本",
-                        style: TextStyle(color: theme.scheme.onSecondary),
-                      ),
-                      backgroundColor: theme.scheme.secondary,
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text("无新版本"),
                     ));
                   }
                 }
@@ -64,26 +59,17 @@ class _CheckForUpdateState extends State<CheckForUpdate> {
                   isChecking = false;
                 });
               },
-        style: theme.primaryButtonStyle,
       ),
     ];
     if (isChecking) {
       children.add(const SizedBox(width: 16.0));
-      children.add(SizedBox(
+      children.add(const SizedBox(
         width: 16.0,
         height: 16.0,
-        child: CircularProgressIndicator(
-          color: theme.scheme.primary,
-          backgroundColor: theme.scheme.primaryContainer,
-        ),
+        child: CircularProgressIndicator(),
       ));
     }
-    return Material(
-      type: MaterialType.transparency,
-      child: Row(
-        children: children,
-      ),
-    );
+    return Row(children: children);
   }
 }
 
@@ -97,23 +83,9 @@ class NewestUpdateView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
-    final textButtonStyle = ButtonStyle(
-      overlayColor: WidgetStatePropertyAll(
-        theme.scheme.onSurface.withOpacity(0.08),
-      ),
-      foregroundColor: WidgetStatePropertyAll(theme.scheme.onSurface),
-    );
-    final onSurface = TextStyle(color: theme.scheme.onSurface);
-    final onSurfaceVariant = TextStyle(color: theme.scheme.onSurfaceVariant);
-    final primary = TextStyle(
-      color: theme.scheme.primary,
-      decoration: TextDecoration.underline,
-      decorationColor: theme.scheme.primary,
-    );
+    final scheme = Theme.of(context).colorScheme;
+
     return Dialog(
-      backgroundColor: theme.scheme.surface,
-      surfaceTintColor: theme.scheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -128,7 +100,7 @@ class NewestUpdateView extends StatelessWidget {
                   Text(
                     release.name ?? "新版本",
                     style: TextStyle(
-                      color: theme.scheme.onSurface,
+                      color: scheme.onSurface,
                       fontSize: 18.0,
                       fontWeight: FontWeight.w600,
                     ),
@@ -136,7 +108,7 @@ class NewestUpdateView extends StatelessWidget {
                   const SizedBox(width: 16.0),
                   Text(
                     "${release.tagName}\n${release.publishedAt}",
-                    style: TextStyle(color: theme.scheme.onSurface),
+                    style: TextStyle(color: scheme.onSurface),
                   ),
                 ],
               ),
@@ -150,26 +122,7 @@ class NewestUpdateView extends StatelessWidget {
                   }
                 },
                 padding: EdgeInsets.zero,
-                styleSheet: MarkdownStyleSheet(
-                  a: primary,
-                  p: onSurface,
-                  code: onSurfaceVariant,
-                  h1: onSurface,
-                  h2: onSurface,
-                  h3: onSurface,
-                  h4: onSurface,
-                  h5: onSurface,
-                  h6: onSurface,
-                  em: onSurface,
-                  strong: onSurface,
-                  del: onSurfaceVariant,
-                  blockquote: onSurfaceVariant,
-                  img: onSurface,
-                  checkbox: onSurface,
-                  listBullet: onSurface,
-                  tableHead: onSurface,
-                  tableBody: onSurface,
-                ),
+                styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)),
               ),
             ),
             Padding(
@@ -181,7 +134,6 @@ class NewestUpdateView extends StatelessWidget {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    style: textButtonStyle,
                     child: const Text("取消"),
                   ),
                   const SizedBox(width: 16.0),
@@ -193,7 +145,6 @@ class NewestUpdateView extends StatelessWidget {
 
                       Navigator.pop(context);
                     },
-                    style: textButtonStyle,
                     icon: const Icon(Symbols.arrow_outward),
                     label: const Text("获取更新"),
                   ),
