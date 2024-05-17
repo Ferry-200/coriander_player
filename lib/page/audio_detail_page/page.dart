@@ -3,10 +3,8 @@ import 'package:coriander_player/component/album_tile.dart';
 import 'package:coriander_player/component/artist_tile.dart';
 import 'package:coriander_player/lyric/lrc.dart';
 import 'package:coriander_player/src/rust/api/utils.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:provider/provider.dart';
 
 class AudioDetailPage extends StatelessWidget {
   const AudioDetailPage({super.key, required this.audio});
@@ -15,7 +13,7 @@ class AudioDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
     final artists = List.generate(
       audio.splitedArtists.length,
       (i) {
@@ -26,8 +24,11 @@ class AudioDetailPage extends StatelessWidget {
     const space = SizedBox(height: 16.0);
     final lyric = Lrc.fromAudioPath(audio, separator: "\n");
 
+    final styleTitle = TextStyle(fontSize: 22, color: scheme.onSurface);
+    final styleContent = TextStyle(fontSize: 16, color: scheme.onSurface);
+
     return Material(
-      color: theme.scheme.surface,
+      color: scheme.surface,
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(8.0),
         bottomRight: Radius.circular(8.0),
@@ -48,7 +49,7 @@ class AudioDetailPage extends StatelessWidget {
                     if (snapshot.data == null) {
                       return Icon(
                         Symbols.broken_image,
-                        color: theme.scheme.onSurface,
+                        color: scheme.onSurface,
                         size: 200,
                       );
                     }
@@ -62,25 +63,13 @@ class AudioDetailPage extends StatelessWidget {
                     );
                   },
                 ),
-                Text(
-                  audio.title,
-                  style: TextStyle(
-                    fontSize: 22,
-                    color: theme.scheme.onSurface,
-                  ),
-                ),
+                Text(audio.title, style: styleTitle),
               ],
             ),
             space,
 
             /// artists
-            Text(
-              "艺术家",
-              style: TextStyle(
-                fontSize: 22,
-                color: theme.scheme.onSurface,
-              ),
-            ),
+            Text("艺术家", style: styleTitle),
             space,
             Wrap(
               spacing: 8.0,
@@ -98,13 +87,7 @@ class AudioDetailPage extends StatelessWidget {
             space,
 
             /// album
-            Text(
-              "专辑",
-              style: TextStyle(
-                fontSize: 22,
-                color: theme.scheme.onSurface,
-              ),
-            ),
+            Text("专辑", style: styleTitle),
             space,
             AlbumTile(album: album),
             space,
@@ -113,26 +96,14 @@ class AudioDetailPage extends StatelessWidget {
             Wrap(
               spacing: 8.0,
               children: [
-                Text(
-                  "路径",
-                  style: TextStyle(
-                    fontSize: 22,
-                    color: theme.scheme.onSurface,
-                  ),
-                ),
+                Text("路径", style: styleTitle),
                 TextButton(
                   onPressed: () async {
                     final result = await showInExplorer(path: audio.path);
 
                     if (!result && context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            "打开失败",
-                            style: TextStyle(color: theme.scheme.onSecondary),
-                          ),
-                          backgroundColor: theme.scheme.secondary,
-                        ),
+                        const SnackBar(content: Text("打开失败")),
                       );
                     }
                   },
@@ -141,78 +112,42 @@ class AudioDetailPage extends StatelessWidget {
               ],
             ),
             space,
-            Text(
-              audio.path,
-              style: TextStyle(
-                fontSize: 16,
-                color: theme.scheme.onSurface,
-              ),
-            ),
+            Text(audio.path, style: styleContent),
             space,
 
             /// modified
-            Text(
-              "修改时间",
-              style: TextStyle(
-                fontSize: 22,
-                color: theme.scheme.onSurface,
-              ),
-            ),
+            Text("修改时间", style: styleTitle),
             space,
             Text(
-              DateTime.fromMillisecondsSinceEpoch(audio.modified * 1000)
-                  .toString(),
-              style: TextStyle(
-                fontSize: 16,
-                color: theme.scheme.onSurface,
-              ),
+              DateTime.fromMillisecondsSinceEpoch(
+                audio.modified * 1000,
+              ).toString(),
+              style: styleContent,
             ),
             space,
 
             /// created
-            Text(
-              "创建时间",
-              style: TextStyle(
-                fontSize: 22,
-                color: theme.scheme.onSurface,
-              ),
-            ),
+            Text("创建时间", style: styleTitle),
             space,
             Text(
-              DateTime.fromMillisecondsSinceEpoch(audio.created * 1000)
-                  .toString(),
-              style: TextStyle(
-                fontSize: 16,
-                color: theme.scheme.onSurface,
-              ),
+              DateTime.fromMillisecondsSinceEpoch(
+                audio.created * 1000,
+              ).toString(),
+              style: styleContent,
             ),
             space,
 
             /// lyric
-            Row(
-              children: [
-                Text(
-                  "歌词",
-                  style: TextStyle(
-                    fontSize: 22,
-                    color: theme.scheme.onSurface,
-                  ),
-                ),
-                FutureBuilder(
-                  future: lyric,
-                  builder: (context, snapshot) {
-                    if (snapshot.data == null) return const SizedBox.shrink();
+            FutureBuilder(
+              future: lyric,
+              builder: (context, snapshot) {
+                if (snapshot.data == null) return const SizedBox.shrink();
 
-                    return Text(
-                      "（${snapshot.data!.source.name}）",
-                      style: TextStyle(
-                        fontSize: 22,
-                        color: theme.scheme.onSurface,
-                      ),
-                    );
-                  },
-                ),
-              ],
+                return Text(
+                  "歌词（${snapshot.data!.source.name}）",
+                  style: styleTitle,
+                );
+              },
             ),
             space,
             SizedBox(
@@ -221,13 +156,7 @@ class AudioDetailPage extends StatelessWidget {
                 future: lyric,
                 builder: (context, snapshot) {
                   if (snapshot.data == null) {
-                    return Text(
-                      "无",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: theme.scheme.onSurface,
-                      ),
-                    );
+                    return const SizedBox.shrink();
                   }
 
                   return ListView.builder(
@@ -236,17 +165,11 @@ class AudioDetailPage extends StatelessWidget {
                       return ListTile(
                         title: Text(
                           snapshot.data!.lines[i].start.toString(),
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: theme.scheme.onSurface,
-                          ),
+                          style: styleContent,
                         ),
                         subtitle: Text(
                           (snapshot.data!.lines[i] as LrcLine).content,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: theme.scheme.onSurface,
-                          ),
+                          style: styleContent,
                         ),
                       );
                     },
