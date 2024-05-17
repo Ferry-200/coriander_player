@@ -2,12 +2,10 @@ import 'package:coriander_player/component/audio_tile.dart';
 import 'package:coriander_player/page/page_scaffold.dart';
 import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/library/playlist.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:provider/provider.dart';
 
 class PlaylistsPage extends StatefulWidget {
   const PlaylistsPage({super.key});
@@ -17,40 +15,34 @@ class PlaylistsPage extends StatefulWidget {
 }
 
 class _PlaylistsPageState extends State<PlaylistsPage> {
-  void newPlaylist(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context, listen: false);
-    showDialog<String>(
+  void newPlaylist(BuildContext context) async {
+    final name = await showDialog<String>(
       context: context,
-      builder: (context) => _NewPlaylistDialog(theme: theme),
-    ).then((value) {
-      if (value != null) {
-        setState(() {
-          PLAYLISTS.add(Playlist(value, []));
-        });
-      }
+      builder: (context) => const _NewPlaylistDialog(),
+    );
+    if (name == null) return;
+    setState(() {
+      PLAYLISTS.add(Playlist(name, []));
     });
   }
 
   void editPlaylist(
     BuildContext context,
     Playlist playlist,
-  ) {
-    final theme = Provider.of<ThemeProvider>(context, listen: false);
-    showDialog<String>(
+  ) async {
+    final name = await showDialog<String>(
       context: context,
-      builder: (context) => _EditPlaylistDialog(theme: theme),
-    ).then((value) {
-      if (value != null) {
-        setState(() {
-          playlist.name = value;
-        });
-      }
+      builder: (context) => const _EditPlaylistDialog(),
+    );
+    if (name == null) return;
+    setState(() {
+      playlist.name = name;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return PageScaffold(
       title: "歌单",
@@ -59,7 +51,9 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
           onPressed: () => newPlaylist(context),
           icon: const Icon(Symbols.add),
           label: const Text("新建歌单"),
-          style: theme.primaryButtonStyle,
+          style: const ButtonStyle(
+            fixedSize: WidgetStatePropertyAll(Size.fromHeight(40)),
+          ),
         ),
       ],
       body: Material(
@@ -73,11 +67,21 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
             trailing: Wrap(
               spacing: 8.0,
               children: [
-                editPlaylistBtn(context, i, theme),
-                removePlaylistBtn(i, theme),
+                IconButton(
+                  onPressed: () => editPlaylist(context, PLAYLISTS[i]),
+                  icon: const Icon(
+                    Symbols.edit,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => setState(() {
+                    PLAYLISTS.remove(PLAYLISTS[i]);
+                  }),
+                  color: scheme.error,
+                  icon: const Icon(Symbols.delete),
+                ),
               ],
             ),
-            textColor: theme.scheme.onSurface,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8.0),
             ),
@@ -90,49 +94,18 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
       ),
     );
   }
-
-  IconButton removePlaylistBtn(int i, ThemeProvider theme) {
-    return IconButton(
-      onPressed: () => setState(() {
-        PLAYLISTS.remove(PLAYLISTS[i]);
-      }),
-      hoverColor: theme.scheme.error.withOpacity(0.08),
-      highlightColor: theme.scheme.error.withOpacity(0.12),
-      splashColor: theme.scheme.error.withOpacity(0.12),
-      icon: Icon(
-        Symbols.delete,
-        color: theme.scheme.error,
-      ),
-    );
-  }
-
-  IconButton editPlaylistBtn(BuildContext context, int i, ThemeProvider theme) {
-    return IconButton(
-      onPressed: () => editPlaylist(context, PLAYLISTS[i]),
-      hoverColor: theme.scheme.onSurface.withOpacity(0.08),
-      highlightColor: theme.scheme.onSurface.withOpacity(0.12),
-      splashColor: theme.scheme.onSurface.withOpacity(0.12),
-      icon: Icon(
-        Symbols.edit,
-        color: theme.scheme.onSurface,
-      ),
-    );
-  }
 }
 
 class _NewPlaylistDialog extends StatelessWidget {
-  const _NewPlaylistDialog({required this.theme});
-
-  final ThemeProvider theme;
+  const _NewPlaylistDialog();
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final editingController = TextEditingController();
 
     return Dialog(
       insetPadding: EdgeInsets.zero,
-      backgroundColor: theme.scheme.surface,
-      surfaceTintColor: theme.scheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
       ),
@@ -149,7 +122,7 @@ class _NewPlaylistDialog extends StatelessWidget {
                 child: Text(
                   "新建歌单",
                   style: TextStyle(
-                    color: theme.scheme.onSurface,
+                    color: scheme.onSurface,
                     fontSize: 18.0,
                     fontWeight: FontWeight.w600,
                   ),
@@ -160,9 +133,10 @@ class _NewPlaylistDialog extends StatelessWidget {
                 onSubmitted: (value) {
                   Navigator.pop(context, value);
                 },
-                cursorColor: theme.scheme.primary,
-                style: TextStyle(color: theme.scheme.onSurface),
-                decoration: theme.inputDecoration("歌单名称"),
+                decoration: const InputDecoration(
+                  labelText: "歌单名称",
+                  border: OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 16.0),
               Row(
@@ -170,17 +144,6 @@ class _NewPlaylistDialog extends StatelessWidget {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(
-                        theme.scheme.surface,
-                      ),
-                      foregroundColor: WidgetStatePropertyAll(
-                        theme.scheme.onSurface,
-                      ),
-                      overlayColor: WidgetStatePropertyAll(
-                        theme.scheme.onSurface.withOpacity(0.08),
-                      ),
-                    ),
                     child: const Text("取消"),
                   ),
                   const SizedBox(width: 8.0),
@@ -188,17 +151,6 @@ class _NewPlaylistDialog extends StatelessWidget {
                     onPressed: () {
                       Navigator.pop(context, editingController.text);
                     },
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(
-                        theme.scheme.surface,
-                      ),
-                      foregroundColor: WidgetStatePropertyAll(
-                        theme.scheme.onSurface,
-                      ),
-                      overlayColor: WidgetStatePropertyAll(
-                        theme.scheme.onSurface.withOpacity(0.08),
-                      ),
-                    ),
                     child: const Text("创建"),
                   ),
                 ],
@@ -212,18 +164,15 @@ class _NewPlaylistDialog extends StatelessWidget {
 }
 
 class _EditPlaylistDialog extends StatelessWidget {
-  const _EditPlaylistDialog({required this.theme});
-
-  final ThemeProvider theme;
+  const _EditPlaylistDialog();
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final editingController = TextEditingController();
 
     return Dialog(
       insetPadding: EdgeInsets.zero,
-      backgroundColor: theme.scheme.surface,
-      surfaceTintColor: theme.scheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
       ),
@@ -240,7 +189,7 @@ class _EditPlaylistDialog extends StatelessWidget {
                 child: Text(
                   "修改歌单",
                   style: TextStyle(
-                    color: theme.scheme.onSurface,
+                    color: scheme.onSurface,
                     fontSize: 18.0,
                     fontWeight: FontWeight.w600,
                   ),
@@ -251,9 +200,10 @@ class _EditPlaylistDialog extends StatelessWidget {
                 onSubmitted: (value) {
                   Navigator.pop(context, value);
                 },
-                cursorColor: theme.scheme.primary,
-                style: TextStyle(color: theme.scheme.onSurface),
-                decoration: theme.inputDecoration("新歌单名称"),
+                decoration: const InputDecoration(
+                  labelText: "新歌单名称",
+                  border: OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 16.0),
               Row(
@@ -261,17 +211,6 @@ class _EditPlaylistDialog extends StatelessWidget {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(
-                        theme.scheme.surface,
-                      ),
-                      foregroundColor: WidgetStatePropertyAll(
-                        theme.scheme.onSurface,
-                      ),
-                      overlayColor: WidgetStatePropertyAll(
-                        theme.scheme.onSurface.withOpacity(0.08),
-                      ),
-                    ),
                     child: const Text("取消"),
                   ),
                   const SizedBox(width: 8.0),
@@ -279,17 +218,6 @@ class _EditPlaylistDialog extends StatelessWidget {
                     onPressed: () {
                       Navigator.pop(context, editingController.text);
                     },
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(
-                        theme.scheme.surface,
-                      ),
-                      foregroundColor: WidgetStatePropertyAll(
-                        theme.scheme.onSurface,
-                      ),
-                      overlayColor: WidgetStatePropertyAll(
-                        theme.scheme.onSurface.withOpacity(0.08),
-                      ),
-                    ),
                     child: const Text("创建"),
                   ),
                 ],
@@ -314,7 +242,7 @@ class PlaylistDetailPage extends StatefulWidget {
 class _PlaylistDetailPageState extends State<PlaylistDetailPage> {
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
     return PageScaffold(
       title: widget.playlist.name,
       subtitle: "${widget.playlist.audios.length} 首乐曲",
@@ -325,7 +253,9 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage> {
           },
           icon: const Icon(Symbols.shuffle),
           label: const Text("随机播放"),
-          style: theme.primaryButtonStyle,
+          style: const ButtonStyle(
+            fixedSize: WidgetStatePropertyAll(Size.fromHeight(40)),
+          ),
         ),
       ],
       body: Material(
@@ -347,13 +277,8 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage> {
                           widget.playlist.audios.removeAt(i);
                         });
                       },
-                      icon: Icon(
-                        Symbols.delete,
-                        color: theme.scheme.error,
-                      ),
-                      hoverColor: theme.scheme.error.withOpacity(0.08),
-                      highlightColor: theme.scheme.error.withOpacity(0.12),
-                      splashColor: theme.scheme.error.withOpacity(0.12),
+                      color: scheme.error,
+                      icon: const Icon(Symbols.delete),
                     ),
                   ),
                 )
