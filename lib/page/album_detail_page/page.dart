@@ -2,7 +2,6 @@ import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/audio_tile.dart';
 import 'page_controller.dart';
 import 'package:coriander_player/play_service.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -31,11 +30,11 @@ class AlbumDetailPage extends StatelessWidget {
   }
 
   Widget _pageBuilder(context, albumCover) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
     final pageController = Provider.of<AlbumDetailPageController>(context);
 
     return Material(
-      color: theme.scheme.surface,
+      color: scheme.surface,
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(8.0),
         bottomRight: Radius.circular(8.0),
@@ -62,7 +61,7 @@ class AlbumDetailPage extends StatelessWidget {
                             album.name,
                             style: TextStyle(
                               fontSize: 22.0,
-                              color: theme.scheme.onSurface,
+                              color: scheme.onSurface,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -71,7 +70,7 @@ class AlbumDetailPage extends StatelessWidget {
                           "${album.works.length} 首乐曲",
                           style: TextStyle(
                             fontSize: 14.0,
-                            color: theme.scheme.onSurface,
+                            color: scheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: 8.0),
@@ -90,13 +89,8 @@ class AlbumDetailPage extends StatelessWidget {
                 ],
               ),
             ),
-            SliverToBoxAdapter(
-              child: Divider(
-                height: 32.0,
-                color: theme.scheme.outline,
-                indent: 8.0,
-                endIndent: 8.0,
-              ),
+            const SliverToBoxAdapter(
+              child: Divider(height: 32.0, indent: 8.0, endIndent: 8.0),
             ),
 
             /// list of album works
@@ -113,7 +107,7 @@ class AlbumDetailPage extends StatelessWidget {
                 child: Text(
                   "艺术家",
                   style: TextStyle(
-                    color: theme.scheme.onSurface,
+                    color: scheme.onSurface,
                     fontSize: 18.0,
                     fontWeight: FontWeight.w600,
                   ),
@@ -134,7 +128,6 @@ class _ArtistsSliverList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
     final pageController = Provider.of<AlbumDetailPageController>(context);
 
     return SliverList.builder(
@@ -147,12 +140,9 @@ class _ArtistsSliverList extends StatelessWidget {
             extra: artist,
           ),
           title: Text(artist.name),
-          textColor: theme.scheme.onSurface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
-          hoverColor: theme.scheme.onSurface.withOpacity(0.08),
-          splashColor: theme.scheme.onSurface.withOpacity(0.12),
         );
       },
     );
@@ -171,13 +161,13 @@ class _AlbumCover extends StatelessWidget {
     return FutureBuilder(
       future: album.cover,
       builder: (context, snapshot) {
-        final theme = Provider.of<ThemeProvider>(context);
+        final scheme = Theme.of(context).colorScheme;
         if (snapshot.data == null) {
           return Flexible(
             child: Icon(
               Symbols.broken_image,
               size: 200.0,
-              color: theme.scheme.onSurface,
+              color: scheme.onSurface,
             ),
           );
         }
@@ -200,16 +190,25 @@ class _ShuffleAndPlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pageController = Provider.of<AlbumDetailPageController>(context);
-    final theme = Provider.of<ThemeProvider>(context);
     return FilledButton.icon(
       onPressed: () {
         PlayService.instance.shuffleAndPlay(pageController.works);
       },
       icon: const Icon(Symbols.shuffle),
       label: const Text("随机播放"),
-      style: theme.primaryButtonStyle,
+      style: const ButtonStyle(
+        fixedSize: WidgetStatePropertyAll(Size.fromHeight(40)),
+      ),
     );
   }
+}
+
+class MenuItemDesc {
+  final IconData icon;
+  final SortBy sortBy;
+  final void Function() action;
+
+  MenuItemDesc(this.icon, this.sortBy, this.action);
 }
 
 class _SortMethodComboBox extends StatelessWidget {
@@ -217,102 +216,52 @@ class _SortMethodComboBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
     final pageController = Provider.of<AlbumDetailPageController>(context);
 
-    final menuItemStyle = ButtonStyle(
-      backgroundColor: WidgetStatePropertyAll(
-        theme.scheme.secondaryContainer,
+    final menuItemDescs = [
+      MenuItemDesc(
+        Symbols.title,
+        SortBy.title,
+        () => pageController.setSortMethod(SortBy.title),
       ),
-      foregroundColor: WidgetStatePropertyAll(
-        theme.scheme.onSecondaryContainer,
+      MenuItemDesc(
+        Symbols.artist,
+        SortBy.artist,
+        () => pageController.setSortMethod(SortBy.artist),
       ),
-      padding: const WidgetStatePropertyAll(
-        EdgeInsets.symmetric(horizontal: 16.0),
+      MenuItemDesc(
+        Symbols.art_track,
+        SortBy.track,
+        () => pageController.setSortMethod(SortBy.track),
       ),
-      overlayColor: WidgetStatePropertyAll(
-        theme.scheme.onSecondaryContainer.withOpacity(0.08),
+      MenuItemDesc(
+        Symbols.add,
+        SortBy.created,
+        () => pageController.setSortMethod(SortBy.created),
       ),
-    );
-
-    final menuStyle = MenuStyle(
-      backgroundColor: WidgetStatePropertyAll(
-        theme.scheme.secondaryContainer,
+      MenuItemDesc(
+        Symbols.edit,
+        SortBy.modified,
+        () => pageController.setSortMethod(SortBy.modified),
       ),
-      surfaceTintColor: WidgetStatePropertyAll(
-        theme.scheme.secondaryContainer,
+      MenuItemDesc(
+        Symbols.filter_list_off,
+        SortBy.origin,
+        () => pageController.setSortMethod(SortBy.origin),
       ),
-      shape: const WidgetStatePropertyAll(RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20.0),
-          bottomRight: Radius.circular(20.0),
-        ),
-      )),
-      fixedSize: const WidgetStatePropertyAll(Size.fromWidth(149.0)),
-    );
+    ];
 
     return MenuAnchor(
-      /// 这样可以指定菜单栏的大小
-      crossAxisUnconstrained: false,
-      style: menuStyle,
-      menuChildren: [
-        MenuItemButton(
-          style: menuItemStyle,
-          onPressed: () => pageController.setSortMethod(SortBy.title),
-          leadingIcon: Icon(
-            Symbols.title,
-            color: theme.scheme.onSecondaryContainer,
-          ),
-          child: const Text("标题"),
+      menuChildren: List.generate(
+        menuItemDescs.length,
+        (i) => MenuItemButton(
+          leadingIcon: Icon(menuItemDescs[i].icon),
+          onPressed: menuItemDescs[i].action,
+          child: Text(menuItemDescs[i].sortBy.methodName),
         ),
-        MenuItemButton(
-          style: menuItemStyle,
-          leadingIcon: Icon(
-            Symbols.artist,
-            color: theme.scheme.onSecondaryContainer,
-          ),
-          child: const Text("艺术家"),
-          onPressed: () => pageController.setSortMethod(SortBy.artist),
-        ),
-        MenuItemButton(
-          style: menuItemStyle,
-          onPressed: () => pageController.setSortMethod(SortBy.track),
-          leadingIcon: Icon(
-            Symbols.art_track,
-            color: theme.scheme.onSecondaryContainer,
-          ),
-          child: const Text("音轨"),
-        ),
-        MenuItemButton(
-          style: menuItemStyle,
-          leadingIcon: Icon(
-            Symbols.add,
-            color: theme.scheme.onSecondaryContainer,
-          ),
-          child: const Text("创建时间"),
-          onPressed: () => pageController.setSortMethod(SortBy.created),
-        ),
-        MenuItemButton(
-          style: menuItemStyle,
-          leadingIcon: Icon(
-            Symbols.edit,
-            color: theme.scheme.onSecondaryContainer,
-          ),
-          child: const Text("修改时间"),
-          onPressed: () => pageController.setSortMethod(SortBy.modified),
-        ),
-        MenuItemButton(
-          style: menuItemStyle,
-          leadingIcon: Icon(
-            Symbols.filter_list_off,
-            color: theme.scheme.onSecondaryContainer,
-          ),
-          child: const Text("默认"),
-          onPressed: () => pageController.setSortMethod(SortBy.origin),
-        ),
-      ],
+      ),
       builder: (context, menuController, _) {
-        final theme = Provider.of<ThemeProvider>(context);
+        final scheme = Theme.of(context).colorScheme;
         final pageController = Provider.of<AlbumDetailPageController>(context);
 
         final sortMethod = pageController.sortBy;
@@ -330,10 +279,9 @@ class _SortMethodComboBox extends StatelessWidget {
           width: 149.0,
           child: Material(
             borderRadius: borderRadius,
-            color: theme.scheme.secondaryContainer,
+            color: scheme.secondaryContainer,
             elevation: isOpen ? 4.0 : 0,
             child: InkWell(
-              hoverColor: theme.scheme.onSecondaryContainer.withOpacity(0.08),
               borderRadius: borderRadius,
               onTap: isOpen ? menuController.close : menuController.open,
               child: Padding(
@@ -343,22 +291,20 @@ class _SortMethodComboBox extends StatelessWidget {
                     Icon(
                       Symbols.sort,
                       size: 24,
-                      color: theme.scheme.onSecondaryContainer,
+                      color: scheme.onSecondaryContainer,
                     ),
                     const SizedBox(width: 8.0),
                     Expanded(
                       child: Text(
                         sortMethod.methodName,
-                        style: TextStyle(
-                          color: theme.scheme.onSecondaryContainer,
-                        ),
+                        style: TextStyle(color: scheme.onSecondaryContainer),
                       ),
                     ),
                     const SizedBox(width: 8.0),
                     Icon(
                       isOpen ? Symbols.arrow_drop_up : Symbols.arrow_drop_down,
                       size: 24,
-                      color: theme.scheme.onSecondaryContainer,
+                      color: scheme.onSecondaryContainer,
                     ),
                   ],
                 ),
@@ -376,10 +322,9 @@ class _ToggleListOrder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
     final pageController = Provider.of<AlbumDetailPageController>(context);
 
-    return IconButton(
+    return IconButton.filledTonal(
       onPressed: () {
         pageController.setListOrder(
           pageController.listOrder == ListOrder.ascending
@@ -392,7 +337,6 @@ class _ToggleListOrder extends StatelessWidget {
             ? Symbols.arrow_upward
             : Symbols.arrow_downward,
       ),
-      style: theme.secondaryIconButtonStyle,
     );
   }
 }
