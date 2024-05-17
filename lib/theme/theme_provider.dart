@@ -3,40 +3,44 @@ import 'dart:async';
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/src/rust/api/system_theme.dart';
-import 'package:coriander_player/theme/color_palette.dart';
+// import 'package:coriander_player/theme/color_palette.dart';
 import 'package:flutter/material.dart';
 
 class ThemeProvider extends ChangeNotifier {
-  ColorPalette scheme = ColorPalette.fromSeed(
-    seedValue: AppSettings.instance.defaultTheme,
-    brightness: AppSettings.instance.themeMode,
+  ColorScheme lightScheme = ColorScheme.fromSeed(
+    seedColor: Color(AppSettings.instance.defaultTheme),
+    brightness: Brightness.light,
   );
+
+  ColorScheme darkScheme = ColorScheme.fromSeed(
+    seedColor: Color(AppSettings.instance.defaultTheme),
+    brightness: Brightness.dark,
+  );
+
+  ThemeMode themeMode = AppSettings.instance.themeMode;
 
   static ThemeProvider? _instance;
 
   late StreamSubscription<SystemTheme> _systemThemeChangedStreamSub;
   ThemeProvider._() {
-    _systemThemeChangedStreamSub =
-        SystemTheme.onSystemThemeChanged().listen((event) {
-      final isDarkMode =
-          (((5 * event.fore.$3) + (2 * event.fore.$2) + event.fore.$4) >
-              (8 * 128));
-      final themeMode = isDarkMode ? Brightness.dark : Brightness.light;
-      final seed = Color.fromARGB(
-        event.accent.$1,
-        event.accent.$2,
-        event.accent.$3,
-        event.accent.$4,
-      ).value;
-      scheme = ColorPalette.fromSeed(seedValue: seed, brightness: themeMode);
-      notifyListeners();
-    });
-  }
+    _systemThemeChangedStreamSub = SystemTheme.onSystemThemeChanged().listen(
+      (event) {
+        final isDarkMode =
+            (((5 * event.fore.$3) + (2 * event.fore.$2) + event.fore.$4) >
+                (8 * 128));
+        final themeMode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
+        final seed = Color.fromARGB(
+          event.accent.$1,
+          event.accent.$2,
+          event.accent.$3,
+          event.accent.$4,
+        );
 
-  @override
-  void dispose() {
-    super.dispose();
-    _systemThemeChangedStreamSub.cancel();
+        applyTheme(seedColor: seed);
+        applyThemeMode(themeMode);
+        notifyListeners();
+      },
+    );
   }
 
   static ThemeProvider get instance {
@@ -44,40 +48,71 @@ class ThemeProvider extends ChangeNotifier {
     return _instance!;
   }
 
-  void changeTheme(ColorPalette palette) {
-    this.scheme = palette;
+  void applyTheme({required Color seedColor}) {
+    lightScheme = ColorScheme.fromSeed(
+      seedColor: seedColor,
+      brightness: Brightness.light,
+    );
+
+    darkScheme = ColorScheme.fromSeed(
+      seedColor: seedColor,
+      brightness: Brightness.dark,
+    );
     notifyListeners();
   }
 
-  void toggleThemeMode() {
-    scheme = scheme.brightness == Brightness.light
-        ? ColorPalette.fromSeed(
-            seedValue: scheme.seed,
-            brightness: Brightness.dark,
-          )
-        : ColorPalette.fromSeed(
-            seedValue: scheme.seed,
-            brightness: Brightness.light,
-          );
+  /// 应用从 image 生成的主题。只在 themeMode == this.themeMode 时通知改变。
+  void applyThemeFromImage(ImageProvider image, ThemeMode themeMode) {
+    final brightness = switch (themeMode) {
+      ThemeMode.system => Brightness.light,
+      ThemeMode.light => Brightness.light,
+      ThemeMode.dark => Brightness.dark,
+    };
+
+    ColorScheme.fromImageProvider(
+      provider: image,
+      brightness: brightness,
+    ).then(
+      (value) {
+        switch (brightness) {
+          case Brightness.light:
+            lightScheme = value;
+            break;
+          case Brightness.dark:
+            darkScheme = value;
+            break;
+        }
+        if (themeMode == this.themeMode) notifyListeners();
+      },
+    );
+  }
+
+  void applyThemeMode(ThemeMode themeMode) {
+    this.themeMode = themeMode;
     notifyListeners();
   }
 
-  void setPalleteFromAudio(Audio audio) async {
+  void applyThemeFromAudio(Audio audio) {
     if (!AppSettings.instance.dynamicTheme) return;
 
     audio.cover.then((image) {
-      if (image != null) {
-        ColorPalette.fromImageProvider(
-          provider: image,
-          brightness: scheme.brightness,
-        ).then(
-          (value) {
-            scheme = value;
-            notifyListeners();
-          },
-        );
-      }
+      if (image == null) return;
+
+      applyThemeFromImage(image, themeMode);
+
+      final second = switch(themeMode) {
+        ThemeMode.system => ThemeMode.dark,
+        ThemeMode.light => ThemeMode.dark,
+        ThemeMode.dark => ThemeMode.light,
+      };
+      applyThemeFromImage(image, second);
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _systemThemeChangedStreamSub.cancel();
   }
 
   ButtonStyle get primaryButtonStyle => ButtonStyle(
