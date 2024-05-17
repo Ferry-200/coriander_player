@@ -1,9 +1,7 @@
 import 'package:coriander_player/library/audio_library.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:provider/provider.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
 
 class AlbumTile extends StatelessWidget {
@@ -16,16 +14,10 @@ class AlbumTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
     return InkWell(
-      onTap: () => context.push(
-        app_paths.ALBUM_DETAIL_PAGE,
-        extra: album,
-      ),
+      onTap: () => context.push(app_paths.ALBUM_DETAIL_PAGE, extra: album),
       borderRadius: BorderRadius.circular(8.0),
-      hoverColor: theme.scheme.onSurface.withOpacity(0.08),
-      highlightColor: theme.scheme.onSurface.withOpacity(0.12),
-      splashColor: theme.scheme.onSurface.withOpacity(0.12),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
@@ -36,8 +28,8 @@ class AlbumTile extends StatelessWidget {
                 if (snapshot.data == null) {
                   return Icon(
                     Symbols.broken_image,
-                    color: theme.scheme.onSurface,
                     size: 48,
+                    color: scheme.onSurface,
                   );
                 }
                 return ClipRRect(
@@ -55,9 +47,7 @@ class AlbumTile extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 8.0),
                 child: Text(
                   album.name,
-                  style: TextStyle(
-                    color: theme.scheme.onSurface,
-                  ),
+                  style: TextStyle(color: scheme.onSurface),
                 ),
               ),
             ),

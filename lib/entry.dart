@@ -69,31 +69,9 @@ class Entry extends StatelessWidget {
         final theme = Provider.of<ThemeProvider>(context);
         return MaterialApp.router(
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            useMaterial3: true,
-            colorScheme:
-                ColorScheme.fromSeed(seedColor: Color(theme.scheme.seed)),
-            platform: TargetPlatform.windows,
-            scrollbarTheme: ScrollbarThemeData(
-              thumbColor: WidgetStatePropertyAll(theme.scheme.outline),
-              trackColor:
-                  WidgetStatePropertyAll(theme.scheme.outlineVariant),
-            ),
-            segmentedButtonTheme: SegmentedButtonThemeData(
-              style: ButtonStyle(
-                backgroundColor: WidgetStateColor.resolveWith(
-                  (states) => states.contains(WidgetState.selected)
-                      ? theme.scheme.secondaryContainer
-                      : theme.scheme.surface,
-                ),
-                foregroundColor: WidgetStateColor.resolveWith(
-                  (states) => states.contains(WidgetState.selected)
-                      ? theme.scheme.onSecondaryContainer
-                      : theme.scheme.onSurface,
-                ),
-              ),
-            ),
-          ),
+          theme: ThemeData.from(colorScheme: theme.lightScheme),
+          darkTheme: ThemeData.from(colorScheme: theme.darkScheme),
+          themeMode: theme.themeMode,
           localizationsDelegates: const [GlobalMaterialLocalizations.delegate],
           supportedLocales: supportedLocales,
           routerConfig: config,

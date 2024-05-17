@@ -115,76 +115,76 @@ class ThemeProvider extends ChangeNotifier {
     _systemThemeChangedStreamSub.cancel();
   }
 
-  ButtonStyle get primaryButtonStyle => ButtonStyle(
-        backgroundColor: WidgetStatePropertyAll(scheme.primary),
-        foregroundColor: WidgetStatePropertyAll(scheme.onPrimary),
-        fixedSize: const WidgetStatePropertyAll(Size.fromHeight(40.0)),
-        overlayColor:
-            WidgetStatePropertyAll(scheme.onPrimary.withOpacity(0.08)),
-      );
+  // ButtonStyle get primaryButtonStyle => ButtonStyle(
+  //       backgroundColor: WidgetStatePropertyAll(scheme.primary),
+  //       foregroundColor: WidgetStatePropertyAll(scheme.onPrimary),
+  //       fixedSize: const WidgetStatePropertyAll(Size.fromHeight(40.0)),
+  //       overlayColor:
+  //           WidgetStatePropertyAll(scheme.onPrimary.withOpacity(0.08)),
+  //     );
 
-  ButtonStyle get secondaryButtonStyle => ButtonStyle(
-        backgroundColor: WidgetStatePropertyAll(scheme.secondaryContainer),
-        foregroundColor: WidgetStatePropertyAll(scheme.onSecondaryContainer),
-        fixedSize: const WidgetStatePropertyAll(Size.fromHeight(40.0)),
-        overlayColor: WidgetStatePropertyAll(
-            scheme.onSecondaryContainer.withOpacity(0.08)),
-      );
+  // ButtonStyle get secondaryButtonStyle => ButtonStyle(
+  //       backgroundColor: WidgetStatePropertyAll(scheme.secondaryContainer),
+  //       foregroundColor: WidgetStatePropertyAll(scheme.onSecondaryContainer),
+  //       fixedSize: const WidgetStatePropertyAll(Size.fromHeight(40.0)),
+  //       overlayColor: WidgetStatePropertyAll(
+  //           scheme.onSecondaryContainer.withOpacity(0.08)),
+  //     );
 
-  ButtonStyle get primaryIconButtonStyle => ButtonStyle(
-        backgroundColor: WidgetStatePropertyAll(scheme.primary),
-        foregroundColor: WidgetStatePropertyAll(scheme.onPrimary),
-        overlayColor: WidgetStatePropertyAll(
-          scheme.onPrimary.withOpacity(0.08),
-        ),
-      );
+  // ButtonStyle get primaryIconButtonStyle => ButtonStyle(
+  //       backgroundColor: WidgetStatePropertyAll(scheme.primary),
+  //       foregroundColor: WidgetStatePropertyAll(scheme.onPrimary),
+  //       overlayColor: WidgetStatePropertyAll(
+  //         scheme.onPrimary.withOpacity(0.08),
+  //       ),
+  //     );
 
-  ButtonStyle get secondaryIconButtonStyle => ButtonStyle(
-        backgroundColor: WidgetStatePropertyAll(scheme.secondaryContainer),
-        foregroundColor: WidgetStatePropertyAll(scheme.onSecondaryContainer),
-        overlayColor: WidgetStatePropertyAll(
-          scheme.onSecondaryContainer.withOpacity(0.08),
-        ),
-      );
+  // ButtonStyle get secondaryIconButtonStyle => ButtonStyle(
+  //       backgroundColor: WidgetStatePropertyAll(scheme.secondaryContainer),
+  //       foregroundColor: WidgetStatePropertyAll(scheme.onSecondaryContainer),
+  //       overlayColor: WidgetStatePropertyAll(
+  //         scheme.onSecondaryContainer.withOpacity(0.08),
+  //       ),
+  //     );
 
-  ButtonStyle get menuItemStyle => ButtonStyle(
-        backgroundColor: WidgetStatePropertyAll(scheme.secondaryContainer),
-        foregroundColor: WidgetStatePropertyAll(scheme.onSecondaryContainer),
-        padding: const WidgetStatePropertyAll(
-          EdgeInsets.symmetric(horizontal: 16.0),
-        ),
-        overlayColor: WidgetStatePropertyAll(
-          scheme.onSecondaryContainer.withOpacity(0.08),
-        ),
-      );
+  // ButtonStyle get menuItemStyle => ButtonStyle(
+  //       backgroundColor: WidgetStatePropertyAll(scheme.secondaryContainer),
+  //       foregroundColor: WidgetStatePropertyAll(scheme.onSecondaryContainer),
+  //       padding: const WidgetStatePropertyAll(
+  //         EdgeInsets.symmetric(horizontal: 16.0),
+  //       ),
+  //       overlayColor: WidgetStatePropertyAll(
+  //         scheme.onSecondaryContainer.withOpacity(0.08),
+  //       ),
+  //     );
 
-  MenuStyle get menuStyleWithFixedSize => MenuStyle(
-        backgroundColor: WidgetStatePropertyAll(scheme.secondaryContainer),
-        surfaceTintColor: WidgetStatePropertyAll(scheme.secondaryContainer),
-        shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0),
-        )),
-        fixedSize: const WidgetStatePropertyAll(Size.fromWidth(149.0)),
-      );
+  // MenuStyle get menuStyleWithFixedSize => MenuStyle(
+  //       backgroundColor: WidgetStatePropertyAll(scheme.secondaryContainer),
+  //       surfaceTintColor: WidgetStatePropertyAll(scheme.secondaryContainer),
+  //       shape: WidgetStatePropertyAll(RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.circular(20.0),
+  //       )),
+  //       fixedSize: const WidgetStatePropertyAll(Size.fromWidth(149.0)),
+  //     );
 
-  MenuStyle get menuStyle => MenuStyle(
-        shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        ),
-        backgroundColor: WidgetStatePropertyAll(scheme.surfaceContainer),
-        surfaceTintColor: WidgetStatePropertyAll(scheme.surfaceContainer),
-      );
+  // MenuStyle get menuStyle => MenuStyle(
+  //       shape: WidgetStatePropertyAll(
+  //         RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+  //       ),
+  //       backgroundColor: WidgetStatePropertyAll(scheme.surfaceContainer),
+  //       surfaceTintColor: WidgetStatePropertyAll(scheme.surfaceContainer),
+  //     );
 
-  InputDecoration inputDecoration(String labelText) => InputDecoration(
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: scheme.outline, width: 2),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: scheme.primary, width: 2),
-        ),
-        labelText: labelText,
-        labelStyle: TextStyle(color: scheme.onSurfaceVariant),
-        floatingLabelStyle: TextStyle(color: scheme.primary),
-        focusColor: scheme.primary,
-      );
+  // InputDecoration inputDecoration(String labelText) => InputDecoration(
+  //       enabledBorder: OutlineInputBorder(
+  //         borderSide: BorderSide(color: scheme.outline, width: 2),
+  //       ),
+  //       focusedBorder: OutlineInputBorder(
+  //         borderSide: BorderSide(color: scheme.primary, width: 2),
+  //       ),
+  //       labelText: labelText,
+  //       labelStyle: TextStyle(color: scheme.onSurfaceVariant),
+  //       floatingLabelStyle: TextStyle(color: scheme.primary),
+  //       focusColor: scheme.primary,
+  //     );
 }

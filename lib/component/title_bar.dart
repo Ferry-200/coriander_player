@@ -5,11 +5,9 @@ import 'package:coriander_player/component/horizontal_lyric_view.dart';
 import 'package:coriander_player/component/responsive_builder.dart';
 import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/lyric/lyric_source.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 
 class TitleBar extends StatelessWidget {
@@ -37,7 +35,7 @@ class _TitleBar_Small extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return SizedBox(
       height: 56.0,
@@ -54,10 +52,7 @@ class _TitleBar_Small extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
                     "Coriander Player",
-                    style: TextStyle(
-                      color: theme.scheme.onSurface,
-                      fontSize: 16,
-                    ),
+                    style: TextStyle(color: scheme.onSurface, fontSize: 16),
                   ),
                 ),
               ),
@@ -75,7 +70,7 @@ class _TitleBar_Medium extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return Row(
       children: [
@@ -89,10 +84,7 @@ class _TitleBar_Medium extends StatelessWidget {
               children: [
                 Text(
                   "Coriander Player",
-                  style: TextStyle(
-                    color: theme.scheme.onSurface,
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(color: scheme.onSurface, fontSize: 16),
                 ),
                 const Expanded(
                   child: Padding(
@@ -119,7 +111,7 @@ class _TitleBar_Large extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -135,16 +127,12 @@ class _TitleBar_Large extends StatelessWidget {
                     width: 228,
                     child: Row(
                       children: [
-                        Image.asset(
-                          "app_icon.ico",
-                          width: 24,
-                          height: 24,
-                        ),
+                        Image.asset("app_icon.ico", width: 24, height: 24),
                         const SizedBox(width: 8.0),
                         Text(
                           "Coriander Player",
                           style: TextStyle(
-                            color: theme.scheme.onSurface,
+                            color: scheme.onSurface,
                             fontSize: 16,
                           ),
                         ),
@@ -173,18 +161,9 @@ class _OpenDrawerBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
     return IconButton(
-      onPressed: () {
-        Scaffold.of(context).openDrawer();
-      },
-      icon: Icon(
-        Symbols.side_navigation,
-        color: theme.scheme.onSurface,
-      ),
-      hoverColor: theme.scheme.onSurface.withOpacity(0.08),
-      highlightColor: theme.scheme.onSurface.withOpacity(0.12),
-      splashColor: theme.scheme.onSurface.withOpacity(0.12),
+      onPressed: Scaffold.of(context).openDrawer,
+      icon: const Icon(Symbols.side_navigation),
     );
   }
 }
@@ -194,20 +173,13 @@ class _NavBackBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
     return IconButton(
       onPressed: () {
         if (context.canPop()) {
           context.pop();
         }
       },
-      icon: Icon(
-        Symbols.navigate_before,
-        color: theme.scheme.onSurface,
-      ),
-      hoverColor: theme.scheme.onSurface.withOpacity(0.08),
-      highlightColor: theme.scheme.onSurface.withOpacity(0.12),
-      splashColor: theme.scheme.onSurface.withOpacity(0.12),
+      icon: const Icon(Symbols.navigate_before),
     );
   }
 }
@@ -249,19 +221,12 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
     return Wrap(
       spacing: 8.0,
       children: [
         IconButton(
           onPressed: windowManager.minimize,
-          icon: Icon(
-            Symbols.remove,
-            color: theme.scheme.onSurface,
-          ),
-          hoverColor: theme.scheme.onSurface.withOpacity(0.08),
-          highlightColor: theme.scheme.onSurface.withOpacity(0.12),
-          splashColor: theme.scheme.onSurface.withOpacity(0.12),
+          icon: const Icon(Symbols.remove),
         ),
         FutureBuilder(
           future: windowManager.isMaximized(),
@@ -273,11 +238,7 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
                   : windowManager.maximize,
               icon: Icon(
                 isMaximized ? Symbols.fullscreen_exit : Symbols.fullscreen,
-                color: theme.scheme.onSurface,
               ),
-              hoverColor: theme.scheme.onSurface.withOpacity(0.08),
-              highlightColor: theme.scheme.onSurface.withOpacity(0.12),
-              splashColor: theme.scheme.onSurface.withOpacity(0.12),
             );
           },
         ),
@@ -288,13 +249,7 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
             await AppSettings.instance.saveSettings();
             windowManager.close();
           },
-          icon: Icon(
-            Symbols.close,
-            color: theme.scheme.onSurface,
-          ),
-          hoverColor: theme.scheme.onSurface.withOpacity(0.08),
-          highlightColor: theme.scheme.onSurface.withOpacity(0.12),
-          splashColor: theme.scheme.onSurface.withOpacity(0.12),
+          icon: const Icon(Symbols.close),
         ),
       ],
     );

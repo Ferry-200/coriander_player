@@ -4,9 +4,7 @@ import 'package:coriander_player/component/mini_now_playing.dart';
 import 'package:coriander_player/component/responsive_builder.dart';
 import 'package:coriander_player/component/side_nav.dart';
 import 'package:coriander_player/component/title_bar.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class AppShell extends StatelessWidget {
   const AppShell({super.key, required this.page});
@@ -36,9 +34,9 @@ class _AppShell_Small extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: theme.scheme.surfaceContainer,
+      backgroundColor: scheme.surfaceContainer,
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(48.0),
         child: TitleBar(),
@@ -56,9 +54,9 @@ class _AppShell_Large extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: theme.scheme.surfaceContainer,
+      backgroundColor: scheme.surfaceContainer,
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(48.0),
         child: TitleBar(),

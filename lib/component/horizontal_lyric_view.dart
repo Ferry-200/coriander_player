@@ -3,9 +3,7 @@ import 'dart:math';
 
 import 'package:coriander_player/lyric/lyric.dart';
 import 'package:coriander_player/play_service.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class HorizontalLyricView extends StatelessWidget {
   const HorizontalLyricView({
@@ -14,11 +12,11 @@ class HorizontalLyricView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: theme.scheme.secondaryContainer,
+        color: scheme.secondaryContainer,
         borderRadius: BorderRadius.circular(16.0),
       ),
       child: const _LyricHorizontalScrollArea(),
@@ -120,7 +118,7 @@ class _LyricHorizontalScrollAreaState
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -131,9 +129,7 @@ class _LyricHorizontalScrollAreaState
           alignment: Alignment.centerLeft,
           child: Text(
             currContent,
-            style: TextStyle(
-              color: theme.scheme.onSecondaryContainer,
-            ),
+            style: TextStyle(color: scheme.onSecondaryContainer),
           ),
         ),
       ),

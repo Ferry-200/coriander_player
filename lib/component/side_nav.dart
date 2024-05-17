@@ -1,324 +1,172 @@
 // ignore_for_file: camel_case_types
 
 import 'package:coriander_player/component/responsive_builder.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:provider/provider.dart';
 
-class _SideNavItem_Medium extends StatelessWidget {
-  const _SideNavItem_Medium(
-      {required this.isSelected,
-      required this.onTap,
-      required this.icon,
-      required this.label});
-
-  final bool isSelected;
-  final void Function() onTap;
+class DestinationDesc {
   final IconData icon;
   final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
-    final scaffold = Scaffold.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Column(
-        children: [
-          Material(
-            color: isSelected
-                ? theme.scheme.secondaryContainer
-                : theme.scheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(24.0),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(24.0),
-              onTap: () {
-                onTap();
-                if (scaffold.hasDrawer) {
-                  scaffold.closeDrawer();
-                }
-              },
-              hoverColor: (isSelected
-                      ? theme.scheme.onSecondaryContainer
-                      : theme.scheme.onSurface)
-                  .withOpacity(0.08),
-              highlightColor: (isSelected
-                      ? theme.scheme.onSecondaryContainer
-                      : theme.scheme.onSurface)
-                  .withOpacity(0.12),
-              splashColor: (isSelected
-                      ? theme.scheme.onSecondaryContainer
-                      : theme.scheme.onSurface)
-                  .withOpacity(0.12),
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Icon(
-                    icon,
-                    size: 24,
-                    color: isSelected
-                        ? theme.scheme.onSecondaryContainer
-                        : theme.scheme.onSurface,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Text(
-            label,
-            style: TextStyle(
-              color: theme.scheme.onSurface,
-            ),
-          )
-        ],
-      ),
-    );
-  }
+  final String desPath;
+  DestinationDesc(this.icon, this.label, this.desPath);
 }
 
-class _SideNavItem_Large extends StatelessWidget {
-  const _SideNavItem_Large(
-      {required this.isSelected,
-      required this.onTap,
-      required this.icon,
-      required this.label});
-
-  final bool isSelected;
-  final void Function() onTap;
-  final IconData icon;
-  final String label;
+class SideNav extends StatefulWidget {
+  const SideNav({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
-    final scaffold = Scaffold.of(context);
-
-    return SizedBox(
-      height: 48.0,
-      child: Material(
-        color: isSelected
-            ? theme.scheme.secondaryContainer
-            : theme.scheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(24.0),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(24.0),
-          onTap: () {
-            onTap();
-            if (scaffold.hasDrawer) {
-              scaffold.closeDrawer();
-            }
-          },
-          hoverColor: (isSelected
-                  ? theme.scheme.onSecondaryContainer
-                  : theme.scheme.onSurface)
-              .withOpacity(0.08),
-          highlightColor: (isSelected
-                  ? theme.scheme.onSecondaryContainer
-                  : theme.scheme.onSurface)
-              .withOpacity(0.12),
-          splashColor: (isSelected
-                  ? theme.scheme.onSecondaryContainer
-                  : theme.scheme.onSurface)
-              .withOpacity(0.12),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14.0),
-            child: Row(
-              children: [
-                Icon(
-                  icon,
-                  size: 24,
-                  color: isSelected
-                      ? theme.scheme.onSecondaryContainer
-                      : theme.scheme.onSurface,
-                ),
-                const SizedBox(width: 16.0),
-                Expanded(
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      color: isSelected
-                          ? theme.scheme.onSecondaryContainer
-                          : theme.scheme.onSurface,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  State<SideNav> createState() => _SideNavState();
 }
 
-class SideNavItem extends StatelessWidget {
-  const SideNavItem({
-    super.key,
-    required this.isSelected,
-    required this.onTap,
-    required this.icon,
-    required this.label,
-  });
+class _SideNavState extends State<SideNav> {
+  final destinations = <DestinationDesc>[
+    DestinationDesc(Symbols.library_music, "音乐", app_paths.AUDIOS_PAGE),
+    DestinationDesc(Symbols.artist, "艺术家", app_paths.ARTISTS_PAGE),
+    DestinationDesc(Symbols.album, "专辑", app_paths.ALBUMS_PAGE),
+    DestinationDesc(Symbols.folder, "文件夹", app_paths.FOLDERS_PAGE),
+    DestinationDesc(Symbols.list, "歌单", app_paths.PLAYLISTS_PAGE),
+    DestinationDesc(Symbols.search, "搜索", app_paths.SEARCH_PAGE),
+    DestinationDesc(Symbols.settings, "设置", app_paths.SETTINGS_PAGE),
+  ];
 
-  final bool isSelected;
-  final void Function() onTap;
-  final IconData icon;
-  final String label;
+  int selected = 0;
+
+  void onDestinationSelected(int value) {
+    if (value == selected) return;
+    context.push(destinations[value].desPath);
+    setState(() {
+      selected = value;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveBuilder(
       builder: (context, screenType) {
         switch (screenType) {
-          case ScreenType.medium:
-            return _SideNavItem_Medium(
-              isSelected: isSelected,
-              onTap: onTap,
-              icon: icon,
-              label: label,
-            );
           case ScreenType.small:
           case ScreenType.large:
-            return _SideNavItem_Large(
-              isSelected: isSelected,
-              onTap: onTap,
-              icon: icon,
-              label: label,
+            return NavigationDrawer(
+              selectedIndex: selected,
+              onDestinationSelected: onDestinationSelected,
+              children: List.generate(
+                destinations.length,
+                (i) => NavigationDrawerDestination(
+                  icon: Icon(destinations[i].icon),
+                  label: Text(destinations[i].label),
+                ),
+              ),
+            );
+          case ScreenType.medium:
+            return NavigationRail(
+              selectedIndex: selected,
+              onDestinationSelected: onDestinationSelected,
+              destinations: List.generate(
+                destinations.length,
+                (i) => NavigationRailDestination(
+                  icon: Icon(destinations[i].icon),
+                  label: Text(destinations[i].label),
+                ),
+              ),
             );
         }
       },
+
+      // return DecoratedBox(
+      //   decoration: BoxDecoration(
+      //     color: theme.scheme.surfaceContainer,
+      //     borderRadius: const BorderRadius.horizontal(
+      //       right: Radius.circular(12.0),
+      //     ),
+      //   ),
+      //   child: SizedBox(
+      //     width: screenType == ScreenType.medium ? 80.0 : 284.0,
+      //     child: Padding(
+      //       padding: const EdgeInsets.fromLTRB(12.0, 0, 12.0, 8.0),
+      //       child: Column(
+      //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //         children: [
+      //           Column(
+      //             children: [
+      //               SideNavItem(
+      //                 isSelected: selected == 0,
+      //                 onTap: () {
+      //                   if (selected != 0) {
+      //                     context.push(app_paths.AUDIOS_PAGE);
+      //                   }
+      //                 },
+      //                 icon: Symbols.library_music,
+      //                 label: "音乐",
+      //               ),
+      //               SideNavItem(
+      //                 isSelected: selected == 1,
+      //                 onTap: () {
+      //                   if (selected != 1) {
+      //                     context.push(app_paths.ARTISTS_PAGE);
+      //                   }
+      //                 },
+      //                 icon: Symbols.artist,
+      //                 label: "艺术家",
+      //               ),
+      //               SideNavItem(
+      //                 isSelected: selected == 2,
+      //                 onTap: () {
+      //                   if (selected != 2) {
+      //                     context.push(app_paths.ALBUMS_PAGE);
+      //                   }
+      //                 },
+      //                 icon: Symbols.album,
+      //                 label: "专辑",
+      //               ),
+      //               SideNavItem(
+      //                 isSelected: selected == 3,
+      //                 onTap: () {
+      //                   if (selected != 3) {
+      //                     context.push(app_paths.FOLDERS_PAGE);
+      //                   }
+      //                 },
+      //                 icon: Symbols.folder,
+      //                 label: "文件夹",
+      //               ),
+      //               SideNavItem(
+      //                 isSelected: selected == 4,
+      //                 onTap: () {
+      //                   if (selected != 4) {
+      //                     context.push(app_paths.PLAYLISTS_PAGE);
+      //                   }
+      //                 },
+      //                 icon: Symbols.list,
+      //                 label: "歌单",
+      //               ),
+      //               SideNavItem(
+      //                 isSelected: selected == 5,
+      //                 onTap: () {
+      //                   if (selected != 5) {
+      //                     context.push(app_paths.SEARCH_PAGE);
+      //                   }
+      //                 },
+      //                 icon: Symbols.search,
+      //                 label: "搜索",
+      //               ),
+      //             ],
+      //           ),
+      //           SideNavItem(
+      //             isSelected: selected == 6,
+      //             onTap: () {
+      //               if (selected != 6) {
+      //                 context.push(app_paths.SETTINGS_PAGE);
+      //               }
+      //             },
+      //             icon: Symbols.settings,
+      //             label: "设置",
+      //           ),
+      //         ],
+      //       ),
+      //     ),
+      //   ),
+      // );
     );
-  }
-}
-
-class SideNav extends StatelessWidget {
-  const SideNav({super.key});
-
-  /// 获取当前页面，更新选择的页面
-  int judgeSelected(BuildContext context) {
-    final uri = GoRouterState.of(context).uri.toString();
-    if (uri.startsWith(app_paths.AUDIOS_PAGE)) {
-      return 0;
-    } else if (uri.startsWith(app_paths.ARTISTS_PAGE)) {
-      return 1;
-    } else if (uri.startsWith(app_paths.ALBUMS_PAGE)) {
-      return 2;
-    } else if (uri.startsWith(app_paths.FOLDERS_PAGE)) {
-      return 3;
-    } else if (uri.startsWith(app_paths.PLAYLISTS_PAGE)) {
-      return 4;
-    } else if (uri.startsWith(app_paths.SEARCH_PAGE)) {
-      return 5;
-    } else if (uri.startsWith(app_paths.SETTINGS_PAGE)) {
-      return 6;
-    }
-    return -1;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
-
-    int selected = judgeSelected(context);
-    return ResponsiveBuilder(builder: (context, screenType) {
-      return DecoratedBox(
-        decoration: BoxDecoration(
-          color: theme.scheme.surfaceContainer,
-          borderRadius: const BorderRadius.horizontal(
-            right: Radius.circular(12.0),
-          ),
-        ),
-        child: SizedBox(
-          width: screenType == ScreenType.medium ? 80.0 : 284.0,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(12.0, 0, 12.0, 8.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  children: [
-                    SideNavItem(
-                      isSelected: selected == 0,
-                      onTap: () {
-                        if (selected != 0) {
-                          context.push(app_paths.AUDIOS_PAGE);
-                        }
-                      },
-                      icon: Symbols.library_music,
-                      label: "音乐",
-                    ),
-                    SideNavItem(
-                      isSelected: selected == 1,
-                      onTap: () {
-                        if (selected != 1) {
-                          context.push(app_paths.ARTISTS_PAGE);
-                        }
-                      },
-                      icon: Symbols.artist,
-                      label: "艺术家",
-                    ),
-                    SideNavItem(
-                      isSelected: selected == 2,
-                      onTap: () {
-                        if (selected != 2) {
-                          context.push(app_paths.ALBUMS_PAGE);
-                        }
-                      },
-                      icon: Symbols.album,
-                      label: "专辑",
-                    ),
-                    SideNavItem(
-                      isSelected: selected == 3,
-                      onTap: () {
-                        if (selected != 3) {
-                          context.push(app_paths.FOLDERS_PAGE);
-                        }
-                      },
-                      icon: Symbols.folder,
-                      label: "文件夹",
-                    ),
-                    SideNavItem(
-                      isSelected: selected == 4,
-                      onTap: () {
-                        if (selected != 4) {
-                          context.push(app_paths.PLAYLISTS_PAGE);
-                        }
-                      },
-                      icon: Symbols.list,
-                      label: "歌单",
-                    ),
-                    SideNavItem(
-                      isSelected: selected == 5,
-                      onTap: () {
-                        if (selected != 5) {
-                          context.push(app_paths.SEARCH_PAGE);
-                        }
-                      },
-                      icon: Symbols.search,
-                      label: "搜索",
-                    ),
-                  ],
-                ),
-                SideNavItem(
-                  isSelected: selected == 6,
-                  onTap: () {
-                    if (selected != 6) {
-                      context.push(app_paths.SETTINGS_PAGE);
-                    }
-                  },
-                  icon: Symbols.settings,
-                  label: "设置",
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    });
   }
 }
