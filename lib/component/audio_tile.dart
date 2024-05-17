@@ -29,16 +29,16 @@ class AudioTile extends StatelessWidget {
     final audio = playlist[audioIndex];
 
     final menuItemStyle = ButtonStyle(
-      backgroundColor: MaterialStatePropertyAll(
+      backgroundColor: WidgetStatePropertyAll(
         theme.palette.surfaceContainer,
       ),
-      surfaceTintColor: MaterialStatePropertyAll(
+      surfaceTintColor: WidgetStatePropertyAll(
         theme.palette.surfaceContainer,
       ),
-      foregroundColor: MaterialStatePropertyAll(
+      foregroundColor: WidgetStatePropertyAll(
         theme.palette.onSurface,
       ),
-      overlayColor: MaterialStatePropertyAll(
+      overlayColor: WidgetStatePropertyAll(
         theme.palette.onSurface.withOpacity(0.08),
       ),
     );
@@ -66,10 +66,10 @@ class AudioTile extends StatelessWidget {
         child: MenuAnchor(
           controller: menuController,
           style: MenuStyle(
-            backgroundColor: MaterialStatePropertyAll(
+            backgroundColor: WidgetStatePropertyAll(
               theme.palette.surfaceContainer,
             ),
-            surfaceTintColor: MaterialStatePropertyAll(
+            surfaceTintColor: WidgetStatePropertyAll(
               theme.palette.surfaceContainer,
             ),
           ),
@@ -77,10 +77,10 @@ class AudioTile extends StatelessWidget {
             /// artists
             SubmenuButton(
               menuStyle: MenuStyle(
-                backgroundColor: MaterialStatePropertyAll(
+                backgroundColor: WidgetStatePropertyAll(
                   theme.palette.surfaceContainer,
                 ),
-                surfaceTintColor: MaterialStatePropertyAll(
+                surfaceTintColor: WidgetStatePropertyAll(
                   theme.palette.surfaceContainer,
                 ),
               ),
@@ -125,10 +125,10 @@ class AudioTile extends StatelessWidget {
             /// add to playlist
             SubmenuButton(
               menuStyle: MenuStyle(
-                backgroundColor: MaterialStatePropertyAll(
+                backgroundColor: WidgetStatePropertyAll(
                   theme.palette.surfaceContainer,
                 ),
-                surfaceTintColor: MaterialStatePropertyAll(
+                surfaceTintColor: WidgetStatePropertyAll(
                   theme.palette.surfaceContainer,
                 ),
               ),

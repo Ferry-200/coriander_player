@@ -363,13 +363,13 @@ class _MoreActions extends StatelessWidget {
     final playService = Provider.of<PlayService>(context);
     final nowPlaying = playService.nowPlaying;
     final menuItemStyle = ButtonStyle(
-      backgroundColor: MaterialStatePropertyAll(
+      backgroundColor: WidgetStatePropertyAll(
         theme.palette.surface,
       ),
-      foregroundColor: MaterialStatePropertyAll(
+      foregroundColor: WidgetStatePropertyAll(
         theme.palette.onSurface,
       ),
-      overlayColor: MaterialStatePropertyAll(
+      overlayColor: WidgetStatePropertyAll(
         theme.palette.onSecondaryContainer.withOpacity(0.08),
       ),
     );
@@ -381,20 +381,20 @@ class _MoreActions extends StatelessWidget {
           )
         : MenuAnchor(
             style: MenuStyle(
-              backgroundColor: MaterialStatePropertyAll(
+              backgroundColor: WidgetStatePropertyAll(
                 theme.palette.surface,
               ),
-              surfaceTintColor: MaterialStatePropertyAll(
+              surfaceTintColor: WidgetStatePropertyAll(
                 theme.palette.surface,
               ),
             ),
             menuChildren: [
               SubmenuButton(
                 menuStyle: MenuStyle(
-                  backgroundColor: MaterialStatePropertyAll(
+                  backgroundColor: WidgetStatePropertyAll(
                     theme.palette.surface,
                   ),
-                  surfaceTintColor: MaterialStatePropertyAll(
+                  surfaceTintColor: WidgetStatePropertyAll(
                     theme.palette.surface,
                   ),
                 ),

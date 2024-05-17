@@ -51,7 +51,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
                 brightness: settings.themeMode,
               );
               return MouseRegion(
-                cursor: MaterialStateMouseCursor.clickable,
+                cursor: WidgetStateMouseCursor.clickable,
                 child: GestureDetector(
                   onTap: () async {
                     setState(() {

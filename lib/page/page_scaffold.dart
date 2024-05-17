@@ -65,12 +65,12 @@ class PageScaffold extends StatelessWidget {
               }
 
               final menuStyle = MenuStyle(
-                shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                shape: WidgetStatePropertyAll(RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20))),
                 backgroundColor:
-                    MaterialStatePropertyAll(theme.palette.surfaceContainer),
+                    WidgetStatePropertyAll(theme.palette.surfaceContainer),
                 surfaceTintColor:
-                    MaterialStatePropertyAll(theme.palette.surfaceContainer),
+                    WidgetStatePropertyAll(theme.palette.surfaceContainer),
               );
 
               rowChildren = [

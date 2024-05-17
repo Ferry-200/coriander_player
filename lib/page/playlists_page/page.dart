@@ -171,13 +171,13 @@ class _NewPlaylistDialog extends StatelessWidget {
                   TextButton(
                     onPressed: () => Navigator.pop(context),
                     style: ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(
+                      backgroundColor: WidgetStatePropertyAll(
                         theme.palette.surface,
                       ),
-                      foregroundColor: MaterialStatePropertyAll(
+                      foregroundColor: WidgetStatePropertyAll(
                         theme.palette.onSurface,
                       ),
-                      overlayColor: MaterialStatePropertyAll(
+                      overlayColor: WidgetStatePropertyAll(
                         theme.palette.onSurface.withOpacity(0.08),
                       ),
                     ),
@@ -189,13 +189,13 @@ class _NewPlaylistDialog extends StatelessWidget {
                       Navigator.pop(context, editingController.text);
                     },
                     style: ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(
+                      backgroundColor: WidgetStatePropertyAll(
                         theme.palette.surface,
                       ),
-                      foregroundColor: MaterialStatePropertyAll(
+                      foregroundColor: WidgetStatePropertyAll(
                         theme.palette.onSurface,
                       ),
-                      overlayColor: MaterialStatePropertyAll(
+                      overlayColor: WidgetStatePropertyAll(
                         theme.palette.onSurface.withOpacity(0.08),
                       ),
                     ),
@@ -262,13 +262,13 @@ class _EditPlaylistDialog extends StatelessWidget {
                   TextButton(
                     onPressed: () => Navigator.pop(context),
                     style: ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(
+                      backgroundColor: WidgetStatePropertyAll(
                         theme.palette.surface,
                       ),
-                      foregroundColor: MaterialStatePropertyAll(
+                      foregroundColor: WidgetStatePropertyAll(
                         theme.palette.onSurface,
                       ),
-                      overlayColor: MaterialStatePropertyAll(
+                      overlayColor: WidgetStatePropertyAll(
                         theme.palette.onSurface.withOpacity(0.08),
                       ),
                     ),
@@ -280,13 +280,13 @@ class _EditPlaylistDialog extends StatelessWidget {
                       Navigator.pop(context, editingController.text);
                     },
                     style: ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(
+                      backgroundColor: WidgetStatePropertyAll(
                         theme.palette.surface,
                       ),
-                      foregroundColor: MaterialStatePropertyAll(
+                      foregroundColor: WidgetStatePropertyAll(
                         theme.palette.onSurface,
                       ),
-                      overlayColor: MaterialStatePropertyAll(
+                      overlayColor: WidgetStatePropertyAll(
                         theme.palette.onSurface.withOpacity(0.08),
                       ),
                     ),

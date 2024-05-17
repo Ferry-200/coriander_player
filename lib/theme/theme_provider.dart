@@ -81,63 +81,63 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   ButtonStyle get primaryButtonStyle => ButtonStyle(
-        backgroundColor: MaterialStatePropertyAll(palette.primary),
-        foregroundColor: MaterialStatePropertyAll(palette.onPrimary),
-        fixedSize: const MaterialStatePropertyAll(Size.fromHeight(40.0)),
+        backgroundColor: WidgetStatePropertyAll(palette.primary),
+        foregroundColor: WidgetStatePropertyAll(palette.onPrimary),
+        fixedSize: const WidgetStatePropertyAll(Size.fromHeight(40.0)),
         overlayColor:
-            MaterialStatePropertyAll(palette.onPrimary.withOpacity(0.08)),
+            WidgetStatePropertyAll(palette.onPrimary.withOpacity(0.08)),
       );
 
   ButtonStyle get secondaryButtonStyle => ButtonStyle(
-        backgroundColor: MaterialStatePropertyAll(palette.secondaryContainer),
-        foregroundColor: MaterialStatePropertyAll(palette.onSecondaryContainer),
-        fixedSize: const MaterialStatePropertyAll(Size.fromHeight(40.0)),
-        overlayColor: MaterialStatePropertyAll(
+        backgroundColor: WidgetStatePropertyAll(palette.secondaryContainer),
+        foregroundColor: WidgetStatePropertyAll(palette.onSecondaryContainer),
+        fixedSize: const WidgetStatePropertyAll(Size.fromHeight(40.0)),
+        overlayColor: WidgetStatePropertyAll(
             palette.onSecondaryContainer.withOpacity(0.08)),
       );
 
   ButtonStyle get primaryIconButtonStyle => ButtonStyle(
-        backgroundColor: MaterialStatePropertyAll(palette.primary),
-        foregroundColor: MaterialStatePropertyAll(palette.onPrimary),
-        overlayColor: MaterialStatePropertyAll(
+        backgroundColor: WidgetStatePropertyAll(palette.primary),
+        foregroundColor: WidgetStatePropertyAll(palette.onPrimary),
+        overlayColor: WidgetStatePropertyAll(
           palette.onPrimary.withOpacity(0.08),
         ),
       );
 
   ButtonStyle get secondaryIconButtonStyle => ButtonStyle(
-        backgroundColor: MaterialStatePropertyAll(palette.secondaryContainer),
-        foregroundColor: MaterialStatePropertyAll(palette.onSecondaryContainer),
-        overlayColor: MaterialStatePropertyAll(
+        backgroundColor: WidgetStatePropertyAll(palette.secondaryContainer),
+        foregroundColor: WidgetStatePropertyAll(palette.onSecondaryContainer),
+        overlayColor: WidgetStatePropertyAll(
           palette.onSecondaryContainer.withOpacity(0.08),
         ),
       );
 
   ButtonStyle get menuItemStyle => ButtonStyle(
-        backgroundColor: MaterialStatePropertyAll(palette.secondaryContainer),
-        foregroundColor: MaterialStatePropertyAll(palette.onSecondaryContainer),
-        padding: const MaterialStatePropertyAll(
+        backgroundColor: WidgetStatePropertyAll(palette.secondaryContainer),
+        foregroundColor: WidgetStatePropertyAll(palette.onSecondaryContainer),
+        padding: const WidgetStatePropertyAll(
           EdgeInsets.symmetric(horizontal: 16.0),
         ),
-        overlayColor: MaterialStatePropertyAll(
+        overlayColor: WidgetStatePropertyAll(
           palette.onSecondaryContainer.withOpacity(0.08),
         ),
       );
 
   MenuStyle get menuStyleWithFixedSize => MenuStyle(
-        backgroundColor: MaterialStatePropertyAll(palette.secondaryContainer),
-        surfaceTintColor: MaterialStatePropertyAll(palette.secondaryContainer),
-        shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+        backgroundColor: WidgetStatePropertyAll(palette.secondaryContainer),
+        surfaceTintColor: WidgetStatePropertyAll(palette.secondaryContainer),
+        shape: WidgetStatePropertyAll(RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.0),
         )),
-        fixedSize: const MaterialStatePropertyAll(Size.fromWidth(149.0)),
+        fixedSize: const WidgetStatePropertyAll(Size.fromWidth(149.0)),
       );
 
   MenuStyle get menuStyle => MenuStyle(
-        shape: MaterialStatePropertyAll(
+        shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         ),
-        backgroundColor: MaterialStatePropertyAll(palette.surfaceContainer),
-        surfaceTintColor: MaterialStatePropertyAll(palette.surfaceContainer),
+        backgroundColor: WidgetStatePropertyAll(palette.surfaceContainer),
+        surfaceTintColor: WidgetStatePropertyAll(palette.surfaceContainer),
       );
 
   InputDecoration inputDecoration(String labelText) => InputDecoration(

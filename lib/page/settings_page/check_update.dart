@@ -99,10 +99,10 @@ class NewestUpdateView extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
     final textButtonStyle = ButtonStyle(
-      overlayColor: MaterialStatePropertyAll(
+      overlayColor: WidgetStatePropertyAll(
         theme.palette.onSurface.withOpacity(0.08),
       ),
-      foregroundColor: MaterialStatePropertyAll(theme.palette.onSurface),
+      foregroundColor: WidgetStatePropertyAll(theme.palette.onSurface),
     );
     final onSurface = TextStyle(color: theme.palette.onSurface);
     final onSurfaceVariant = TextStyle(color: theme.palette.onSurfaceVariant);

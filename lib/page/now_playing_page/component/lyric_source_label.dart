@@ -39,7 +39,7 @@ class LyricSourceLabel extends StatelessWidget {
                   ? PlayService.instance.useOnlineLyric
                   : PlayService.instance.useEmbeddedLyric,
               style: ButtonStyle(
-                overlayColor: MaterialStatePropertyAll(
+                overlayColor: WidgetStatePropertyAll(
                   theme.palette.onSecondaryContainer.withOpacity(0.12),
                 ),
               ),

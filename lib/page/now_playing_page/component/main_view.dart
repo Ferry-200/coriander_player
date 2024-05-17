@@ -42,12 +42,12 @@ class NowPlayingControls extends StatelessWidget {
     final playService = Provider.of<PlayService>(context);
     final theme = Provider.of<ThemeProvider>(context);
     final secondaryBtnStyle = ButtonStyle(
-      backgroundColor: MaterialStatePropertyAll(
+      backgroundColor: WidgetStatePropertyAll(
         theme.palette.secondary,
       ),
-      foregroundColor: MaterialStatePropertyAll(theme.palette.onSecondary),
-      fixedSize: const MaterialStatePropertyAll(Size(64, 64)),
-      overlayColor: MaterialStatePropertyAll(
+      foregroundColor: WidgetStatePropertyAll(theme.palette.onSecondary),
+      fixedSize: const WidgetStatePropertyAll(Size(64, 64)),
+      overlayColor: WidgetStatePropertyAll(
         theme.palette.onSecondary.withOpacity(0.08),
       ),
     );

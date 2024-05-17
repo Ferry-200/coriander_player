@@ -217,34 +217,34 @@ class _SortMethodComboBox extends StatelessWidget {
     final pageController = Provider.of<ArtistDetailPageController>(context);
 
     final menuItemStyle = ButtonStyle(
-      backgroundColor: MaterialStatePropertyAll(
+      backgroundColor: WidgetStatePropertyAll(
         theme.palette.secondaryContainer,
       ),
-      foregroundColor: MaterialStatePropertyAll(
+      foregroundColor: WidgetStatePropertyAll(
         theme.palette.onSecondaryContainer,
       ),
-      padding: const MaterialStatePropertyAll(
+      padding: const WidgetStatePropertyAll(
         EdgeInsets.symmetric(horizontal: 16.0),
       ),
-      overlayColor: MaterialStatePropertyAll(
+      overlayColor: WidgetStatePropertyAll(
         theme.palette.onSecondaryContainer.withOpacity(0.08),
       ),
     );
 
     final menuStyle = MenuStyle(
-      backgroundColor: MaterialStatePropertyAll(
+      backgroundColor: WidgetStatePropertyAll(
         theme.palette.secondaryContainer,
       ),
-      surfaceTintColor: MaterialStatePropertyAll(
+      surfaceTintColor: WidgetStatePropertyAll(
         theme.palette.secondaryContainer,
       ),
-      shape: const MaterialStatePropertyAll(RoundedRectangleBorder(
+      shape: const WidgetStatePropertyAll(RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20.0),
           bottomRight: Radius.circular(20.0),
         ),
       )),
-      fixedSize: const MaterialStatePropertyAll(Size.fromWidth(149.0)),
+      fixedSize: const WidgetStatePropertyAll(Size.fromWidth(149.0)),
     );
 
     return MenuAnchor(
