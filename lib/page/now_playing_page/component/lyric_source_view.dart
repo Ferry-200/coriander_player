@@ -5,9 +5,7 @@ import 'package:coriander_player/lyric/lyric.dart';
 import 'package:coriander_player/lyric/lyric_source.dart';
 import 'package:coriander_player/music_api/search_helper.dart';
 import 'package:coriander_player/play_service.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class LyricSourceView extends StatefulWidget {
   const LyricSourceView({super.key, required this.audio});
@@ -21,10 +19,8 @@ class LyricSourceView extends StatefulWidget {
 class _LyricSourceViewState extends State<LyricSourceView> {
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
     return Dialog(
-      backgroundColor: theme.scheme.surface,
-      surfaceTintColor: theme.scheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -36,7 +32,7 @@ class _LyricSourceViewState extends State<LyricSourceView> {
               child: Text(
                 "默认歌词",
                 style: TextStyle(
-                  color: theme.scheme.onSurface,
+                  color: scheme.onSurface,
                   fontSize: 18.0,
                   fontWeight: FontWeight.w600,
                 ),
@@ -45,10 +41,8 @@ class _LyricSourceViewState extends State<LyricSourceView> {
             ListTile(
               title: const Text("本地歌词"),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0)),
-              textColor: theme.scheme.onSurface,
-              hoverColor: theme.scheme.onSurface.withOpacity(0.08),
-              splashColor: theme.scheme.onSurface.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
               onTap: () {
                 LYRIC_SOURCES[widget.audio.path] =
                     LyricSource(LyricSourceType.local);
@@ -61,12 +55,7 @@ class _LyricSourceViewState extends State<LyricSourceView> {
                 future: uniSearch(widget.audio),
                 builder: (context, snapshot) {
                   if (snapshot.data == null) {
-                    return Center(
-                      child: LinearProgressIndicator(
-                        color: theme.scheme.primary,
-                        backgroundColor: theme.scheme.primaryContainer,
-                      ),
-                    );
+                    return const Center(child: LinearProgressIndicator());
                   }
                   return ListView.builder(
                     itemCount: snapshot.data!.length,
@@ -120,21 +109,16 @@ class LyricSourceTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
-    final titleStyle = TextStyle(color: theme.scheme.onSurface);
-    final subtitleStyle = TextStyle(color: theme.scheme.onSurface);
     return ListTile(
       onTap: onTap,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-      hoverColor: theme.scheme.onSurface.withOpacity(0.08),
-      splashColor: theme.scheme.onSurface.withOpacity(0.12),
       title: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(source.source.name, style: titleStyle),
-          Text(source.title, style: titleStyle),
-          Text("${source.artists} - ${source.album}", style: titleStyle),
+          Text(source.source.name),
+          Text(source.title),
+          Text("${source.artists} - ${source.album}"),
         ],
       ),
       subtitle: FutureBuilder(
@@ -147,16 +131,13 @@ class LyricSourceTile extends StatelessWidget {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
             case ConnectionState.waiting:
-              return LinearProgressIndicator(
-                color: theme.scheme.primary,
-                backgroundColor: theme.scheme.primaryContainer,
-              );
+              return const LinearProgressIndicator();
             case ConnectionState.active:
             case ConnectionState.done:
               {
                 final lyric = snapshot.data;
                 if (lyric == null || lyric.lines.isEmpty) {
-                  return Text("无歌词", style: subtitleStyle);
+                  return const Text("无歌词");
                 }
                 return StreamBuilder(
                   stream: PlayService.instance.positionStream,
@@ -174,7 +155,7 @@ class LyricSourceTile extends StatelessWidget {
                     } else {
                       content = (currLine as SyncLyricLine).content;
                     }
-                    return Text("当前：$content", style: subtitleStyle);
+                    return Text("当前：$content");
                   },
                 );
               }

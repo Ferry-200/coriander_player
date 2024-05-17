@@ -1,7 +1,5 @@
 import 'package:coriander_player/play_service.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class CurrentPlaylistView extends StatefulWidget {
   const CurrentPlaylistView({super.key});
@@ -35,7 +33,7 @@ class _CurrentPlaylistViewState extends State<CurrentPlaylistView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return Material(
       type: MaterialType.transparency,
@@ -47,7 +45,7 @@ class _CurrentPlaylistViewState extends State<CurrentPlaylistView> {
             child: Text(
               "播放列表",
               style: TextStyle(
-                color: theme.scheme.onSecondaryContainer,
+                color: scheme.onSecondaryContainer,
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
               ),
@@ -90,12 +88,9 @@ class _PlaylistViewItem extends StatelessWidget {
   Widget build(BuildContext context) {
     var playService = PlayService.instance;
     final item = playService.playlist[index];
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
     return InkWell(
       borderRadius: BorderRadius.circular(8.0),
-      hoverColor: theme.scheme.onSecondaryContainer.withOpacity(0.08),
-      highlightColor: theme.scheme.onSecondaryContainer.withOpacity(0.12),
-      splashColor: theme.scheme.onSecondaryContainer.withOpacity(0.12),
       onTap: () {
         playService.playIndexOfPlaylist(index);
       },
@@ -104,10 +99,7 @@ class _PlaylistViewItem extends StatelessWidget {
         child: DefaultTextStyle(
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: theme.scheme.onSecondaryContainer,
-            fontSize: 14,
-          ),
+          style: TextStyle(color: scheme.onSecondaryContainer, fontSize: 14),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,

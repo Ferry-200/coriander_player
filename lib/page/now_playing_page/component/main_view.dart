@@ -1,6 +1,5 @@
 import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/src/bass/bass_player.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
@@ -40,17 +39,7 @@ class NowPlayingControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final playService = Provider.of<PlayService>(context);
-    final theme = Provider.of<ThemeProvider>(context);
-    final secondaryBtnStyle = ButtonStyle(
-      backgroundColor: WidgetStatePropertyAll(
-        theme.scheme.secondary,
-      ),
-      foregroundColor: WidgetStatePropertyAll(theme.scheme.onSecondary),
-      fixedSize: const WidgetStatePropertyAll(Size(64, 64)),
-      overlayColor: WidgetStatePropertyAll(
-        theme.scheme.onSecondary.withOpacity(0.08),
-      ),
-    );
+    final scheme = Theme.of(context).colorScheme;
     return SizedBox(
       height: 64.0,
       child: Row(
@@ -60,7 +49,7 @@ class NowPlayingControls extends StatelessWidget {
           SizedBox(
             width: 156,
             child: Material(
-              color: theme.scheme.primary,
+              color: scheme.primary,
               borderRadius: BorderRadius.circular(32.0),
               child: StreamBuilder(
                 stream: playService.playerStateStream,
@@ -76,7 +65,6 @@ class NowPlayingControls extends StatelessWidget {
                   }
 
                   return InkWell(
-                    hoverColor: theme.scheme.onPrimary.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(32.0),
                     onTap: onTap,
                     child: Center(
@@ -84,7 +72,7 @@ class NowPlayingControls extends StatelessWidget {
                         snapshot.data! == PlayerState.playing
                             ? Symbols.pause
                             : Symbols.play_arrow,
-                        color: theme.scheme.onPrimary,
+                        color: scheme.onPrimary,
                       ),
                     ),
                   );
@@ -95,18 +83,22 @@ class NowPlayingControls extends StatelessWidget {
           const SizedBox(width: 24.0),
 
           /// 上一曲
-          IconButton(
+          IconButton.filledTonal(
             onPressed: playService.lastAudio,
             icon: const Icon(Symbols.skip_previous),
-            style: secondaryBtnStyle,
+            style: const ButtonStyle(
+              fixedSize: WidgetStatePropertyAll(Size(64, 64)),
+            ),
           ),
           const SizedBox(width: 24.0),
 
           /// 下一曲
-          IconButton(
+          IconButton.filledTonal(
             onPressed: playService.nextAudio,
             icon: const Icon(Symbols.skip_next),
-            style: secondaryBtnStyle,
+            style: const ButtonStyle(
+              fixedSize: WidgetStatePropertyAll(Size(64, 64)),
+            ),
           ),
         ],
       ),
@@ -119,12 +111,13 @@ class PositionAndLength extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
     final playService = Provider.of<PlayService>(context);
     final nowPlaying = playService.nowPlaying;
     final lengthMinute = PlayService.instance.length ~/ 60;
     final lengthSecond = (PlayService.instance.length % 60).toInt();
 
+    var textStyle = TextStyle(color: scheme.onSecondaryContainer);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -135,21 +128,14 @@ class PositionAndLength extends StatelessWidget {
             final pos = snapshot.data ?? 0;
             final minute = pos ~/ 60;
             final second = (pos % 60).toInt();
-            return Text(
-              "$minute:$second",
-              style: TextStyle(
-                color: theme.scheme.onSecondaryContainer,
-              ),
-            );
+            return Text("$minute:$second", style: textStyle);
           },
         ),
 
         /// length
         Text(
           nowPlaying == null ? "N/A" : "$lengthMinute:$lengthSecond",
-          style: TextStyle(
-            color: theme.scheme.onSecondaryContainer,
-          ),
+          style: textStyle,
         ),
       ],
     );
@@ -172,7 +158,6 @@ class NowPlayingProgressIndicatorState
   @override
   Widget build(BuildContext context) {
     final playService = Provider.of<PlayService>(context);
-    final theme = Provider.of<ThemeProvider>(context);
 
     return GestureDetector(
       onHorizontalDragStart: (details) {
@@ -200,8 +185,6 @@ class NowPlayingProgressIndicatorState
             builder: (context, _) {
               return LinearProgressIndicator(
                 value: isDragging ? dragProgress.value : progress,
-                color: theme.scheme.outline,
-                backgroundColor: theme.scheme.outlineVariant,
                 minHeight: 12.0,
                 borderRadius: BorderRadius.circular(6.0),
               );
@@ -224,7 +207,7 @@ class NowPlayingArtistAlbum extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
     final playService = Provider.of<PlayService>(context);
     final nowPlaying = playService.nowPlaying;
 
@@ -235,9 +218,7 @@ class NowPlayingArtistAlbum extends StatelessWidget {
             ? "Enjoy Music"
             : "${nowPlaying.artist} - ${nowPlaying.album}",
         maxLines: 1,
-        style: TextStyle(
-          color: theme.scheme.onSecondaryContainer,
-        ),
+        style: TextStyle(color: scheme.onSecondaryContainer),
       ),
     );
   }
@@ -248,7 +229,7 @@ class NowPlayingTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
     final playService = Provider.of<PlayService>(context);
     final nowPlaying = playService.nowPlaying;
 
@@ -258,7 +239,7 @@ class NowPlayingTitle extends StatelessWidget {
         nowPlaying == null ? "Coriander Music" : nowPlaying.title,
         maxLines: 1,
         style: TextStyle(
-          color: theme.scheme.onSecondaryContainer,
+          color: scheme.onSecondaryContainer,
           fontWeight: FontWeight.w600,
           fontSize: 20,
         ),
@@ -274,7 +255,7 @@ class NowPlayingCover extends StatelessWidget {
   Widget build(BuildContext context) {
     final playService = Provider.of<PlayService>(context);
     final nowPlaying = playService.nowPlaying;
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return RepaintBoundary(
       child: nowPlaying == null
@@ -282,19 +263,19 @@ class NowPlayingCover extends StatelessWidget {
               child: Icon(
                 Symbols.broken_image,
                 size: 400.0,
-                color: theme.scheme.onSecondaryContainer,
+                color: scheme.onSecondaryContainer,
               ),
             )
           : FutureBuilder(
               future: nowPlaying.largeCover,
               builder: (context, snapshot) {
-                final theme = Provider.of<ThemeProvider>(context);
+                final scheme = Theme.of(context).colorScheme;
                 if (snapshot.data == null) {
                   return FittedBox(
                     child: Icon(
                       Symbols.broken_image,
                       size: 400.0,
-                      color: theme.scheme.onSecondaryContainer,
+                      color: scheme.onSecondaryContainer,
                     ),
                   );
                 }
