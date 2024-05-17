@@ -72,24 +72,24 @@ class Entry extends StatelessWidget {
           theme: ThemeData(
             useMaterial3: true,
             colorScheme:
-                ColorScheme.fromSeed(seedColor: Color(theme.palette.seed)),
+                ColorScheme.fromSeed(seedColor: Color(theme.scheme.seed)),
             platform: TargetPlatform.windows,
             scrollbarTheme: ScrollbarThemeData(
-              thumbColor: WidgetStatePropertyAll(theme.palette.outline),
+              thumbColor: WidgetStatePropertyAll(theme.scheme.outline),
               trackColor:
-                  WidgetStatePropertyAll(theme.palette.outlineVariant),
+                  WidgetStatePropertyAll(theme.scheme.outlineVariant),
             ),
             segmentedButtonTheme: SegmentedButtonThemeData(
               style: ButtonStyle(
                 backgroundColor: WidgetStateColor.resolveWith(
                   (states) => states.contains(WidgetState.selected)
-                      ? theme.palette.secondaryContainer
-                      : theme.palette.surface,
+                      ? theme.scheme.secondaryContainer
+                      : theme.scheme.surface,
                 ),
                 foregroundColor: WidgetStateColor.resolveWith(
                   (states) => states.contains(WidgetState.selected)
-                      ? theme.palette.onSecondaryContainer
-                      : theme.palette.onSurface,
+                      ? theme.scheme.onSecondaryContainer
+                      : theme.scheme.onSurface,
                 ),
               ),
             ),

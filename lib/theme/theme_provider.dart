@@ -7,7 +7,7 @@ import 'package:coriander_player/theme/color_palette.dart';
 import 'package:flutter/material.dart';
 
 class ThemeProvider extends ChangeNotifier {
-  ColorPalette palette = ColorPalette.fromSeed(
+  ColorPalette scheme = ColorPalette.fromSeed(
     seedValue: AppSettings.instance.defaultTheme,
     brightness: AppSettings.instance.themeMode,
   );
@@ -28,7 +28,7 @@ class ThemeProvider extends ChangeNotifier {
         event.accent.$3,
         event.accent.$4,
       ).value;
-      palette = ColorPalette.fromSeed(seedValue: seed, brightness: themeMode);
+      scheme = ColorPalette.fromSeed(seedValue: seed, brightness: themeMode);
       notifyListeners();
     });
   }
@@ -45,18 +45,18 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   void changeTheme(ColorPalette palette) {
-    this.palette = palette;
+    this.scheme = palette;
     notifyListeners();
   }
 
   void toggleThemeMode() {
-    palette = palette.brightness == Brightness.light
+    scheme = scheme.brightness == Brightness.light
         ? ColorPalette.fromSeed(
-            seedValue: palette.seed,
+            seedValue: scheme.seed,
             brightness: Brightness.dark,
           )
         : ColorPalette.fromSeed(
-            seedValue: palette.seed,
+            seedValue: scheme.seed,
             brightness: Brightness.light,
           );
     notifyListeners();
@@ -69,10 +69,10 @@ class ThemeProvider extends ChangeNotifier {
       if (image != null) {
         ColorPalette.fromImageProvider(
           provider: image,
-          brightness: palette.brightness,
+          brightness: scheme.brightness,
         ).then(
           (value) {
-            palette = value;
+            scheme = value;
             notifyListeners();
           },
         );
@@ -81,51 +81,51 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   ButtonStyle get primaryButtonStyle => ButtonStyle(
-        backgroundColor: WidgetStatePropertyAll(palette.primary),
-        foregroundColor: WidgetStatePropertyAll(palette.onPrimary),
+        backgroundColor: WidgetStatePropertyAll(scheme.primary),
+        foregroundColor: WidgetStatePropertyAll(scheme.onPrimary),
         fixedSize: const WidgetStatePropertyAll(Size.fromHeight(40.0)),
         overlayColor:
-            WidgetStatePropertyAll(palette.onPrimary.withOpacity(0.08)),
+            WidgetStatePropertyAll(scheme.onPrimary.withOpacity(0.08)),
       );
 
   ButtonStyle get secondaryButtonStyle => ButtonStyle(
-        backgroundColor: WidgetStatePropertyAll(palette.secondaryContainer),
-        foregroundColor: WidgetStatePropertyAll(palette.onSecondaryContainer),
+        backgroundColor: WidgetStatePropertyAll(scheme.secondaryContainer),
+        foregroundColor: WidgetStatePropertyAll(scheme.onSecondaryContainer),
         fixedSize: const WidgetStatePropertyAll(Size.fromHeight(40.0)),
         overlayColor: WidgetStatePropertyAll(
-            palette.onSecondaryContainer.withOpacity(0.08)),
+            scheme.onSecondaryContainer.withOpacity(0.08)),
       );
 
   ButtonStyle get primaryIconButtonStyle => ButtonStyle(
-        backgroundColor: WidgetStatePropertyAll(palette.primary),
-        foregroundColor: WidgetStatePropertyAll(palette.onPrimary),
+        backgroundColor: WidgetStatePropertyAll(scheme.primary),
+        foregroundColor: WidgetStatePropertyAll(scheme.onPrimary),
         overlayColor: WidgetStatePropertyAll(
-          palette.onPrimary.withOpacity(0.08),
+          scheme.onPrimary.withOpacity(0.08),
         ),
       );
 
   ButtonStyle get secondaryIconButtonStyle => ButtonStyle(
-        backgroundColor: WidgetStatePropertyAll(palette.secondaryContainer),
-        foregroundColor: WidgetStatePropertyAll(palette.onSecondaryContainer),
+        backgroundColor: WidgetStatePropertyAll(scheme.secondaryContainer),
+        foregroundColor: WidgetStatePropertyAll(scheme.onSecondaryContainer),
         overlayColor: WidgetStatePropertyAll(
-          palette.onSecondaryContainer.withOpacity(0.08),
+          scheme.onSecondaryContainer.withOpacity(0.08),
         ),
       );
 
   ButtonStyle get menuItemStyle => ButtonStyle(
-        backgroundColor: WidgetStatePropertyAll(palette.secondaryContainer),
-        foregroundColor: WidgetStatePropertyAll(palette.onSecondaryContainer),
+        backgroundColor: WidgetStatePropertyAll(scheme.secondaryContainer),
+        foregroundColor: WidgetStatePropertyAll(scheme.onSecondaryContainer),
         padding: const WidgetStatePropertyAll(
           EdgeInsets.symmetric(horizontal: 16.0),
         ),
         overlayColor: WidgetStatePropertyAll(
-          palette.onSecondaryContainer.withOpacity(0.08),
+          scheme.onSecondaryContainer.withOpacity(0.08),
         ),
       );
 
   MenuStyle get menuStyleWithFixedSize => MenuStyle(
-        backgroundColor: WidgetStatePropertyAll(palette.secondaryContainer),
-        surfaceTintColor: WidgetStatePropertyAll(palette.secondaryContainer),
+        backgroundColor: WidgetStatePropertyAll(scheme.secondaryContainer),
+        surfaceTintColor: WidgetStatePropertyAll(scheme.secondaryContainer),
         shape: WidgetStatePropertyAll(RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.0),
         )),
@@ -136,20 +136,20 @@ class ThemeProvider extends ChangeNotifier {
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         ),
-        backgroundColor: WidgetStatePropertyAll(palette.surfaceContainer),
-        surfaceTintColor: WidgetStatePropertyAll(palette.surfaceContainer),
+        backgroundColor: WidgetStatePropertyAll(scheme.surfaceContainer),
+        surfaceTintColor: WidgetStatePropertyAll(scheme.surfaceContainer),
       );
 
   InputDecoration inputDecoration(String labelText) => InputDecoration(
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: palette.outline, width: 2),
+          borderSide: BorderSide(color: scheme.outline, width: 2),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: palette.primary, width: 2),
+          borderSide: BorderSide(color: scheme.primary, width: 2),
         ),
         labelText: labelText,
-        labelStyle: TextStyle(color: palette.onSurfaceVariant),
-        floatingLabelStyle: TextStyle(color: palette.primary),
-        focusColor: palette.primary,
+        labelStyle: TextStyle(color: scheme.onSurfaceVariant),
+        floatingLabelStyle: TextStyle(color: scheme.primary),
+        focusColor: scheme.primary,
       );
 }

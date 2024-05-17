@@ -55,7 +55,7 @@ class _TitleBar_Small extends StatelessWidget {
                   child: Text(
                     "Coriander Player",
                     style: TextStyle(
-                      color: theme.palette.onSurface,
+                      color: theme.scheme.onSurface,
                       fontSize: 16,
                     ),
                   ),
@@ -90,7 +90,7 @@ class _TitleBar_Medium extends StatelessWidget {
                 Text(
                   "Coriander Player",
                   style: TextStyle(
-                    color: theme.palette.onSurface,
+                    color: theme.scheme.onSurface,
                     fontSize: 16,
                   ),
                 ),
@@ -144,7 +144,7 @@ class _TitleBar_Large extends StatelessWidget {
                         Text(
                           "Coriander Player",
                           style: TextStyle(
-                            color: theme.palette.onSurface,
+                            color: theme.scheme.onSurface,
                             fontSize: 16,
                           ),
                         ),
@@ -180,11 +180,11 @@ class _OpenDrawerBtn extends StatelessWidget {
       },
       icon: Icon(
         Symbols.side_navigation,
-        color: theme.palette.onSurface,
+        color: theme.scheme.onSurface,
       ),
-      hoverColor: theme.palette.onSurface.withOpacity(0.08),
-      highlightColor: theme.palette.onSurface.withOpacity(0.12),
-      splashColor: theme.palette.onSurface.withOpacity(0.12),
+      hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+      highlightColor: theme.scheme.onSurface.withOpacity(0.12),
+      splashColor: theme.scheme.onSurface.withOpacity(0.12),
     );
   }
 }
@@ -203,11 +203,11 @@ class _NavBackBtn extends StatelessWidget {
       },
       icon: Icon(
         Symbols.navigate_before,
-        color: theme.palette.onSurface,
+        color: theme.scheme.onSurface,
       ),
-      hoverColor: theme.palette.onSurface.withOpacity(0.08),
-      highlightColor: theme.palette.onSurface.withOpacity(0.12),
-      splashColor: theme.palette.onSurface.withOpacity(0.12),
+      hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+      highlightColor: theme.scheme.onSurface.withOpacity(0.12),
+      splashColor: theme.scheme.onSurface.withOpacity(0.12),
     );
   }
 }
@@ -257,11 +257,11 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
           onPressed: windowManager.minimize,
           icon: Icon(
             Symbols.remove,
-            color: theme.palette.onSurface,
+            color: theme.scheme.onSurface,
           ),
-          hoverColor: theme.palette.onSurface.withOpacity(0.08),
-          highlightColor: theme.palette.onSurface.withOpacity(0.12),
-          splashColor: theme.palette.onSurface.withOpacity(0.12),
+          hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+          highlightColor: theme.scheme.onSurface.withOpacity(0.12),
+          splashColor: theme.scheme.onSurface.withOpacity(0.12),
         ),
         FutureBuilder(
           future: windowManager.isMaximized(),
@@ -273,11 +273,11 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
                   : windowManager.maximize,
               icon: Icon(
                 isMaximized ? Symbols.fullscreen_exit : Symbols.fullscreen,
-                color: theme.palette.onSurface,
+                color: theme.scheme.onSurface,
               ),
-              hoverColor: theme.palette.onSurface.withOpacity(0.08),
-              highlightColor: theme.palette.onSurface.withOpacity(0.12),
-              splashColor: theme.palette.onSurface.withOpacity(0.12),
+              hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+              highlightColor: theme.scheme.onSurface.withOpacity(0.12),
+              splashColor: theme.scheme.onSurface.withOpacity(0.12),
             );
           },
         ),
@@ -290,11 +290,11 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
           },
           icon: Icon(
             Symbols.close,
-            color: theme.palette.onSurface,
+            color: theme.scheme.onSurface,
           ),
-          hoverColor: theme.palette.onSurface.withOpacity(0.08),
-          highlightColor: theme.palette.onSurface.withOpacity(0.12),
-          splashColor: theme.palette.onSurface.withOpacity(0.12),
+          hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+          highlightColor: theme.scheme.onSurface.withOpacity(0.12),
+          splashColor: theme.scheme.onSurface.withOpacity(0.12),
         ),
       ],
     );

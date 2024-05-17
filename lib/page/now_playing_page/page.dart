@@ -33,7 +33,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
         preferredSize: Size.fromHeight(80.0),
         child: NowPlayingPageTitleBar(),
       ),
-      backgroundColor: theme.palette.secondaryContainer,
+      backgroundColor: theme.scheme.secondaryContainer,
       body: ChangeNotifierProvider.value(
         value: PlayService.instance,
         builder: (context, _) {
@@ -177,7 +177,7 @@ class _CompactAudioInfo extends StatelessWidget {
               ? Icon(
                   Symbols.broken_image,
                   size: 48.0,
-                  color: theme.palette.onSecondaryContainer,
+                  color: theme.scheme.onSecondaryContainer,
                 )
               : FutureBuilder(
                   future: nowPlaying.cover,
@@ -187,7 +187,7 @@ class _CompactAudioInfo extends StatelessWidget {
                       return Icon(
                         Symbols.broken_image,
                         size: 48.0,
-                        color: theme.palette.onSecondaryContainer,
+                        color: theme.scheme.onSecondaryContainer,
                       );
                     }
                     return ClipRRect(
@@ -211,7 +211,7 @@ class _CompactAudioInfo extends StatelessWidget {
                 nowPlaying == null ? "Coriander Music" : nowPlaying.title,
                 maxLines: 1,
                 style: TextStyle(
-                  color: theme.palette.onSecondaryContainer,
+                  color: theme.scheme.onSecondaryContainer,
                   fontWeight: FontWeight.w600,
                   fontSize: 20.0,
                 ),
@@ -222,7 +222,7 @@ class _CompactAudioInfo extends StatelessWidget {
                     : "${nowPlaying.artist} - ${nowPlaying.album}",
                 maxLines: 1,
                 style: TextStyle(
-                  color: theme.palette.onSecondaryContainer,
+                  color: theme.scheme.onSecondaryContainer,
                 ),
               )
             ],
@@ -318,14 +318,14 @@ class _LyricViewBtn extends StatelessWidget {
     final theme = Provider.of<ThemeProvider>(context);
     return IconButton(
       onPressed: onTap,
-      hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
-      highlightColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
-      splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
+      hoverColor: theme.scheme.onSecondaryContainer.withOpacity(0.08),
+      highlightColor: theme.scheme.onSecondaryContainer.withOpacity(0.12),
+      splashColor: theme.scheme.onSecondaryContainer.withOpacity(0.12),
       icon: Icon(
         Symbols.lyrics,
         color: _viewMode == _ViewMode.withLyric
-            ? theme.palette.onSecondaryContainer
-            : theme.palette.onSecondaryContainer.withOpacity(0.5),
+            ? theme.scheme.onSecondaryContainer
+            : theme.scheme.onSecondaryContainer.withOpacity(0.5),
       ),
     );
   }
@@ -341,14 +341,14 @@ class _PlaylistViewBtn extends StatelessWidget {
     final theme = Provider.of<ThemeProvider>(context);
     return IconButton(
       onPressed: onTap,
-      hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
-      highlightColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
-      splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
+      hoverColor: theme.scheme.onSecondaryContainer.withOpacity(0.08),
+      highlightColor: theme.scheme.onSecondaryContainer.withOpacity(0.12),
+      splashColor: theme.scheme.onSecondaryContainer.withOpacity(0.12),
       icon: Icon(
         Symbols.queue_music,
         color: _viewMode == _ViewMode.withPlaylist
-            ? theme.palette.onSecondaryContainer
-            : theme.palette.onSecondaryContainer.withOpacity(0.5),
+            ? theme.scheme.onSecondaryContainer
+            : theme.scheme.onSecondaryContainer.withOpacity(0.5),
       ),
     );
   }
@@ -364,38 +364,38 @@ class _MoreActions extends StatelessWidget {
     final nowPlaying = playService.nowPlaying;
     final menuItemStyle = ButtonStyle(
       backgroundColor: WidgetStatePropertyAll(
-        theme.palette.surface,
+        theme.scheme.surface,
       ),
       foregroundColor: WidgetStatePropertyAll(
-        theme.palette.onSurface,
+        theme.scheme.onSurface,
       ),
       overlayColor: WidgetStatePropertyAll(
-        theme.palette.onSecondaryContainer.withOpacity(0.08),
+        theme.scheme.onSecondaryContainer.withOpacity(0.08),
       ),
     );
 
     return nowPlaying == null
         ? Icon(
             Symbols.more_vert,
-            color: theme.palette.onSecondaryContainer.withOpacity(0.5),
+            color: theme.scheme.onSecondaryContainer.withOpacity(0.5),
           )
         : MenuAnchor(
             style: MenuStyle(
               backgroundColor: WidgetStatePropertyAll(
-                theme.palette.surface,
+                theme.scheme.surface,
               ),
               surfaceTintColor: WidgetStatePropertyAll(
-                theme.palette.surface,
+                theme.scheme.surface,
               ),
             ),
             menuChildren: [
               SubmenuButton(
                 menuStyle: MenuStyle(
                   backgroundColor: WidgetStatePropertyAll(
-                    theme.palette.surface,
+                    theme.scheme.surface,
                   ),
                   surfaceTintColor: WidgetStatePropertyAll(
-                    theme.palette.surface,
+                    theme.scheme.surface,
                   ),
                 ),
                 style: menuItemStyle,
@@ -413,7 +413,7 @@ class _MoreActions extends StatelessWidget {
                     },
                     leadingIcon: Icon(
                       Symbols.people,
-                      color: theme.palette.onSurface,
+                      color: theme.scheme.onSurface,
                     ),
                     child: Text(nowPlaying.splitedArtists[i]),
                   ),
@@ -430,7 +430,7 @@ class _MoreActions extends StatelessWidget {
                 },
                 leadingIcon: Icon(
                   Symbols.album,
-                  color: theme.palette.onSurface,
+                  color: theme.scheme.onSurface,
                 ),
                 child: Text(nowPlaying.album),
               ),
@@ -444,7 +444,7 @@ class _MoreActions extends StatelessWidget {
                 },
                 leadingIcon: Icon(
                   Symbols.lyrics,
-                  color: theme.palette.onSurface,
+                  color: theme.scheme.onSurface,
                 ),
                 child: const Text("指定默认歌词"),
               ),
@@ -459,14 +459,14 @@ class _MoreActions extends StatelessWidget {
                   }
                 },
                 hoverColor:
-                    theme.palette.onSecondaryContainer.withOpacity(0.08),
+                    theme.scheme.onSecondaryContainer.withOpacity(0.08),
                 highlightColor:
-                    theme.palette.onSecondaryContainer.withOpacity(0.12),
+                    theme.scheme.onSecondaryContainer.withOpacity(0.12),
                 splashColor:
-                    theme.palette.onSecondaryContainer.withOpacity(0.12),
+                    theme.scheme.onSecondaryContainer.withOpacity(0.12),
                 icon: Icon(
                   Symbols.more_vert,
-                  color: theme.palette.onSecondaryContainer,
+                  color: theme.scheme.onSecondaryContainer,
                 ),
               );
             },
@@ -502,12 +502,12 @@ class _TogglePlayMode extends StatelessWidget {
               playMode.value = PlayMode.forward;
             }
           },
-          hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
-          highlightColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
-          splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
+          hoverColor: theme.scheme.onSecondaryContainer.withOpacity(0.08),
+          highlightColor: theme.scheme.onSecondaryContainer.withOpacity(0.12),
+          splashColor: theme.scheme.onSecondaryContainer.withOpacity(0.12),
           icon: Icon(
             result,
-            color: theme.palette.onSecondaryContainer,
+            color: theme.scheme.onSecondaryContainer,
           ),
         );
       },
@@ -529,12 +529,12 @@ class _ToggleShuffle extends StatelessWidget {
           onPressed: () {
             playService.toggleShuffle();
           },
-          hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
-          highlightColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
-          splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
+          hoverColor: theme.scheme.onSecondaryContainer.withOpacity(0.08),
+          highlightColor: theme.scheme.onSecondaryContainer.withOpacity(0.12),
+          splashColor: theme.scheme.onSecondaryContainer.withOpacity(0.12),
           icon: Icon(
             playService.shuffle.value ? Symbols.shuffle_on : Symbols.shuffle,
-            color: theme.palette.onSecondaryContainer,
+            color: theme.scheme.onSecondaryContainer,
           ),
         );
       },

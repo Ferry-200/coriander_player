@@ -40,7 +40,7 @@ class LyricSourceLabel extends StatelessWidget {
                   : PlayService.instance.useEmbeddedLyric,
               style: ButtonStyle(
                 overlayColor: WidgetStatePropertyAll(
-                  theme.palette.onSecondaryContainer.withOpacity(0.12),
+                  theme.scheme.onSecondaryContainer.withOpacity(0.12),
                 ),
               ),
               child: Text(
@@ -48,7 +48,7 @@ class LyricSourceLabel extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 12,
-                  color: theme.palette.onSecondaryContainer,
+                  color: theme.scheme.onSecondaryContainer,
                 ),
               ),
             );

@@ -43,7 +43,7 @@ class _RectangleProgressIndicatorState
       size: widget.size,
       painter: RectangleProgressPainter(
         progress: progress,
-        palette: theme.palette,
+        palette: theme.scheme,
       ),
       child: widget.child,
     );

@@ -43,12 +43,12 @@ class NowPlayingControls extends StatelessWidget {
     final theme = Provider.of<ThemeProvider>(context);
     final secondaryBtnStyle = ButtonStyle(
       backgroundColor: WidgetStatePropertyAll(
-        theme.palette.secondary,
+        theme.scheme.secondary,
       ),
-      foregroundColor: WidgetStatePropertyAll(theme.palette.onSecondary),
+      foregroundColor: WidgetStatePropertyAll(theme.scheme.onSecondary),
       fixedSize: const WidgetStatePropertyAll(Size(64, 64)),
       overlayColor: WidgetStatePropertyAll(
-        theme.palette.onSecondary.withOpacity(0.08),
+        theme.scheme.onSecondary.withOpacity(0.08),
       ),
     );
     return SizedBox(
@@ -60,7 +60,7 @@ class NowPlayingControls extends StatelessWidget {
           SizedBox(
             width: 156,
             child: Material(
-              color: theme.palette.primary,
+              color: theme.scheme.primary,
               borderRadius: BorderRadius.circular(32.0),
               child: StreamBuilder(
                 stream: playService.playerStateStream,
@@ -76,7 +76,7 @@ class NowPlayingControls extends StatelessWidget {
                   }
 
                   return InkWell(
-                    hoverColor: theme.palette.onPrimary.withOpacity(0.08),
+                    hoverColor: theme.scheme.onPrimary.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(32.0),
                     onTap: onTap,
                     child: Center(
@@ -84,7 +84,7 @@ class NowPlayingControls extends StatelessWidget {
                         snapshot.data! == PlayerState.playing
                             ? Symbols.pause
                             : Symbols.play_arrow,
-                        color: theme.palette.onPrimary,
+                        color: theme.scheme.onPrimary,
                       ),
                     ),
                   );
@@ -138,7 +138,7 @@ class PositionAndLength extends StatelessWidget {
             return Text(
               "$minute:$second",
               style: TextStyle(
-                color: theme.palette.onSecondaryContainer,
+                color: theme.scheme.onSecondaryContainer,
               ),
             );
           },
@@ -148,7 +148,7 @@ class PositionAndLength extends StatelessWidget {
         Text(
           nowPlaying == null ? "N/A" : "$lengthMinute:$lengthSecond",
           style: TextStyle(
-            color: theme.palette.onSecondaryContainer,
+            color: theme.scheme.onSecondaryContainer,
           ),
         ),
       ],
@@ -200,8 +200,8 @@ class NowPlayingProgressIndicatorState
             builder: (context, _) {
               return LinearProgressIndicator(
                 value: isDragging ? dragProgress.value : progress,
-                color: theme.palette.outline,
-                backgroundColor: theme.palette.outlineVariant,
+                color: theme.scheme.outline,
+                backgroundColor: theme.scheme.outlineVariant,
                 minHeight: 12.0,
                 borderRadius: BorderRadius.circular(6.0),
               );
@@ -236,7 +236,7 @@ class NowPlayingArtistAlbum extends StatelessWidget {
             : "${nowPlaying.artist} - ${nowPlaying.album}",
         maxLines: 1,
         style: TextStyle(
-          color: theme.palette.onSecondaryContainer,
+          color: theme.scheme.onSecondaryContainer,
         ),
       ),
     );
@@ -258,7 +258,7 @@ class NowPlayingTitle extends StatelessWidget {
         nowPlaying == null ? "Coriander Music" : nowPlaying.title,
         maxLines: 1,
         style: TextStyle(
-          color: theme.palette.onSecondaryContainer,
+          color: theme.scheme.onSecondaryContainer,
           fontWeight: FontWeight.w600,
           fontSize: 20,
         ),
@@ -282,7 +282,7 @@ class NowPlayingCover extends StatelessWidget {
               child: Icon(
                 Symbols.broken_image,
                 size: 400.0,
-                color: theme.palette.onSecondaryContainer,
+                color: theme.scheme.onSecondaryContainer,
               ),
             )
           : FutureBuilder(
@@ -294,7 +294,7 @@ class NowPlayingCover extends StatelessWidget {
                     child: Icon(
                       Symbols.broken_image,
                       size: 400.0,
-                      color: theme.palette.onSecondaryContainer,
+                      color: theme.scheme.onSecondaryContainer,
                     ),
                   );
                 }

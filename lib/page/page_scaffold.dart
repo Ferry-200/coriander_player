@@ -68,9 +68,9 @@ class PageScaffold extends StatelessWidget {
                 shape: WidgetStatePropertyAll(RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20))),
                 backgroundColor:
-                    WidgetStatePropertyAll(theme.palette.surfaceContainer),
+                    WidgetStatePropertyAll(theme.scheme.surfaceContainer),
                 surfaceTintColor:
-                    WidgetStatePropertyAll(theme.palette.surfaceContainer),
+                    WidgetStatePropertyAll(theme.scheme.surfaceContainer),
               );
 
               rowChildren = [
@@ -108,7 +108,7 @@ class PageScaffold extends StatelessWidget {
 
       return DecoratedBox(
         decoration: BoxDecoration(
-          color: theme.palette.surface,
+          color: theme.scheme.surface,
           borderRadius: BorderRadius.only(
             topLeft: screenType == ScreenType.small
                 ? Radius.zero
@@ -145,7 +145,7 @@ class PageScaffold extends StatelessWidget {
         title,
         style: TextStyle(
           fontSize: 32.0,
-          color: theme.palette.onSurface,
+          color: theme.scheme.onSurface,
         ),
         overflow: TextOverflow.ellipsis,
       ),
@@ -161,7 +161,7 @@ class PageScaffold extends StatelessWidget {
             title,
             style: TextStyle(
               fontSize: 28.0,
-              color: theme.palette.onSurface,
+              color: theme.scheme.onSurface,
             ),
             overflow: TextOverflow.ellipsis,
           ),
@@ -169,7 +169,7 @@ class PageScaffold extends StatelessWidget {
             subtitle!,
             style: TextStyle(
               fontSize: 14.0,
-              color: theme.palette.onSurface,
+              color: theme.scheme.onSurface,
             ),
             overflow: TextOverflow.ellipsis,
           )

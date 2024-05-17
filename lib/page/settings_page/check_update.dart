@@ -53,9 +53,9 @@ class _CheckForUpdateState extends State<CheckForUpdate> {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text(
                         "无新版本",
-                        style: TextStyle(color: theme.palette.onSecondary),
+                        style: TextStyle(color: theme.scheme.onSecondary),
                       ),
-                      backgroundColor: theme.palette.secondary,
+                      backgroundColor: theme.scheme.secondary,
                     ));
                   }
                 }
@@ -73,8 +73,8 @@ class _CheckForUpdateState extends State<CheckForUpdate> {
         width: 16.0,
         height: 16.0,
         child: CircularProgressIndicator(
-          color: theme.palette.primary,
-          backgroundColor: theme.palette.primaryContainer,
+          color: theme.scheme.primary,
+          backgroundColor: theme.scheme.primaryContainer,
         ),
       ));
     }
@@ -100,20 +100,20 @@ class NewestUpdateView extends StatelessWidget {
     final theme = Provider.of<ThemeProvider>(context);
     final textButtonStyle = ButtonStyle(
       overlayColor: WidgetStatePropertyAll(
-        theme.palette.onSurface.withOpacity(0.08),
+        theme.scheme.onSurface.withOpacity(0.08),
       ),
-      foregroundColor: WidgetStatePropertyAll(theme.palette.onSurface),
+      foregroundColor: WidgetStatePropertyAll(theme.scheme.onSurface),
     );
-    final onSurface = TextStyle(color: theme.palette.onSurface);
-    final onSurfaceVariant = TextStyle(color: theme.palette.onSurfaceVariant);
+    final onSurface = TextStyle(color: theme.scheme.onSurface);
+    final onSurfaceVariant = TextStyle(color: theme.scheme.onSurfaceVariant);
     final primary = TextStyle(
-      color: theme.palette.primary,
+      color: theme.scheme.primary,
       decoration: TextDecoration.underline,
-      decorationColor: theme.palette.primary,
+      decorationColor: theme.scheme.primary,
     );
     return Dialog(
-      backgroundColor: theme.palette.surface,
-      surfaceTintColor: theme.palette.surface,
+      backgroundColor: theme.scheme.surface,
+      surfaceTintColor: theme.scheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -128,7 +128,7 @@ class NewestUpdateView extends StatelessWidget {
                   Text(
                     release.name ?? "新版本",
                     style: TextStyle(
-                      color: theme.palette.onSurface,
+                      color: theme.scheme.onSurface,
                       fontSize: 18.0,
                       fontWeight: FontWeight.w600,
                     ),
@@ -136,7 +136,7 @@ class NewestUpdateView extends StatelessWidget {
                   const SizedBox(width: 16.0),
                   Text(
                     "${release.tagName}\n${release.publishedAt}",
-                    style: TextStyle(color: theme.palette.onSurface),
+                    style: TextStyle(color: theme.scheme.onSurface),
                   ),
                 ],
               ),

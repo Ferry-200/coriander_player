@@ -67,7 +67,7 @@ class _SearchPageState extends State<SearchPage> {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: theme.palette.surface,
+        color: theme.scheme.surface,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(8.0),
           bottomRight: Radius.circular(8.0),
@@ -81,7 +81,7 @@ class _SearchPageState extends State<SearchPage> {
             Text(
               "搜索",
               style: TextStyle(
-                color: theme.palette.onSurface,
+                color: theme.scheme.onSurface,
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
               ),
@@ -94,8 +94,8 @@ class _SearchPageState extends State<SearchPage> {
 
                 /// when 'enter' is pressed
                 onSubmitted: (_) => toUnionPage(),
-                cursorColor: theme.palette.primary,
-                style: TextStyle(color: theme.palette.onSurface),
+                cursorColor: theme.scheme.primary,
+                style: TextStyle(color: theme.scheme.onSurface),
                 decoration: InputDecoration(
                   suffixIcon: Padding(
                     padding: const EdgeInsets.only(right: 12.0),
@@ -104,21 +104,21 @@ class _SearchPageState extends State<SearchPage> {
                       onPressed: toUnionPage,
                     ),
                   ),
-                  suffixIconColor: theme.palette.onSurface,
+                  suffixIconColor: theme.scheme.onSurface,
                   hintText: "搜索歌曲、艺术家、专辑",
                   hintStyle: TextStyle(
-                    color: theme.palette.onSurfaceVariant,
+                    color: theme.scheme.onSurfaceVariant,
                   ),
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: theme.palette.outline,
+                      color: theme.scheme.outline,
                       width: 1.0,
                     ),
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: theme.palette.primary,
+                      color: theme.scheme.primary,
                       width: 2.0,
                     ),
                     borderRadius: BorderRadius.circular(8.0),

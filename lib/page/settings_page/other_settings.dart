@@ -25,18 +25,18 @@ class _DefaultLyricSourceControlState extends State<DefaultLyricSourceControl> {
     final theme = Provider.of<ThemeProvider>(context);
 
     final leftForeColor = settings.localLyricFirst
-        ? theme.palette.onSecondaryContainer
-        : theme.palette.onSurface;
+        ? theme.scheme.onSecondaryContainer
+        : theme.scheme.onSurface;
     final rightForeColor = !settings.localLyricFirst
-        ? theme.palette.onSecondaryContainer
-        : theme.palette.onSurface;
+        ? theme.scheme.onSecondaryContainer
+        : theme.scheme.onSurface;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           "首选歌词来源",
           style: TextStyle(
-            color: theme.palette.onSurface,
+            color: theme.scheme.onSurface,
             fontSize: 18.0,
           ),
         ),
@@ -100,7 +100,7 @@ class _AudioLibraryEditFieldState extends State<AudioLibraryEditField> {
               Text(
                 "文件夹管理",
                 style: TextStyle(
-                  color: theme.palette.onSurface,
+                  color: theme.scheme.onSurface,
                   fontSize: 18.0,
                 ),
               ),
@@ -116,12 +116,12 @@ class _AudioLibraryEditFieldState extends State<AudioLibraryEditField> {
                         );
                       });
                     },
-                    hoverColor: theme.palette.onSurface.withOpacity(0.08),
-                    highlightColor: theme.palette.onSurface.withOpacity(0.12),
-                    splashColor: theme.palette.onSurface.withOpacity(0.12),
+                    hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+                    highlightColor: theme.scheme.onSurface.withOpacity(0.12),
+                    splashColor: theme.scheme.onSurface.withOpacity(0.12),
                     icon: Icon(
                       Symbols.add,
-                      color: theme.palette.onSurface,
+                      color: theme.scheme.onSurface,
                     ),
                   ),
                   const SizedBox(width: 8.0),
@@ -190,21 +190,21 @@ class __BuildIndexButtonState extends State<_BuildIndexButton> {
 
     return IconButton(
       onPressed: isLoading ? null : save,
-      hoverColor: theme.palette.onSurface.withOpacity(0.08),
-      highlightColor: theme.palette.onSurface.withOpacity(0.12),
-      splashColor: theme.palette.onSurface.withOpacity(0.12),
+      hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+      highlightColor: theme.scheme.onSurface.withOpacity(0.12),
+      splashColor: theme.scheme.onSurface.withOpacity(0.12),
       icon: isLoading
           ? SizedBox(
               width: 18,
               height: 18,
               child: CircularProgressIndicator(
-                color: theme.palette.primary,
-                backgroundColor: theme.palette.surface,
+                color: theme.scheme.primary,
+                backgroundColor: theme.scheme.surface,
               ),
             )
           : Icon(
               Symbols.refresh,
-              color: theme.palette.onSurface,
+              color: theme.scheme.onSurface,
             ),
     );
   }

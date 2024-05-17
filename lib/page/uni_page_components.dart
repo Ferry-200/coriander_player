@@ -50,7 +50,7 @@ class SortMethodComboBox<T> extends StatelessWidget {
           style: theme.menuItemStyle,
           leadingIcon: Icon(
             sortMethods[i].icon,
-            color: theme.palette.onSecondaryContainer,
+            color: theme.scheme.onSecondaryContainer,
           ),
           child: Text(sortMethods[i].name),
           onPressed: () => setSortMethod(sortMethods[i]),
@@ -66,9 +66,9 @@ class SortMethodComboBox<T> extends StatelessWidget {
           width: 149.0,
           child: Material(
             borderRadius: borderRadius,
-            color: theme.palette.secondaryContainer,
+            color: theme.scheme.secondaryContainer,
             child: InkWell(
-              hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
+              hoverColor: theme.scheme.onSecondaryContainer.withOpacity(0.08),
               borderRadius: borderRadius,
               onTap: isOpen ? menuController.close : menuController.open,
               child: Padding(
@@ -78,14 +78,14 @@ class SortMethodComboBox<T> extends StatelessWidget {
                     Icon(
                       Symbols.sort,
                       size: 24,
-                      color: theme.palette.onSecondaryContainer,
+                      color: theme.scheme.onSecondaryContainer,
                     ),
                     const SizedBox(width: 8.0),
                     Expanded(
                       child: Text(
                         currSortMethod.name,
                         style: TextStyle(
-                          color: theme.palette.onSecondaryContainer,
+                          color: theme.scheme.onSecondaryContainer,
                         ),
                       ),
                     ),
@@ -93,7 +93,7 @@ class SortMethodComboBox<T> extends StatelessWidget {
                     Icon(
                       isOpen ? Symbols.arrow_drop_up : Symbols.arrow_drop_down,
                       size: 24,
-                      color: theme.palette.onSecondaryContainer,
+                      color: theme.scheme.onSecondaryContainer,
                     ),
                   ],
                 ),

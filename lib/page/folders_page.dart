@@ -87,9 +87,9 @@ class AudioFolderTile extends StatelessWidget {
       subtitle: Text(
         "修改日期：${DateTime.fromMillisecondsSinceEpoch(audioFolder.modified * 1000).toString()}",
       ),
-      textColor: theme.palette.onSurface,
-      hoverColor: theme.palette.onSurface.withOpacity(0.08),
-      splashColor: theme.palette.onSurface.withOpacity(0.12),
+      textColor: theme.scheme.onSurface,
+      hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+      splashColor: theme.scheme.onSurface.withOpacity(0.12),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8.0),
       ),

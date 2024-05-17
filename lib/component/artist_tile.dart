@@ -23,9 +23,9 @@ class ArtistTile extends StatelessWidget {
         extra: artist,
       ),
       borderRadius: BorderRadius.circular(8.0),
-      hoverColor: theme.palette.onSurface.withOpacity(0.08),
-      highlightColor: theme.palette.onSurface.withOpacity(0.12),
-      splashColor: theme.palette.onSurface.withOpacity(0.12),
+      hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+      highlightColor: theme.scheme.onSurface.withOpacity(0.12),
+      splashColor: theme.scheme.onSurface.withOpacity(0.12),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
@@ -36,7 +36,7 @@ class ArtistTile extends StatelessWidget {
                 if (snapshot.data == null) {
                   return Icon(
                     Symbols.broken_image,
-                    color: theme.palette.onSurface,
+                    color: theme.scheme.onSurface,
                     size: 48,
                   );
                 }
@@ -55,7 +55,7 @@ class ArtistTile extends StatelessWidget {
                 child: Text(
                   artist.name,
                   style: TextStyle(
-                    color: theme.palette.onSurface,
+                    color: theme.scheme.onSurface,
                   ),
                 ),
               ),

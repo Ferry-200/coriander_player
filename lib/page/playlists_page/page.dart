@@ -77,7 +77,7 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
                 removePlaylistBtn(i, theme),
               ],
             ),
-            textColor: theme.palette.onSurface,
+            textColor: theme.scheme.onSurface,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8.0),
             ),
@@ -96,12 +96,12 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
       onPressed: () => setState(() {
         PLAYLISTS.remove(PLAYLISTS[i]);
       }),
-      hoverColor: theme.palette.error.withOpacity(0.08),
-      highlightColor: theme.palette.error.withOpacity(0.12),
-      splashColor: theme.palette.error.withOpacity(0.12),
+      hoverColor: theme.scheme.error.withOpacity(0.08),
+      highlightColor: theme.scheme.error.withOpacity(0.12),
+      splashColor: theme.scheme.error.withOpacity(0.12),
       icon: Icon(
         Symbols.delete,
-        color: theme.palette.error,
+        color: theme.scheme.error,
       ),
     );
   }
@@ -109,12 +109,12 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
   IconButton editPlaylistBtn(BuildContext context, int i, ThemeProvider theme) {
     return IconButton(
       onPressed: () => editPlaylist(context, PLAYLISTS[i]),
-      hoverColor: theme.palette.onSurface.withOpacity(0.08),
-      highlightColor: theme.palette.onSurface.withOpacity(0.12),
-      splashColor: theme.palette.onSurface.withOpacity(0.12),
+      hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+      highlightColor: theme.scheme.onSurface.withOpacity(0.12),
+      splashColor: theme.scheme.onSurface.withOpacity(0.12),
       icon: Icon(
         Symbols.edit,
-        color: theme.palette.onSurface,
+        color: theme.scheme.onSurface,
       ),
     );
   }
@@ -131,8 +131,8 @@ class _NewPlaylistDialog extends StatelessWidget {
 
     return Dialog(
       insetPadding: EdgeInsets.zero,
-      backgroundColor: theme.palette.surface,
-      surfaceTintColor: theme.palette.surface,
+      backgroundColor: theme.scheme.surface,
+      surfaceTintColor: theme.scheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
       ),
@@ -149,7 +149,7 @@ class _NewPlaylistDialog extends StatelessWidget {
                 child: Text(
                   "新建歌单",
                   style: TextStyle(
-                    color: theme.palette.onSurface,
+                    color: theme.scheme.onSurface,
                     fontSize: 18.0,
                     fontWeight: FontWeight.w600,
                   ),
@@ -160,8 +160,8 @@ class _NewPlaylistDialog extends StatelessWidget {
                 onSubmitted: (value) {
                   Navigator.pop(context, value);
                 },
-                cursorColor: theme.palette.primary,
-                style: TextStyle(color: theme.palette.onSurface),
+                cursorColor: theme.scheme.primary,
+                style: TextStyle(color: theme.scheme.onSurface),
                 decoration: theme.inputDecoration("歌单名称"),
               ),
               const SizedBox(height: 16.0),
@@ -172,13 +172,13 @@ class _NewPlaylistDialog extends StatelessWidget {
                     onPressed: () => Navigator.pop(context),
                     style: ButtonStyle(
                       backgroundColor: WidgetStatePropertyAll(
-                        theme.palette.surface,
+                        theme.scheme.surface,
                       ),
                       foregroundColor: WidgetStatePropertyAll(
-                        theme.palette.onSurface,
+                        theme.scheme.onSurface,
                       ),
                       overlayColor: WidgetStatePropertyAll(
-                        theme.palette.onSurface.withOpacity(0.08),
+                        theme.scheme.onSurface.withOpacity(0.08),
                       ),
                     ),
                     child: const Text("取消"),
@@ -190,13 +190,13 @@ class _NewPlaylistDialog extends StatelessWidget {
                     },
                     style: ButtonStyle(
                       backgroundColor: WidgetStatePropertyAll(
-                        theme.palette.surface,
+                        theme.scheme.surface,
                       ),
                       foregroundColor: WidgetStatePropertyAll(
-                        theme.palette.onSurface,
+                        theme.scheme.onSurface,
                       ),
                       overlayColor: WidgetStatePropertyAll(
-                        theme.palette.onSurface.withOpacity(0.08),
+                        theme.scheme.onSurface.withOpacity(0.08),
                       ),
                     ),
                     child: const Text("创建"),
@@ -222,8 +222,8 @@ class _EditPlaylistDialog extends StatelessWidget {
 
     return Dialog(
       insetPadding: EdgeInsets.zero,
-      backgroundColor: theme.palette.surface,
-      surfaceTintColor: theme.palette.surface,
+      backgroundColor: theme.scheme.surface,
+      surfaceTintColor: theme.scheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
       ),
@@ -240,7 +240,7 @@ class _EditPlaylistDialog extends StatelessWidget {
                 child: Text(
                   "修改歌单",
                   style: TextStyle(
-                    color: theme.palette.onSurface,
+                    color: theme.scheme.onSurface,
                     fontSize: 18.0,
                     fontWeight: FontWeight.w600,
                   ),
@@ -251,8 +251,8 @@ class _EditPlaylistDialog extends StatelessWidget {
                 onSubmitted: (value) {
                   Navigator.pop(context, value);
                 },
-                cursorColor: theme.palette.primary,
-                style: TextStyle(color: theme.palette.onSurface),
+                cursorColor: theme.scheme.primary,
+                style: TextStyle(color: theme.scheme.onSurface),
                 decoration: theme.inputDecoration("新歌单名称"),
               ),
               const SizedBox(height: 16.0),
@@ -263,13 +263,13 @@ class _EditPlaylistDialog extends StatelessWidget {
                     onPressed: () => Navigator.pop(context),
                     style: ButtonStyle(
                       backgroundColor: WidgetStatePropertyAll(
-                        theme.palette.surface,
+                        theme.scheme.surface,
                       ),
                       foregroundColor: WidgetStatePropertyAll(
-                        theme.palette.onSurface,
+                        theme.scheme.onSurface,
                       ),
                       overlayColor: WidgetStatePropertyAll(
-                        theme.palette.onSurface.withOpacity(0.08),
+                        theme.scheme.onSurface.withOpacity(0.08),
                       ),
                     ),
                     child: const Text("取消"),
@@ -281,13 +281,13 @@ class _EditPlaylistDialog extends StatelessWidget {
                     },
                     style: ButtonStyle(
                       backgroundColor: WidgetStatePropertyAll(
-                        theme.palette.surface,
+                        theme.scheme.surface,
                       ),
                       foregroundColor: WidgetStatePropertyAll(
-                        theme.palette.onSurface,
+                        theme.scheme.onSurface,
                       ),
                       overlayColor: WidgetStatePropertyAll(
-                        theme.palette.onSurface.withOpacity(0.08),
+                        theme.scheme.onSurface.withOpacity(0.08),
                       ),
                     ),
                     child: const Text("创建"),
@@ -349,11 +349,11 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage> {
                       },
                       icon: Icon(
                         Symbols.delete,
-                        color: theme.palette.error,
+                        color: theme.scheme.error,
                       ),
-                      hoverColor: theme.palette.error.withOpacity(0.08),
-                      highlightColor: theme.palette.error.withOpacity(0.12),
-                      splashColor: theme.palette.error.withOpacity(0.12),
+                      hoverColor: theme.scheme.error.withOpacity(0.08),
+                      highlightColor: theme.scheme.error.withOpacity(0.12),
+                      splashColor: theme.scheme.error.withOpacity(0.12),
                     ),
                   ),
                 )

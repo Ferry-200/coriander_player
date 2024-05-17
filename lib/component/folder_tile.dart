@@ -20,8 +20,8 @@ class FolderTile extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8.0),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: theme.palette.surface,
-          border: Border.all(color: theme.palette.outline),
+          color: theme.scheme.surface,
+          border: Border.all(color: theme.scheme.outline),
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Padding(
@@ -33,19 +33,19 @@ class FolderTile extends StatelessWidget {
                 child: Text(
                   path,
                   style: TextStyle(
-                    color: theme.palette.onSurface,
+                    color: theme.scheme.onSurface,
                     fontSize: 16.0,
                   ),
                 ),
               ),
               IconButton(
                 onPressed: onDelete,
-                hoverColor: theme.palette.error.withOpacity(0.08),
-                highlightColor: theme.palette.error.withOpacity(0.12),
-                splashColor: theme.palette.error.withOpacity(0.12),
+                hoverColor: theme.scheme.error.withOpacity(0.08),
+                highlightColor: theme.scheme.error.withOpacity(0.12),
+                splashColor: theme.scheme.error.withOpacity(0.12),
                 icon: Icon(
                   Symbols.delete,
-                  color: theme.palette.error,
+                  color: theme.scheme.error,
                 ),
               ),
             ],

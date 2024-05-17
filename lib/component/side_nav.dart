@@ -31,8 +31,8 @@ class _SideNavItem_Medium extends StatelessWidget {
         children: [
           Material(
             color: isSelected
-                ? theme.palette.secondaryContainer
-                : theme.palette.surfaceContainer,
+                ? theme.scheme.secondaryContainer
+                : theme.scheme.surfaceContainer,
             borderRadius: BorderRadius.circular(24.0),
             child: InkWell(
               borderRadius: BorderRadius.circular(24.0),
@@ -43,16 +43,16 @@ class _SideNavItem_Medium extends StatelessWidget {
                 }
               },
               hoverColor: (isSelected
-                      ? theme.palette.onSecondaryContainer
-                      : theme.palette.onSurface)
+                      ? theme.scheme.onSecondaryContainer
+                      : theme.scheme.onSurface)
                   .withOpacity(0.08),
               highlightColor: (isSelected
-                      ? theme.palette.onSecondaryContainer
-                      : theme.palette.onSurface)
+                      ? theme.scheme.onSecondaryContainer
+                      : theme.scheme.onSurface)
                   .withOpacity(0.12),
               splashColor: (isSelected
-                      ? theme.palette.onSecondaryContainer
-                      : theme.palette.onSurface)
+                      ? theme.scheme.onSecondaryContainer
+                      : theme.scheme.onSurface)
                   .withOpacity(0.12),
               child: Center(
                 child: Padding(
@@ -61,8 +61,8 @@ class _SideNavItem_Medium extends StatelessWidget {
                     icon,
                     size: 24,
                     color: isSelected
-                        ? theme.palette.onSecondaryContainer
-                        : theme.palette.onSurface,
+                        ? theme.scheme.onSecondaryContainer
+                        : theme.scheme.onSurface,
                   ),
                 ),
               ),
@@ -71,7 +71,7 @@ class _SideNavItem_Medium extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: theme.palette.onSurface,
+              color: theme.scheme.onSurface,
             ),
           )
         ],
@@ -101,8 +101,8 @@ class _SideNavItem_Large extends StatelessWidget {
       height: 48.0,
       child: Material(
         color: isSelected
-            ? theme.palette.secondaryContainer
-            : theme.palette.surfaceContainer,
+            ? theme.scheme.secondaryContainer
+            : theme.scheme.surfaceContainer,
         borderRadius: BorderRadius.circular(24.0),
         child: InkWell(
           borderRadius: BorderRadius.circular(24.0),
@@ -113,16 +113,16 @@ class _SideNavItem_Large extends StatelessWidget {
             }
           },
           hoverColor: (isSelected
-                  ? theme.palette.onSecondaryContainer
-                  : theme.palette.onSurface)
+                  ? theme.scheme.onSecondaryContainer
+                  : theme.scheme.onSurface)
               .withOpacity(0.08),
           highlightColor: (isSelected
-                  ? theme.palette.onSecondaryContainer
-                  : theme.palette.onSurface)
+                  ? theme.scheme.onSecondaryContainer
+                  : theme.scheme.onSurface)
               .withOpacity(0.12),
           splashColor: (isSelected
-                  ? theme.palette.onSecondaryContainer
-                  : theme.palette.onSurface)
+                  ? theme.scheme.onSecondaryContainer
+                  : theme.scheme.onSurface)
               .withOpacity(0.12),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14.0),
@@ -132,8 +132,8 @@ class _SideNavItem_Large extends StatelessWidget {
                   icon,
                   size: 24,
                   color: isSelected
-                      ? theme.palette.onSecondaryContainer
-                      : theme.palette.onSurface,
+                      ? theme.scheme.onSecondaryContainer
+                      : theme.scheme.onSurface,
                 ),
                 const SizedBox(width: 16.0),
                 Expanded(
@@ -141,8 +141,8 @@ class _SideNavItem_Large extends StatelessWidget {
                     label,
                     style: TextStyle(
                       color: isSelected
-                          ? theme.palette.onSecondaryContainer
-                          : theme.palette.onSurface,
+                          ? theme.scheme.onSecondaryContainer
+                          : theme.scheme.onSurface,
                       fontSize: 16,
                     ),
                   ),
@@ -228,7 +228,7 @@ class SideNav extends StatelessWidget {
     return ResponsiveBuilder(builder: (context, screenType) {
       return DecoratedBox(
         decoration: BoxDecoration(
-          color: theme.palette.surfaceContainer,
+          color: theme.scheme.surfaceContainer,
           borderRadius: const BorderRadius.horizontal(
             right: Radius.circular(12.0),
           ),

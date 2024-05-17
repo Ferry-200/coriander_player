@@ -38,7 +38,7 @@ class _AppShell_Small extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      backgroundColor: theme.palette.surfaceContainer,
+      backgroundColor: theme.scheme.surfaceContainer,
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(48.0),
         child: TitleBar(),
@@ -58,7 +58,7 @@ class _AppShell_Large extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      backgroundColor: theme.palette.surfaceContainer,
+      backgroundColor: theme.scheme.surfaceContainer,
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(48.0),
         child: TitleBar(),

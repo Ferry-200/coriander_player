@@ -39,22 +39,22 @@ class _UpdatingDialogState extends State<UpdatingDialog> {
     final theme = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
-      backgroundColor: theme.palette.surface,
+      backgroundColor: theme.scheme.surface,
       body: SimpleDialog(
         title: const Text("正在更新数据库"),
-        titleTextStyle: TextStyle(color: theme.palette.onSurface),
+        titleTextStyle: TextStyle(color: theme.scheme.onSurface),
         elevation: 4,
         shadowColor: Colors.black,
-        backgroundColor: theme.palette.surface,
-        surfaceTintColor: theme.palette.surface,
+        backgroundColor: theme.scheme.surface,
+        surfaceTintColor: theme.scheme.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         children: [
           Center(
             child: FutureBuilder(
               future: updateFuture,
               builder: (context, snapshot) => CircularProgressIndicator(
-                backgroundColor: theme.palette.primaryContainer,
-                color: theme.palette.primary,
+                backgroundColor: theme.scheme.primaryContainer,
+                color: theme.scheme.primary,
               ),
             ),
           )

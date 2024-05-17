@@ -23,7 +23,7 @@ class WelcomingPage extends StatelessWidget {
     final theme = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
-      backgroundColor: theme.palette.surface,
+      backgroundColor: theme.scheme.surface,
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(48.0),
         child: _TitleBar(),
@@ -36,7 +36,7 @@ class WelcomingPage extends StatelessWidget {
             Text(
               "你的音乐都在哪些文件夹呢？",
               style: TextStyle(
-                color: theme.palette.onSurface,
+                color: theme.scheme.onSurface,
                 fontSize: 22,
               ),
             ),
@@ -176,8 +176,8 @@ class __SaveButtonState extends State<_SaveButton> {
               width: 18,
               height: 18,
               child: CircularProgressIndicator(
-                color: theme.palette.primary,
-                backgroundColor: theme.palette.primaryContainer,
+                color: theme.scheme.primary,
+                backgroundColor: theme.scheme.primaryContainer,
               ),
             )
           : const Icon(Symbols.save),
@@ -207,14 +207,14 @@ class _TitleBar extends StatelessWidget {
                   children: [
                     Icon(
                       Symbols.music_note,
-                      color: theme.palette.onSurface,
+                      color: theme.scheme.onSurface,
                       size: 24.0,
                     ),
                     const SizedBox(width: 8.0),
                     Text(
                       "Coriander Player",
                       style: TextStyle(
-                        color: theme.palette.onSurface,
+                        color: theme.scheme.onSurface,
                         fontSize: 16,
                       ),
                     ),

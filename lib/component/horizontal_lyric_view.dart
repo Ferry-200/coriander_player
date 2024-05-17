@@ -18,7 +18,7 @@ class HorizontalLyricView extends StatelessWidget {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: theme.palette.secondaryContainer,
+        color: theme.scheme.secondaryContainer,
         borderRadius: BorderRadius.circular(16.0),
       ),
       child: const _LyricHorizontalScrollArea(),
@@ -132,7 +132,7 @@ class _LyricHorizontalScrollAreaState
           child: Text(
             currContent,
             style: TextStyle(
-              color: theme.palette.onSecondaryContainer,
+              color: theme.scheme.onSecondaryContainer,
             ),
           ),
         ),

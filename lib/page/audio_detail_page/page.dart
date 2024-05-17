@@ -27,7 +27,7 @@ class AudioDetailPage extends StatelessWidget {
     final lyric = Lrc.fromAudioPath(audio, separator: "\n");
 
     return Material(
-      color: theme.palette.surface,
+      color: theme.scheme.surface,
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(8.0),
         bottomRight: Radius.circular(8.0),
@@ -48,7 +48,7 @@ class AudioDetailPage extends StatelessWidget {
                     if (snapshot.data == null) {
                       return Icon(
                         Symbols.broken_image,
-                        color: theme.palette.onSurface,
+                        color: theme.scheme.onSurface,
                         size: 200,
                       );
                     }
@@ -66,7 +66,7 @@ class AudioDetailPage extends StatelessWidget {
                   audio.title,
                   style: TextStyle(
                     fontSize: 22,
-                    color: theme.palette.onSurface,
+                    color: theme.scheme.onSurface,
                   ),
                 ),
               ],
@@ -78,7 +78,7 @@ class AudioDetailPage extends StatelessWidget {
               "艺术家",
               style: TextStyle(
                 fontSize: 22,
-                color: theme.palette.onSurface,
+                color: theme.scheme.onSurface,
               ),
             ),
             space,
@@ -102,7 +102,7 @@ class AudioDetailPage extends StatelessWidget {
               "专辑",
               style: TextStyle(
                 fontSize: 22,
-                color: theme.palette.onSurface,
+                color: theme.scheme.onSurface,
               ),
             ),
             space,
@@ -117,7 +117,7 @@ class AudioDetailPage extends StatelessWidget {
                   "路径",
                   style: TextStyle(
                     fontSize: 22,
-                    color: theme.palette.onSurface,
+                    color: theme.scheme.onSurface,
                   ),
                 ),
                 TextButton(
@@ -129,9 +129,9 @@ class AudioDetailPage extends StatelessWidget {
                         SnackBar(
                           content: Text(
                             "打开失败",
-                            style: TextStyle(color: theme.palette.onSecondary),
+                            style: TextStyle(color: theme.scheme.onSecondary),
                           ),
-                          backgroundColor: theme.palette.secondary,
+                          backgroundColor: theme.scheme.secondary,
                         ),
                       );
                     }
@@ -145,7 +145,7 @@ class AudioDetailPage extends StatelessWidget {
               audio.path,
               style: TextStyle(
                 fontSize: 16,
-                color: theme.palette.onSurface,
+                color: theme.scheme.onSurface,
               ),
             ),
             space,
@@ -155,7 +155,7 @@ class AudioDetailPage extends StatelessWidget {
               "修改时间",
               style: TextStyle(
                 fontSize: 22,
-                color: theme.palette.onSurface,
+                color: theme.scheme.onSurface,
               ),
             ),
             space,
@@ -164,7 +164,7 @@ class AudioDetailPage extends StatelessWidget {
                   .toString(),
               style: TextStyle(
                 fontSize: 16,
-                color: theme.palette.onSurface,
+                color: theme.scheme.onSurface,
               ),
             ),
             space,
@@ -174,7 +174,7 @@ class AudioDetailPage extends StatelessWidget {
               "创建时间",
               style: TextStyle(
                 fontSize: 22,
-                color: theme.palette.onSurface,
+                color: theme.scheme.onSurface,
               ),
             ),
             space,
@@ -183,7 +183,7 @@ class AudioDetailPage extends StatelessWidget {
                   .toString(),
               style: TextStyle(
                 fontSize: 16,
-                color: theme.palette.onSurface,
+                color: theme.scheme.onSurface,
               ),
             ),
             space,
@@ -195,7 +195,7 @@ class AudioDetailPage extends StatelessWidget {
                   "歌词",
                   style: TextStyle(
                     fontSize: 22,
-                    color: theme.palette.onSurface,
+                    color: theme.scheme.onSurface,
                   ),
                 ),
                 FutureBuilder(
@@ -207,7 +207,7 @@ class AudioDetailPage extends StatelessWidget {
                       "（${snapshot.data!.source.name}）",
                       style: TextStyle(
                         fontSize: 22,
-                        color: theme.palette.onSurface,
+                        color: theme.scheme.onSurface,
                       ),
                     );
                   },
@@ -225,7 +225,7 @@ class AudioDetailPage extends StatelessWidget {
                       "无",
                       style: TextStyle(
                         fontSize: 16,
-                        color: theme.palette.onSurface,
+                        color: theme.scheme.onSurface,
                       ),
                     );
                   }
@@ -238,14 +238,14 @@ class AudioDetailPage extends StatelessWidget {
                           snapshot.data!.lines[i].start.toString(),
                           style: TextStyle(
                             fontSize: 16,
-                            color: theme.palette.onSurface,
+                            color: theme.scheme.onSurface,
                           ),
                         ),
                         subtitle: Text(
                           (snapshot.data!.lines[i] as LrcLine).content,
                           style: TextStyle(
                             fontSize: 16,
-                            color: theme.palette.onSurface,
+                            color: theme.scheme.onSurface,
                           ),
                         ),
                       );

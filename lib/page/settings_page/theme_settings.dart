@@ -22,12 +22,12 @@ class _ThemeSelectorState extends State<ThemeSelector> {
     4287059351,
     4292356666,
     4293706294,
-    ThemeProvider.instance.palette.seed,
+    ThemeProvider.instance.scheme.seed,
   ];
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
-    themeCollection.last = theme.palette.seed;
+    themeCollection.last = theme.scheme.seed;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,7 +35,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
         Text(
           "默认主题色",
           style: TextStyle(
-            color: theme.palette.onSurface,
+            color: theme.scheme.onSurface,
             fontSize: 18.0,
           ),
         ),
@@ -110,11 +110,11 @@ class _ThemeModeControlState extends State<ThemeModeControl> {
     final theme = Provider.of<ThemeProvider>(context);
 
     final leftForeColor = settings.themeMode == Brightness.light
-        ? theme.palette.onSecondaryContainer
-        : theme.palette.onSurface;
+        ? theme.scheme.onSecondaryContainer
+        : theme.scheme.onSurface;
     final rightForeColor = settings.themeMode == Brightness.dark
-        ? theme.palette.onSecondaryContainer
-        : theme.palette.onSurface;
+        ? theme.scheme.onSecondaryContainer
+        : theme.scheme.onSurface;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -122,7 +122,7 @@ class _ThemeModeControlState extends State<ThemeModeControl> {
         Text(
           "主题模式",
           style: TextStyle(
-            color: theme.palette.onSurface,
+            color: theme.scheme.onSurface,
             fontSize: 18.0,
           ),
         ),
@@ -174,7 +174,7 @@ class _DynamicThemeSwitchState extends State<DynamicThemeSwitch> {
         Text(
           "动态主题",
           style: TextStyle(
-            color: theme.palette.onSurface,
+            color: theme.scheme.onSurface,
             fontSize: 18.0,
           ),
         ),
@@ -212,7 +212,7 @@ class _UseSystemThemeSwitchState extends State<UseSystemThemeSwitch> {
         Text(
           "启动时使用系统主题",
           style: TextStyle(
-            color: theme.palette.onSurface,
+            color: theme.scheme.onSurface,
             fontSize: 18.0,
           ),
         ),
@@ -251,7 +251,7 @@ class _UseSystemThemeModeSwitchState extends State<UseSystemThemeModeSwitch> {
         Text(
           "启动时使用系统主题模式",
           style: TextStyle(
-            color: theme.palette.onSurface,
+            color: theme.scheme.onSurface,
             fontSize: 18.0,
           ),
         ),

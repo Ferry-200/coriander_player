@@ -28,9 +28,9 @@ class LyricViewTile extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(12.0),
-          hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
-          highlightColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
-          splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
+          hoverColor: theme.scheme.onSecondaryContainer.withOpacity(0.08),
+          highlightColor: theme.scheme.onSecondaryContainer.withOpacity(0.12),
+          splashColor: theme.scheme.onSecondaryContainer.withOpacity(0.12),
           child: line is SyncLyricLine
               ? _SyncLineContent(
                   syncLine: line as SyncLyricLine,
@@ -110,10 +110,10 @@ class _SyncLineContent extends StatelessWidget {
                       shaderCallback: (bounds) {
                         return LinearGradient(
                           colors: [
-                            theme.palette.primary,
-                            theme.palette.primary,
-                            theme.palette.primary.withOpacity(0.10),
-                            theme.palette.primary.withOpacity(0.10),
+                            theme.scheme.primary,
+                            theme.scheme.primary,
+                            theme.scheme.primary.withOpacity(0.10),
+                            theme.scheme.primary.withOpacity(0.10),
                           ],
                           stops: [0, progress, progress, 1],
                         ).createShader(bounds);
@@ -121,7 +121,7 @@ class _SyncLineContent extends StatelessWidget {
                       child: Text(
                         syncLine.words[i].content,
                         style: TextStyle(
-                          color: theme.palette.primary,
+                          color: theme.scheme.primary,
                           fontSize: 22.0,
                           fontWeight: FontWeight.w600,
                         ),
@@ -151,7 +151,7 @@ class _SyncLineContent extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
-        color: theme.palette.onSecondaryContainer,
+        color: theme.scheme.onSecondaryContainer,
         fontSize: 22.0,
         fontWeight: FontWeight.w600,
       ),
@@ -162,7 +162,7 @@ class _SyncLineContent extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
-        color: theme.palette.onSecondaryContainer,
+        color: theme.scheme.onSecondaryContainer,
         fontSize: 18.0,
       ),
     );
@@ -209,7 +209,7 @@ class _LrcLineContent extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
-        color: theme.palette.onSecondaryContainer,
+        color: theme.scheme.onSecondaryContainer,
         fontSize: 22.0,
         fontWeight: FontWeight.w600,
       ),
@@ -220,7 +220,7 @@ class _LrcLineContent extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
-        color: theme.palette.onSecondaryContainer,
+        color: theme.scheme.onSecondaryContainer,
         fontSize: 18.0,
       ),
     );
@@ -269,13 +269,13 @@ class LyricTransitionPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    circlePaint1.color = theme.palette.onSecondaryContainer.withOpacity(
+    circlePaint1.color = theme.scheme.onSecondaryContainer.withOpacity(
       0.05 + min(controller.progress * 3, 1) * 0.95,
     );
-    circlePaint2.color = theme.palette.onSecondaryContainer.withOpacity(
+    circlePaint2.color = theme.scheme.onSecondaryContainer.withOpacity(
       0.05 + min(max(controller.progress - 1 / 3, 0) * 3, 1) * 0.95,
     );
-    circlePaint3.color = theme.palette.onSecondaryContainer.withOpacity(
+    circlePaint3.color = theme.scheme.onSecondaryContainer.withOpacity(
       0.05 + min(max(controller.progress - 2 / 3, 0) * 3, 1) * 0.95,
     );
 

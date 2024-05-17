@@ -64,9 +64,9 @@ class _NowPlayingForeground extends StatelessWidget {
       child: InkWell(
         onTap: () => context.push(app_paths.NOW_PLAYING_PAGE),
         borderRadius: BorderRadius.circular(8.0),
-        hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
-        highlightColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
-        splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
+        hoverColor: theme.scheme.onSecondaryContainer.withOpacity(0.08),
+        highlightColor: theme.scheme.onSecondaryContainer.withOpacity(0.12),
+        splashColor: theme.scheme.onSecondaryContainer.withOpacity(0.12),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: ListenableBuilder(
@@ -85,7 +85,7 @@ class _NowPlayingForeground extends StatelessWidget {
                               return Icon(
                                 Symbols.broken_image,
                                 size: 48.0,
-                                color: theme.palette.onSecondaryContainer,
+                                color: theme.scheme.onSecondaryContainer,
                               );
                             }
 
@@ -107,7 +107,7 @@ class _NowPlayingForeground extends StatelessWidget {
                       : Icon(
                           Symbols.music_note,
                           size: 48.0,
-                          color: theme.palette.onSecondaryContainer,
+                          color: theme.scheme.onSecondaryContainer,
                         ),
                   const SizedBox(width: 8.0),
                   Expanded(
@@ -123,7 +123,7 @@ class _NowPlayingForeground extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            color: theme.palette.onSecondaryContainer,
+                            color: theme.scheme.onSecondaryContainer,
                           ),
                         ),
 
@@ -135,7 +135,7 @@ class _NowPlayingForeground extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            color: theme.palette.onSecondaryContainer,
+                            color: theme.scheme.onSecondaryContainer,
                           ),
                         ),
                       ],

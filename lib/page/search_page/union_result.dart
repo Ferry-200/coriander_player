@@ -19,8 +19,8 @@ class UnionSearchResultPage extends StatelessWidget {
       SliverAppBar(
         automaticallyImplyLeading: false,
         title: Text("“${result.query}”的搜索结果"),
-        backgroundColor: theme.palette.surface,
-        foregroundColor: theme.palette.onSurface,
+        backgroundColor: theme.scheme.surface,
+        foregroundColor: theme.scheme.onSurface,
       )
     ];
     if (result.audios.isNotEmpty) {
@@ -30,7 +30,7 @@ class UnionSearchResultPage extends StatelessWidget {
           child: Text(
             "歌曲：",
             style: TextStyle(
-              color: theme.palette.onSurface,
+              color: theme.scheme.onSurface,
               fontSize: 18.0,
             ),
           ),
@@ -44,9 +44,9 @@ class UnionSearchResultPage extends StatelessWidget {
               title: Text(result.audios[i].title),
               subtitle:
                   Text("${result.audios[i].artist} - ${result.audios[i].album}"),
-              textColor: theme.palette.onSurface,
-              hoverColor: theme.palette.onSurface.withOpacity(0.08),
-              splashColor: theme.palette.onSurface.withOpacity(0.12),
+              textColor: theme.scheme.onSurface,
+              hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+              splashColor: theme.scheme.onSurface.withOpacity(0.12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
@@ -62,9 +62,9 @@ class UnionSearchResultPage extends StatelessWidget {
       slivers.add(SliverToBoxAdapter(
         child: ListTile(
           title: const Text("查看更多"),
-          textColor: theme.palette.onSurface,
-          hoverColor: theme.palette.onSurface.withOpacity(0.08),
-          splashColor: theme.palette.onSurface.withOpacity(0.12),
+          textColor: theme.scheme.onSurface,
+          hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+          splashColor: theme.scheme.onSurface.withOpacity(0.12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
@@ -81,7 +81,7 @@ class UnionSearchResultPage extends StatelessWidget {
     if (result.artists.isNotEmpty) {
       slivers.add(SliverToBoxAdapter(
         child: Divider(
-          color: theme.palette.outline,
+          color: theme.scheme.outline,
           // indent: 16.0,
           // endIndent: 16.0,
         ),
@@ -92,7 +92,7 @@ class UnionSearchResultPage extends StatelessWidget {
           child: Text(
             "艺术家：",
             style: TextStyle(
-              color: theme.palette.onSurface,
+              color: theme.scheme.onSurface,
               fontSize: 18.0,
             ),
           ),
@@ -105,9 +105,9 @@ class UnionSearchResultPage extends StatelessWidget {
             final artist = result.artists[i];
             return ListTile(
               title: Text(artist.name),
-              textColor: theme.palette.onSurface,
-              hoverColor: theme.palette.onSurface.withOpacity(0.08),
-              splashColor: theme.palette.onSurface.withOpacity(0.12),
+              textColor: theme.scheme.onSurface,
+              hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+              splashColor: theme.scheme.onSurface.withOpacity(0.12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
@@ -123,9 +123,9 @@ class UnionSearchResultPage extends StatelessWidget {
       slivers.add(SliverToBoxAdapter(
         child: ListTile(
           title: const Text("查看更多"),
-          textColor: theme.palette.onSurface,
-          hoverColor: theme.palette.onSurface.withOpacity(0.08),
-          splashColor: theme.palette.onSurface.withOpacity(0.12),
+          textColor: theme.scheme.onSurface,
+          hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+          splashColor: theme.scheme.onSurface.withOpacity(0.12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
@@ -141,7 +141,7 @@ class UnionSearchResultPage extends StatelessWidget {
 
     if (result.album.isNotEmpty) {
       slivers.add(SliverToBoxAdapter(
-        child: Divider(color: theme.palette.outline),
+        child: Divider(color: theme.scheme.outline),
       ));
       slivers.add(SliverToBoxAdapter(
         child: Padding(
@@ -149,7 +149,7 @@ class UnionSearchResultPage extends StatelessWidget {
           child: Text(
             "专辑：",
             style: TextStyle(
-              color: theme.palette.onSurface,
+              color: theme.scheme.onSurface,
               fontSize: 18.0,
             ),
           ),
@@ -162,9 +162,9 @@ class UnionSearchResultPage extends StatelessWidget {
             final album = result.album[i];
             return ListTile(
               title: Text(album.name),
-              textColor: theme.palette.onSurface,
-              hoverColor: theme.palette.onSurface.withOpacity(0.08),
-              splashColor: theme.palette.onSurface.withOpacity(0.12),
+              textColor: theme.scheme.onSurface,
+              hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+              splashColor: theme.scheme.onSurface.withOpacity(0.12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
@@ -180,9 +180,9 @@ class UnionSearchResultPage extends StatelessWidget {
       slivers.add(SliverToBoxAdapter(
         child: ListTile(
           title: const Text("查看更多"),
-          textColor: theme.palette.onSurface,
-          hoverColor: theme.palette.onSurface.withOpacity(0.08),
-          splashColor: theme.palette.onSurface.withOpacity(0.12),
+          textColor: theme.scheme.onSurface,
+          hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+          splashColor: theme.scheme.onSurface.withOpacity(0.12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
@@ -199,7 +199,7 @@ class UnionSearchResultPage extends StatelessWidget {
     slivers.add(const SliverPadding(padding: EdgeInsets.only(bottom: 96.0)));
 
     return Material(
-      color: theme.palette.surface,
+      color: theme.scheme.surface,
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(8.0),
         bottomRight: Radius.circular(8.0),

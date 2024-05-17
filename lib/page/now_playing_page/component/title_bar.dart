@@ -31,15 +31,15 @@ class NowPlayingPageTitleBar extends StatelessWidget {
           child: Material(
             type: MaterialType.transparency,
             child: InkWell(
-              hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
+              hoverColor: theme.scheme.onSecondaryContainer.withOpacity(0.08),
               highlightColor:
-                  theme.palette.onSecondaryContainer.withOpacity(0.12),
-              splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
+                  theme.scheme.onSecondaryContainer.withOpacity(0.12),
+              splashColor: theme.scheme.onSecondaryContainer.withOpacity(0.12),
               onTap: () => context.pop(),
               child: Center(
                 child: Icon(
                   Symbols.arrow_drop_down,
-                  color: theme.palette.onSecondaryContainer,
+                  color: theme.scheme.onSecondaryContainer,
                 ),
               ),
             ),
@@ -98,12 +98,12 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
             onPressed: windowManager.minimize,
             icon: Icon(
               Symbols.remove,
-              color: theme.palette.onSecondaryContainer,
+              color: theme.scheme.onSecondaryContainer,
             ),
-            hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
+            hoverColor: theme.scheme.onSecondaryContainer.withOpacity(0.08),
             highlightColor:
-                theme.palette.onSecondaryContainer.withOpacity(0.12),
-            splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
+                theme.scheme.onSecondaryContainer.withOpacity(0.12),
+            splashColor: theme.scheme.onSecondaryContainer.withOpacity(0.12),
           ),
           const SizedBox(width: 8.0),
           FutureBuilder(
@@ -116,14 +116,14 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
                     : windowManager.maximize,
                 icon: Icon(
                   isMaximized ? Symbols.fullscreen_exit : Symbols.fullscreen,
-                  color: theme.palette.onSecondaryContainer,
+                  color: theme.scheme.onSecondaryContainer,
                 ),
                 hoverColor:
-                    theme.palette.onSecondaryContainer.withOpacity(0.08),
+                    theme.scheme.onSecondaryContainer.withOpacity(0.08),
                 highlightColor:
-                    theme.palette.onSecondaryContainer.withOpacity(0.12),
+                    theme.scheme.onSecondaryContainer.withOpacity(0.12),
                 splashColor:
-                    theme.palette.onSecondaryContainer.withOpacity(0.12),
+                    theme.scheme.onSecondaryContainer.withOpacity(0.12),
               );
             },
           ),
@@ -137,12 +137,12 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
             },
             icon: Icon(
               Symbols.close,
-              color: theme.palette.onSecondaryContainer,
+              color: theme.scheme.onSecondaryContainer,
             ),
-            hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
+            hoverColor: theme.scheme.onSecondaryContainer.withOpacity(0.08),
             highlightColor:
-                theme.palette.onSecondaryContainer.withOpacity(0.12),
-            splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
+                theme.scheme.onSecondaryContainer.withOpacity(0.12),
+            splashColor: theme.scheme.onSecondaryContainer.withOpacity(0.12),
           ),
         ],
       ),

@@ -35,7 +35,7 @@ class AlbumDetailPage extends StatelessWidget {
     final pageController = Provider.of<AlbumDetailPageController>(context);
 
     return Material(
-      color: theme.palette.surface,
+      color: theme.scheme.surface,
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(8.0),
         bottomRight: Radius.circular(8.0),
@@ -62,7 +62,7 @@ class AlbumDetailPage extends StatelessWidget {
                             album.name,
                             style: TextStyle(
                               fontSize: 22.0,
-                              color: theme.palette.onSurface,
+                              color: theme.scheme.onSurface,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -71,7 +71,7 @@ class AlbumDetailPage extends StatelessWidget {
                           "${album.works.length} 首乐曲",
                           style: TextStyle(
                             fontSize: 14.0,
-                            color: theme.palette.onSurface,
+                            color: theme.scheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: 8.0),
@@ -93,7 +93,7 @@ class AlbumDetailPage extends StatelessWidget {
             SliverToBoxAdapter(
               child: Divider(
                 height: 32.0,
-                color: theme.palette.outline,
+                color: theme.scheme.outline,
                 indent: 8.0,
                 endIndent: 8.0,
               ),
@@ -113,7 +113,7 @@ class AlbumDetailPage extends StatelessWidget {
                 child: Text(
                   "艺术家",
                   style: TextStyle(
-                    color: theme.palette.onSurface,
+                    color: theme.scheme.onSurface,
                     fontSize: 18.0,
                     fontWeight: FontWeight.w600,
                   ),
@@ -147,12 +147,12 @@ class _ArtistsSliverList extends StatelessWidget {
             extra: artist,
           ),
           title: Text(artist.name),
-          textColor: theme.palette.onSurface,
+          textColor: theme.scheme.onSurface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
-          hoverColor: theme.palette.onSurface.withOpacity(0.08),
-          splashColor: theme.palette.onSurface.withOpacity(0.12),
+          hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+          splashColor: theme.scheme.onSurface.withOpacity(0.12),
         );
       },
     );
@@ -177,7 +177,7 @@ class _AlbumCover extends StatelessWidget {
             child: Icon(
               Symbols.broken_image,
               size: 200.0,
-              color: theme.palette.onSurface,
+              color: theme.scheme.onSurface,
             ),
           );
         }
@@ -222,25 +222,25 @@ class _SortMethodComboBox extends StatelessWidget {
 
     final menuItemStyle = ButtonStyle(
       backgroundColor: WidgetStatePropertyAll(
-        theme.palette.secondaryContainer,
+        theme.scheme.secondaryContainer,
       ),
       foregroundColor: WidgetStatePropertyAll(
-        theme.palette.onSecondaryContainer,
+        theme.scheme.onSecondaryContainer,
       ),
       padding: const WidgetStatePropertyAll(
         EdgeInsets.symmetric(horizontal: 16.0),
       ),
       overlayColor: WidgetStatePropertyAll(
-        theme.palette.onSecondaryContainer.withOpacity(0.08),
+        theme.scheme.onSecondaryContainer.withOpacity(0.08),
       ),
     );
 
     final menuStyle = MenuStyle(
       backgroundColor: WidgetStatePropertyAll(
-        theme.palette.secondaryContainer,
+        theme.scheme.secondaryContainer,
       ),
       surfaceTintColor: WidgetStatePropertyAll(
-        theme.palette.secondaryContainer,
+        theme.scheme.secondaryContainer,
       ),
       shape: const WidgetStatePropertyAll(RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -261,7 +261,7 @@ class _SortMethodComboBox extends StatelessWidget {
           onPressed: () => pageController.setSortMethod(SortBy.title),
           leadingIcon: Icon(
             Symbols.title,
-            color: theme.palette.onSecondaryContainer,
+            color: theme.scheme.onSecondaryContainer,
           ),
           child: const Text("标题"),
         ),
@@ -269,7 +269,7 @@ class _SortMethodComboBox extends StatelessWidget {
           style: menuItemStyle,
           leadingIcon: Icon(
             Symbols.artist,
-            color: theme.palette.onSecondaryContainer,
+            color: theme.scheme.onSecondaryContainer,
           ),
           child: const Text("艺术家"),
           onPressed: () => pageController.setSortMethod(SortBy.artist),
@@ -279,7 +279,7 @@ class _SortMethodComboBox extends StatelessWidget {
           onPressed: () => pageController.setSortMethod(SortBy.track),
           leadingIcon: Icon(
             Symbols.art_track,
-            color: theme.palette.onSecondaryContainer,
+            color: theme.scheme.onSecondaryContainer,
           ),
           child: const Text("音轨"),
         ),
@@ -287,7 +287,7 @@ class _SortMethodComboBox extends StatelessWidget {
           style: menuItemStyle,
           leadingIcon: Icon(
             Symbols.add,
-            color: theme.palette.onSecondaryContainer,
+            color: theme.scheme.onSecondaryContainer,
           ),
           child: const Text("创建时间"),
           onPressed: () => pageController.setSortMethod(SortBy.created),
@@ -296,7 +296,7 @@ class _SortMethodComboBox extends StatelessWidget {
           style: menuItemStyle,
           leadingIcon: Icon(
             Symbols.edit,
-            color: theme.palette.onSecondaryContainer,
+            color: theme.scheme.onSecondaryContainer,
           ),
           child: const Text("修改时间"),
           onPressed: () => pageController.setSortMethod(SortBy.modified),
@@ -305,7 +305,7 @@ class _SortMethodComboBox extends StatelessWidget {
           style: menuItemStyle,
           leadingIcon: Icon(
             Symbols.filter_list_off,
-            color: theme.palette.onSecondaryContainer,
+            color: theme.scheme.onSecondaryContainer,
           ),
           child: const Text("默认"),
           onPressed: () => pageController.setSortMethod(SortBy.origin),
@@ -330,10 +330,10 @@ class _SortMethodComboBox extends StatelessWidget {
           width: 149.0,
           child: Material(
             borderRadius: borderRadius,
-            color: theme.palette.secondaryContainer,
+            color: theme.scheme.secondaryContainer,
             elevation: isOpen ? 4.0 : 0,
             child: InkWell(
-              hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
+              hoverColor: theme.scheme.onSecondaryContainer.withOpacity(0.08),
               borderRadius: borderRadius,
               onTap: isOpen ? menuController.close : menuController.open,
               child: Padding(
@@ -343,14 +343,14 @@ class _SortMethodComboBox extends StatelessWidget {
                     Icon(
                       Symbols.sort,
                       size: 24,
-                      color: theme.palette.onSecondaryContainer,
+                      color: theme.scheme.onSecondaryContainer,
                     ),
                     const SizedBox(width: 8.0),
                     Expanded(
                       child: Text(
                         sortMethod.methodName,
                         style: TextStyle(
-                          color: theme.palette.onSecondaryContainer,
+                          color: theme.scheme.onSecondaryContainer,
                         ),
                       ),
                     ),
@@ -358,7 +358,7 @@ class _SortMethodComboBox extends StatelessWidget {
                     Icon(
                       isOpen ? Symbols.arrow_drop_up : Symbols.arrow_drop_down,
                       size: 24,
-                      color: theme.palette.onSecondaryContainer,
+                      color: theme.scheme.onSecondaryContainer,
                     ),
                   ],
                 ),

@@ -15,7 +15,7 @@ class AudioSearchResultPage extends StatelessWidget {
     final theme = Provider.of<ThemeProvider>(context);
 
     return Material(
-      color: theme.palette.surface,
+      color: theme.scheme.surface,
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(8.0),
         bottomRight: Radius.circular(8.0),
@@ -28,8 +28,8 @@ class AudioSearchResultPage extends StatelessWidget {
             SliverAppBar(
               automaticallyImplyLeading: false,
               title: const Text("搜索结果"),
-              backgroundColor: theme.palette.surface,
-              foregroundColor: theme.palette.onSurface,
+              backgroundColor: theme.scheme.surface,
+              foregroundColor: theme.scheme.onSurface,
             ),
             SliverList.builder(
               itemCount: result.length,
@@ -38,9 +38,9 @@ class AudioSearchResultPage extends StatelessWidget {
                   title: Text(result[i].title),
                   subtitle:
                       Text("${result[i].artist} - ${result[i].album}"),
-                  textColor: theme.palette.onSurface,
-                  hoverColor: theme.palette.onSurface.withOpacity(0.08),
-                  splashColor: theme.palette.onSurface.withOpacity(0.12),
+                  textColor: theme.scheme.onSurface,
+                  hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+                  splashColor: theme.scheme.onSurface.withOpacity(0.12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -68,7 +68,7 @@ class ArtistSearchResultPage extends StatelessWidget {
     final theme = Provider.of<ThemeProvider>(context);
 
     return Material(
-      color: theme.palette.surface,
+      color: theme.scheme.surface,
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(8.0),
         bottomRight: Radius.circular(8.0),
@@ -81,17 +81,17 @@ class ArtistSearchResultPage extends StatelessWidget {
             SliverAppBar(
               automaticallyImplyLeading: false,
               title: const Text("搜索结果"),
-              backgroundColor: theme.palette.surface,
-              foregroundColor: theme.palette.onSurface,
+              backgroundColor: theme.scheme.surface,
+              foregroundColor: theme.scheme.onSurface,
             ),
             SliverList.builder(
               itemCount: result.length,
               itemBuilder: (context, i) {
                 return ListTile(
                   title: Text(result[i].name),
-                  textColor: theme.palette.onSurface,
-                  hoverColor: theme.palette.onSurface.withOpacity(0.08),
-                  splashColor: theme.palette.onSurface.withOpacity(0.12),
+                  textColor: theme.scheme.onSurface,
+                  hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+                  splashColor: theme.scheme.onSurface.withOpacity(0.12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -122,7 +122,7 @@ class AlbumSearchResultPage extends StatelessWidget {
     final theme = Provider.of<ThemeProvider>(context);
 
     return Material(
-      color: theme.palette.surface,
+      color: theme.scheme.surface,
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(8.0),
         bottomRight: Radius.circular(8.0),
@@ -135,17 +135,17 @@ class AlbumSearchResultPage extends StatelessWidget {
             SliverAppBar(
               automaticallyImplyLeading: false,
               title: const Text("搜索结果"),
-              backgroundColor: theme.palette.surface,
-              foregroundColor: theme.palette.onSurface,
+              backgroundColor: theme.scheme.surface,
+              foregroundColor: theme.scheme.onSurface,
             ),
             SliverList.builder(
               itemCount: result.length,
               itemBuilder: (context, i) {
                 return ListTile(
                   title: Text(result[i].name),
-                  textColor: theme.palette.onSurface,
-                  hoverColor: theme.palette.onSurface.withOpacity(0.08),
-                  splashColor: theme.palette.onSurface.withOpacity(0.12),
+                  textColor: theme.scheme.onSurface,
+                  hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+                  splashColor: theme.scheme.onSurface.withOpacity(0.12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),

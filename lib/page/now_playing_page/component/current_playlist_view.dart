@@ -47,7 +47,7 @@ class _CurrentPlaylistViewState extends State<CurrentPlaylistView> {
             child: Text(
               "播放列表",
               style: TextStyle(
-                color: theme.palette.onSecondaryContainer,
+                color: theme.scheme.onSecondaryContainer,
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
               ),
@@ -93,9 +93,9 @@ class _PlaylistViewItem extends StatelessWidget {
     final theme = Provider.of<ThemeProvider>(context);
     return InkWell(
       borderRadius: BorderRadius.circular(8.0),
-      hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
-      highlightColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
-      splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
+      hoverColor: theme.scheme.onSecondaryContainer.withOpacity(0.08),
+      highlightColor: theme.scheme.onSecondaryContainer.withOpacity(0.12),
+      splashColor: theme.scheme.onSecondaryContainer.withOpacity(0.12),
       onTap: () {
         playService.playIndexOfPlaylist(index);
       },
@@ -105,7 +105,7 @@ class _PlaylistViewItem extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-            color: theme.palette.onSecondaryContainer,
+            color: theme.scheme.onSecondaryContainer,
             fontSize: 14,
           ),
           child: Column(

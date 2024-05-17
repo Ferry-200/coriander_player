@@ -23,8 +23,8 @@ class _LyricSourceViewState extends State<LyricSourceView> {
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
     return Dialog(
-      backgroundColor: theme.palette.surface,
-      surfaceTintColor: theme.palette.surface,
+      backgroundColor: theme.scheme.surface,
+      surfaceTintColor: theme.scheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -36,7 +36,7 @@ class _LyricSourceViewState extends State<LyricSourceView> {
               child: Text(
                 "默认歌词",
                 style: TextStyle(
-                  color: theme.palette.onSurface,
+                  color: theme.scheme.onSurface,
                   fontSize: 18.0,
                   fontWeight: FontWeight.w600,
                 ),
@@ -46,9 +46,9 @@ class _LyricSourceViewState extends State<LyricSourceView> {
               title: const Text("本地歌词"),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0)),
-              textColor: theme.palette.onSurface,
-              hoverColor: theme.palette.onSurface.withOpacity(0.08),
-              splashColor: theme.palette.onSurface.withOpacity(0.12),
+              textColor: theme.scheme.onSurface,
+              hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+              splashColor: theme.scheme.onSurface.withOpacity(0.12),
               onTap: () {
                 LYRIC_SOURCES[widget.audio.path] =
                     LyricSource(LyricSourceType.local);
@@ -63,8 +63,8 @@ class _LyricSourceViewState extends State<LyricSourceView> {
                   if (snapshot.data == null) {
                     return Center(
                       child: LinearProgressIndicator(
-                        color: theme.palette.primary,
-                        backgroundColor: theme.palette.primaryContainer,
+                        color: theme.scheme.primary,
+                        backgroundColor: theme.scheme.primaryContainer,
                       ),
                     );
                   }
@@ -121,13 +121,13 @@ class LyricSourceTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
-    final titleStyle = TextStyle(color: theme.palette.onSurface);
-    final subtitleStyle = TextStyle(color: theme.palette.onSurface);
+    final titleStyle = TextStyle(color: theme.scheme.onSurface);
+    final subtitleStyle = TextStyle(color: theme.scheme.onSurface);
     return ListTile(
       onTap: onTap,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-      hoverColor: theme.palette.onSurface.withOpacity(0.08),
-      splashColor: theme.palette.onSurface.withOpacity(0.12),
+      hoverColor: theme.scheme.onSurface.withOpacity(0.08),
+      splashColor: theme.scheme.onSurface.withOpacity(0.12),
       title: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,8 +148,8 @@ class LyricSourceTile extends StatelessWidget {
             case ConnectionState.none:
             case ConnectionState.waiting:
               return LinearProgressIndicator(
-                color: theme.palette.primary,
-                backgroundColor: theme.palette.primaryContainer,
+                color: theme.scheme.primary,
+                backgroundColor: theme.scheme.primaryContainer,
               );
             case ConnectionState.active:
             case ConnectionState.done:
