@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
 import 'package:coriander_player/src/rust/api/system_theme.dart';
+import 'package:flutter/material.dart';
 import 'package:github/github.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:window_manager/window_manager.dart';
@@ -11,7 +11,7 @@ class AppSettings {
   static const String version = "1.0.2";
 
   /// 主题模式：亮 / 暗
-  late Brightness themeMode;
+  late ThemeMode themeMode;
 
   /// 启动时 / 封面主题色不适合当主题时的主题
   late int defaultTheme;
@@ -44,7 +44,7 @@ class AppSettings {
             (2 * systemTheme.fore.$2) +
             systemTheme.fore.$4) >
         (8 * 128));
-    themeMode = isDarkMode ? Brightness.dark : Brightness.light;
+    themeMode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
     defaultTheme = Color.fromARGB(
       systemTheme.accent.$1,
       systemTheme.accent.$2,
@@ -75,7 +75,7 @@ class AppSettings {
     }
     if (!_instance.useSystemThemeMode) {
       _instance.themeMode =
-          settingsMap["ThemeMode"] == 0 ? Brightness.light : Brightness.dark;
+          settingsMap["ThemeMode"] == 0 ? ThemeMode.light : ThemeMode.dark;
     }
 
     _instance.dynamicTheme = settingsMap["DynamicTheme"] == 1 ? true : false;
@@ -98,7 +98,7 @@ class AppSettings {
   Future<void> saveSettings() async {
     final currSize = await windowManager.getSize();
     final settingsMap = {
-      "ThemeMode": themeMode == Brightness.light ? 0 : 1,
+      "ThemeMode": themeMode == ThemeMode.light ? 0 : 1,
       "DynamicTheme": dynamicTheme ? 1 : 0,
       "UseSystemTheme": useSystemTheme ? 1 : 0,
       "UseSystemThemeMode": useSystemThemeMode ? 1 : 0,
