@@ -1,5 +1,5 @@
 import 'package:coriander_player/app_settings.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
+import 'package:coriander_player/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 

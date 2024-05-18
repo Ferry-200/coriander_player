@@ -17,7 +17,7 @@ import 'package:coriander_player/page/settings_page/page.dart';
 import 'package:coriander_player/page/updating_dialog/dialog.dart';
 import 'package:coriander_player/page/welcoming_page/page.dart';
 import 'package:coriander_player/library/playlist.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
+import 'package:coriander_player/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';

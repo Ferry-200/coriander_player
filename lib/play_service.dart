@@ -11,7 +11,7 @@ import 'package:coriander_player/lyric/lyric_source.dart';
 import 'package:coriander_player/music_api/search_helper.dart';
 import 'package:coriander_player/src/bass/bass_player.dart';
 import 'package:coriander_player/src/rust/api/smtc_flutter.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
+import 'package:coriander_player/theme_provider.dart';
 // import 'package:coriander_player/windows_toast.dart';
 import 'package:flutter/widgets.dart';
 
