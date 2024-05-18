@@ -11,8 +11,9 @@ class ShufflePlay<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FilledButton.icon(
-      onPressed: () =>
-          PlayService.instance.shuffleAndPlay(contentList as List<Audio>),
+      onPressed: () => PlayService.instance.shuffleAndPlay(
+        contentList as List<Audio>,
+      ),
       icon: const Icon(Symbols.shuffle),
       label: const Text("随机播放"),
       style: const ButtonStyle(
@@ -40,9 +41,19 @@ class SortMethodComboBox<T> extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
 
     return MenuAnchor(
+      crossAxisUnconstrained: false,
+      style: MenuStyle(
+        fixedSize: const WidgetStatePropertyAll(Size.fromWidth(141)),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        ),
+      ),
       menuChildren: List.generate(
         sortMethods.length,
         (i) => MenuItemButton(
+          style: const ButtonStyle(
+            padding: WidgetStatePropertyAll(EdgeInsets.all(12)),
+          ),
           leadingIcon: Icon(sortMethods[i].icon),
           child: Text(sortMethods[i].name),
           onPressed: () => setSortMethod(sortMethods[i]),
@@ -55,7 +66,7 @@ class SortMethodComboBox<T> extends StatelessWidget {
 
         return SizedBox(
           height: 40.0,
-          width: 149.0,
+          width: 141.0,
           child: Material(
             borderRadius: borderRadius,
             color: scheme.secondaryContainer,
@@ -72,14 +83,14 @@ class SortMethodComboBox<T> extends StatelessWidget {
                       size: 24,
                       color: scheme.onSecondaryContainer,
                     ),
-                    const SizedBox(width: 8.0),
+                    const SizedBox(width: 4.0),
                     Expanded(
                       child: Text(
                         currSortMethod.name,
                         style: TextStyle(color: scheme.onSecondaryContainer),
                       ),
                     ),
-                    const SizedBox(width: 8.0),
+                    const SizedBox(width: 4.0),
                     Icon(
                       isOpen ? Symbols.arrow_drop_up : Symbols.arrow_drop_down,
                       size: 24,
