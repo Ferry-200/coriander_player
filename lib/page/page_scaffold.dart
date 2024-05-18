@@ -1,8 +1,6 @@
 import 'package:coriander_player/component/responsive_builder.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:provider/provider.dart';
 
 /// title, actions, body
 ///
@@ -26,14 +24,14 @@ class PageScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return ResponsiveBuilder(builder: (context, screenType) {
       List<Widget> rowChildren;
 
       if (actions.isEmpty) {
         rowChildren =
-            subtitle == null ? [onlyTitle(theme)] : [withSubtitle(theme)];
+            subtitle == null ? [onlyTitle(scheme)] : [withSubtitle(scheme)];
       } else {
         switch (screenType) {
           case ScreenType.small:
@@ -65,24 +63,22 @@ class PageScaffold extends StatelessWidget {
               }
 
               final menuStyle = MenuStyle(
-                shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20))),
-                backgroundColor:
-                    WidgetStatePropertyAll(theme.scheme.surfaceContainer),
-                surfaceTintColor:
-                    WidgetStatePropertyAll(theme.scheme.surfaceContainer),
+                shape: WidgetStatePropertyAll(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
               );
 
               rowChildren = [
-                subtitle == null ? onlyTitle(theme) : withSubtitle(theme),
+                subtitle == null ? onlyTitle(scheme) : withSubtitle(scheme),
                 const SizedBox(width: 16.0),
                 actions.first,
                 const SizedBox(width: 16.0),
                 MenuAnchor(
                   style: menuStyle,
                   menuChildren: foldedColumn,
-                  builder: (context, controller, _) => IconButton.filled(
-                    style: theme.secondaryIconButtonStyle,
+                  builder: (context, controller, _) => IconButton.filledTonal(
                     onPressed: () {
                       controller.isOpen
                           ? controller.close()
@@ -98,7 +94,7 @@ class PageScaffold extends StatelessWidget {
           case ScreenType.large:
             {
               rowChildren = [
-                subtitle == null ? onlyTitle(theme) : withSubtitle(theme),
+                subtitle == null ? onlyTitle(scheme) : withSubtitle(scheme),
                 const SizedBox(width: 16.0),
                 Wrap(spacing: 8.0, children: actions)
               ];
@@ -108,7 +104,7 @@ class PageScaffold extends StatelessWidget {
 
       return DecoratedBox(
         decoration: BoxDecoration(
-          color: theme.scheme.surface,
+          color: scheme.surface,
           borderRadius: BorderRadius.only(
             topLeft: screenType == ScreenType.small
                 ? Radius.zero
@@ -139,38 +135,29 @@ class PageScaffold extends StatelessWidget {
     });
   }
 
-  Expanded onlyTitle(ThemeProvider theme) {
+  Expanded onlyTitle(ColorScheme scheme) {
     return Expanded(
       child: Text(
         title,
-        style: TextStyle(
-          fontSize: 32.0,
-          color: theme.scheme.onSurface,
-        ),
+        style: TextStyle(fontSize: 32.0, color: scheme.onSurface),
         overflow: TextOverflow.ellipsis,
       ),
     );
   }
 
-  Expanded withSubtitle(ThemeProvider theme) {
+  Expanded withSubtitle(ColorScheme scheme) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: TextStyle(
-              fontSize: 28.0,
-              color: theme.scheme.onSurface,
-            ),
+            style: TextStyle(fontSize: 28.0, color: scheme.onSurface),
             overflow: TextOverflow.ellipsis,
           ),
           Text(
             subtitle!,
-            style: TextStyle(
-              fontSize: 14.0,
-              color: theme.scheme.onSurface,
-            ),
+            style: TextStyle(fontSize: 14.0, color: scheme.onSurface),
             overflow: TextOverflow.ellipsis,
           )
         ],
