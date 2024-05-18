@@ -243,9 +243,19 @@ class _SortMethodComboBox extends StatelessWidget {
     ];
 
     return MenuAnchor(
+      crossAxisUnconstrained: false,
+      style: MenuStyle(
+        fixedSize: const WidgetStatePropertyAll(Size.fromWidth(141)),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        ),
+      ),
       menuChildren: List.generate(
         menuItemDescs.length,
         (i) => MenuItemButton(
+          style: const ButtonStyle(
+            padding: WidgetStatePropertyAll(EdgeInsets.all(12)),
+          ),
           leadingIcon: Icon(menuItemDescs[i].icon),
           onPressed: menuItemDescs[i].action,
           child: Text(menuItemDescs[i].sortBy.methodName),
@@ -267,7 +277,7 @@ class _SortMethodComboBox extends StatelessWidget {
 
         return SizedBox(
           height: 40.0,
-          width: 149.0,
+          width: 141.0,
           child: Material(
             borderRadius: borderRadius,
             color: scheme.secondaryContainer,
@@ -284,14 +294,14 @@ class _SortMethodComboBox extends StatelessWidget {
                       size: 24,
                       color: scheme.onSecondaryContainer,
                     ),
-                    const SizedBox(width: 8.0),
+                    const SizedBox(width: 4.0),
                     Expanded(
                       child: Text(
                         sortMethod.methodName,
                         style: TextStyle(color: scheme.onSecondaryContainer),
                       ),
                     ),
-                    const SizedBox(width: 8.0),
+                    const SizedBox(width: 4.0),
                     Icon(
                       isOpen ? Symbols.arrow_drop_up : Symbols.arrow_drop_down,
                       size: 24,
