@@ -72,7 +72,7 @@ class Entry extends StatelessWidget {
           theme: ThemeData.from(colorScheme: theme.lightScheme),
           darkTheme: ThemeData.from(colorScheme: theme.darkScheme),
           themeMode: theme.themeMode,
-          localizationsDelegates: const [GlobalMaterialLocalizations.delegate],
+          localizationsDelegates: GlobalMaterialLocalizations.delegates,
           supportedLocales: supportedLocales,
           routerConfig: config,
         );
