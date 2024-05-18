@@ -124,7 +124,7 @@ class _TitleBar_Large extends StatelessWidget {
               child: Row(
                 children: [
                   SizedBox(
-                    width: 228,
+                    width: 248,
                     child: Row(
                       children: [
                         Image.asset("app_icon.ico", width: 24, height: 24),

@@ -28,6 +28,7 @@ class SideNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final location = GoRouterState.of(context).uri.toString();
     int selected = destinations.indexWhere(
       (desc) => location.startsWith(desc.desPath),
@@ -46,6 +47,7 @@ class SideNav extends StatelessWidget {
           case ScreenType.small:
           case ScreenType.large:
             return NavigationDrawer(
+              backgroundColor: scheme.surfaceContainer,
               selectedIndex: selected,
               onDestinationSelected: onDestinationSelected,
               children: List.generate(
@@ -58,6 +60,7 @@ class SideNav extends StatelessWidget {
             );
           case ScreenType.medium:
             return NavigationRail(
+              backgroundColor: scheme.surfaceContainer,
               selectedIndex: selected,
               onDestinationSelected: onDestinationSelected,
               destinations: List.generate(
