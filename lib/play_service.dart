@@ -183,7 +183,7 @@ class PlayService with ChangeNotifier {
 
     _bassPlayer.start();
     notifyListeners();
-    ThemeProvider.instance.setPalleteFromAudio(nowPlaying!);
+    ThemeProvider.instance.applyThemeFromAudio(nowPlaying!);
 
     _smtc.updateState(state: SMTCState.playing);
     _smtc.updateDisplay(
