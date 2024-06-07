@@ -18,11 +18,13 @@ class AudioTile extends StatelessWidget {
     required this.audioIndex,
     required this.playlist,
     this.focus = false,
+    this.action,
   });
 
   final int audioIndex;
   final List<Audio> playlist;
   final bool focus;
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
@@ -253,6 +255,8 @@ class AudioTile extends StatelessWidget {
                           : theme.palette.onSurface,
                     ),
                   ),
+                  const SizedBox(width: 8.0),
+                  action ?? const SizedBox.shrink(),
                 ],
               ),
             );

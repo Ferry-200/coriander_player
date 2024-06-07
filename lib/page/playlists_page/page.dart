@@ -336,27 +336,24 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage> {
           itemBuilder: (context, i) {
             return Stack(
               children: [
-                AudioTile(audioIndex: i, playlist: widget.playlist.audios),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 12.0, right: 12.0),
-                    child: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          widget.playlist.audios.removeAt(i);
-                        });
-                      },
-                      icon: Icon(
-                        Symbols.delete,
-                        color: theme.palette.error,
-                      ),
-                      hoverColor: theme.palette.error.withOpacity(0.08),
-                      highlightColor: theme.palette.error.withOpacity(0.12),
-                      splashColor: theme.palette.error.withOpacity(0.12),
+                AudioTile(
+                  audioIndex: i,
+                  playlist: widget.playlist.audios,
+                  action: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        widget.playlist.audios.removeAt(i);
+                      });
+                    },
+                    icon: Icon(
+                      Symbols.delete,
+                      color: theme.palette.error,
                     ),
+                    hoverColor: theme.palette.error.withOpacity(0.08),
+                    highlightColor: theme.palette.error.withOpacity(0.12),
+                    splashColor: theme.palette.error.withOpacity(0.12),
                   ),
-                )
+                ),
               ],
             );
           },
