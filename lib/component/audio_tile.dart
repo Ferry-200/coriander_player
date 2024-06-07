@@ -1,3 +1,4 @@
+import 'package:coriander_player/extensions.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/library/playlist.dart';
@@ -15,11 +16,13 @@ class AudioTile extends StatelessWidget {
     required this.audioIndex,
     required this.playlist,
     this.focus = false,
+    this.action,
   });
 
   final int audioIndex;
   final List<Audio> playlist;
   final bool focus;
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
@@ -170,9 +173,13 @@ class AudioTile extends StatelessWidget {
                   ),
                   const SizedBox(width: 8.0),
                   Text(
-                    "${audio.duration ~/ 60}:${audio.duration % 60}",
-                    style: TextStyle(color: textColor),
+                    Duration(seconds: audio.duration).toStringHMMSS(),
+                    style: TextStyle(
+                      color: focus ? scheme.primary : scheme.onSurface,
+                    ),
                   ),
+                  const SizedBox(width: 8.0),
+                  action ?? const SizedBox.shrink(),
                 ],
               ),
             );

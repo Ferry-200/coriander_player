@@ -74,6 +74,8 @@ class PlayService with ChangeNotifier {
 
   PlayerState get playerState => _bassPlayer.playerState;
 
+  double get volDsp => _bassPlayer.volumeDsp;
+
   Stream<double> get positionStream => _bassPlayer.positionStream;
 
   Stream<PlayerState> get playerStateStream => _bassPlayer.playerStateStream;
@@ -193,6 +195,9 @@ class PlayService with ChangeNotifier {
       path: nowPlaying!.path,
     );
   }
+
+  /// 修改解码时的音量（不影响 Windows 系统音量）
+  void setVolumeDsp(double volume) => _bassPlayer.setVolumeDsp(volume);
 
   void useEmbeddedLyric() {
     currentLyric.value = null;

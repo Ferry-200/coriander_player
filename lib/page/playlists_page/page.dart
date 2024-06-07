@@ -266,22 +266,19 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage> {
           itemBuilder: (context, i) {
             return Stack(
               children: [
-                AudioTile(audioIndex: i, playlist: widget.playlist.audios),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 12.0, right: 12.0),
-                    child: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          widget.playlist.audios.removeAt(i);
-                        });
-                      },
-                      color: scheme.error,
-                      icon: const Icon(Symbols.delete),
-                    ),
+                AudioTile(
+                  audioIndex: i,
+                  playlist: widget.playlist.audios,
+                  action: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        widget.playlist.audios.removeAt(i);
+                      });
+                    },
+                    color: scheme.error,
+                    icon: const Icon(Symbols.delete),
                   ),
-                )
+                ),
               ],
             );
           },

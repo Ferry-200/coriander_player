@@ -1,3 +1,4 @@
+import 'package:coriander_player/extensions.dart';
 import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/src/bass/bass_player.dart';
 import 'package:flutter/material.dart';
@@ -231,10 +232,8 @@ class PositionAndLength extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final playService = Provider.of<PlayService>(context);
     final nowPlaying = playService.nowPlaying;
-    final lengthMinute = PlayService.instance.length ~/ 60;
-    final lengthSecond = (PlayService.instance.length % 60).toInt();
+    final length = PlayService.instance.length;
 
-    var textStyle = TextStyle(color: scheme.onSecondaryContainer);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -243,16 +242,19 @@ class PositionAndLength extends StatelessWidget {
           stream: playService.positionStream,
           builder: (context, snapshot) {
             final pos = snapshot.data ?? 0;
-            final minute = pos ~/ 60;
-            final second = (pos % 60).toInt();
-            return Text("$minute:$second", style: textStyle);
+            return Text(
+              Duration(milliseconds: (pos * 1000).round()).toStringHMMSS(),
+              style: TextStyle(color: scheme.onSecondaryContainer),
+            );
           },
         ),
 
         /// length
         Text(
-          nowPlaying == null ? "N/A" : "$lengthMinute:$lengthSecond",
-          style: textStyle,
+          nowPlaying == null
+              ? "N/A"
+              : Duration(milliseconds: (length * 1000).round()).toStringHMMSS(),
+          style: TextStyle(color: scheme.onSecondaryContainer),
         ),
       ],
     );

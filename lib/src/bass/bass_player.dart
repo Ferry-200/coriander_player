@@ -73,6 +73,14 @@ class BassPlayer {
     }
   }
 
+  double get volumeDsp {
+    if (_fstream == null) return 0;
+
+    final volDsp = malloc.allocate<ffi.Float>(ffi.sizeOf<ffi.Float>());
+    _bass.BASS_ChannelGetAttribute(_fstream!, BASS_ATTRIB_VOLDSP, volDsp);
+    return volDsp.value;
+  }
+
   /// update every 200ms
   Stream<double> get positionStream => _positionStreamController.stream;
 
@@ -209,63 +217,79 @@ class BassPlayer {
     }
   }
 
+  /// [BASS_ATTRIB_VOLDSP] attribute does have direct effect on decoding/recording channels.
+  void setVolumeDsp(double volume) {
+    if (_fstream == null) return;
+
+    _bass.BASS_ChannelSetAttribute(_fstream!, BASS_ATTRIB_VOLDSP, volume);
+
+    switch (_bass.BASS_ErrorGetCode()) {
+      case BASS_ERROR_HANDLE:
+        throw const FormatException("handle is not a valid channel.");
+      case BASS_ERROR_ILLTYPE:
+        throw const FormatException("attrib is not valid.");
+      case BASS_ERROR_ILLPARAM:
+        throw const FormatException("value is not valid.");
+    }
+  }
+
   /// start/resume channel
   ///
   /// do nothing if [setSource] hasn't been called
   void start() {
-    if (_fstream != null) {
-      _bass.BASS_ChannelStart(_fstream!);
-      _playerStateStreamController.add(PlayerState.playing);
-      switch (_bass.BASS_ErrorGetCode()) {
-        case BASS_ERROR_HANDLE:
-          throw const FormatException("handle is not a valid channel.");
-        case BASS_ERROR_DECODE:
-          throw const FormatException(
-              "handle is a decoding channel, so cannot be played.");
-        case BASS_ERROR_START:
-          throw const FormatException(
-              "The output is paused/stopped, use BASS_Start to start it.");
-      }
+    if (_fstream == null) return;
 
-      _positionUpdater = _getPositionUpdater();
+    _bass.BASS_ChannelStart(_fstream!);
+    _playerStateStreamController.add(PlayerState.playing);
+    switch (_bass.BASS_ErrorGetCode()) {
+      case BASS_ERROR_HANDLE:
+        throw const FormatException("handle is not a valid channel.");
+      case BASS_ERROR_DECODE:
+        throw const FormatException(
+            "handle is a decoding channel, so cannot be played.");
+      case BASS_ERROR_START:
+        throw const FormatException(
+            "The output is paused/stopped, use BASS_Start to start it.");
     }
+
+    _positionUpdater = _getPositionUpdater();
   }
 
   /// pause channel, call [start] to resume channel
   ///
   /// do nothing if [setSource] hasn't been called
   void pause() {
-    if (_fstream != null) {
-      _bass.BASS_ChannelPause(_fstream!);
-      _playerStateStreamController.add(PlayerState.paused);
-      switch (_bass.BASS_ErrorGetCode()) {
-        case BASS_ERROR_HANDLE:
-          throw const FormatException("handle is not a valid channel.");
-        case BASS_ERROR_DECODE:
-          throw const FormatException(
-              "handle is a decoding channel, so cannot be played or paused.");
-        case BASS_ERROR_NOPLAY:
-          throw const FormatException("The channel is not playing.");
-      }
+    if (_fstream == null) return;
 
-      _positionUpdater.cancel();
+    _bass.BASS_ChannelPause(_fstream!);
+    _playerStateStreamController.add(PlayerState.paused);
+    switch (_bass.BASS_ErrorGetCode()) {
+      case BASS_ERROR_HANDLE:
+        throw const FormatException("handle is not a valid channel.");
+      case BASS_ERROR_DECODE:
+        throw const FormatException(
+            "handle is a decoding channel, so cannot be played or paused.");
+      case BASS_ERROR_NOPLAY:
+        throw const FormatException("The channel is not playing.");
     }
+
+    _positionUpdater.cancel();
   }
 
   /// pause channel. can't resume by calling [start]
   ///
   /// do nothing if [setSource] hasn't been called
   void stop() {
-    if (_fstream != null) {
-      _bass.BASS_ChannelStop(_fstream!);
-      _playerStateStreamController.add(PlayerState.stopped);
-      switch (_bass.BASS_ErrorGetCode()) {
-        case BASS_ERROR_HANDLE:
-          throw const FormatException("handle is not a valid channel.");
-      }
+    if (_fstream == null) return;
 
-      _positionUpdater.cancel();
+    _bass.BASS_ChannelStop(_fstream!);
+    _playerStateStreamController.add(PlayerState.stopped);
+    switch (_bass.BASS_ErrorGetCode()) {
+      case BASS_ERROR_HANDLE:
+        throw const FormatException("handle is not a valid channel.");
     }
+
+    _positionUpdater.cancel();
   }
 
   /// set channel's position to given [position]
@@ -273,26 +297,26 @@ class BassPlayer {
   ///
   /// do nothing if [setSource] hasn't been called
   void seek(double position) {
-    if (_fstream != null) {
-      _bass.BASS_ChannelSetPosition(
-        _fstream!,
-        _bass.BASS_ChannelSeconds2Bytes(_fstream!, position),
-        BASS_POS_BYTE,
-      );
-      switch (_bass.BASS_ErrorGetCode()) {
-        case BASS_ERROR_HANDLE:
-          throw const FormatException("handle is not a valid channel.");
-        case BASS_ERROR_NOTFILE:
-          throw const FormatException("The stream is not a file stream.");
-        case BASS_ERROR_POSITION:
-          throw const FormatException(
-              "The requested position is invalid, eg. it is beyond the end or the download has not yet reached it.");
-        case BASS_ERROR_NOTAVAIL:
-          throw const FormatException(
-              "The requested mode is not available. Invalid flags are ignored and do not result in this error.");
-        case BASS_ERROR_UNKNOWN:
-          throw const FormatException("Some other mystery problem!");
-      }
+    if (_fstream == null) return;
+
+    _bass.BASS_ChannelSetPosition(
+      _fstream!,
+      _bass.BASS_ChannelSeconds2Bytes(_fstream!, position),
+      BASS_POS_BYTE,
+    );
+    switch (_bass.BASS_ErrorGetCode()) {
+      case BASS_ERROR_HANDLE:
+        throw const FormatException("handle is not a valid channel.");
+      case BASS_ERROR_NOTFILE:
+        throw const FormatException("The stream is not a file stream.");
+      case BASS_ERROR_POSITION:
+        throw const FormatException(
+            "The requested position is invalid, eg. it is beyond the end or the download has not yet reached it.");
+      case BASS_ERROR_NOTAVAIL:
+        throw const FormatException(
+            "The requested mode is not available. Invalid flags are ignored and do not result in this error.");
+      case BASS_ERROR_UNKNOWN:
+        throw const FormatException("Some other mystery problem!");
     }
   }
 
@@ -301,15 +325,15 @@ class BassPlayer {
   ///
   /// do nothing if [setSource] hasn't been called
   void freeFStream() {
-    if (_fstream != null) {
-      _bass.BASS_StreamFree(_fstream!);
-      switch (_bass.BASS_ErrorGetCode()) {
-        case BASS_ERROR_HANDLE:
-          throw const FormatException("handle is not valid.");
-        case BASS_ERROR_NOTAVAIL:
-          throw const FormatException(
-              "Device streams (STREAMPROC_DEVICE) cannot be freed.");
-      }
+    if (_fstream == null) return;
+
+    _bass.BASS_StreamFree(_fstream!);
+    switch (_bass.BASS_ErrorGetCode()) {
+      case BASS_ERROR_HANDLE:
+        throw const FormatException("handle is not valid.");
+      case BASS_ERROR_NOTAVAIL:
+        throw const FormatException(
+            "Device streams (STREAMPROC_DEVICE) cannot be freed.");
     }
   }
 
