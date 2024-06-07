@@ -73,7 +73,7 @@ class BassPlayer {
     }
   }
 
-  double get volumnDsp {
+  double get volumeDsp {
     if (_fstream == null) return 0;
 
     final volDsp = malloc.allocate<ffi.Float>(ffi.sizeOf<ffi.Float>());
