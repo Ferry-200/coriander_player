@@ -1,3 +1,4 @@
+import 'package:coriander_player/extensions.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/library/playlist.dart';
@@ -245,7 +246,7 @@ class AudioTile extends StatelessWidget {
                   ),
                   const SizedBox(width: 8.0),
                   Text(
-                    "${audio.duration ~/ 60}:${audio.duration % 60}",
+                    Duration(seconds: audio.duration).toStringHMMSS(),
                     style: TextStyle(
                       color: focus
                           ? theme.palette.primary

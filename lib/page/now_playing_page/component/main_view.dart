@@ -1,3 +1,4 @@
+import 'package:coriander_player/extensions.dart';
 import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/src/bass/bass_player.dart';
 import 'package:coriander_player/theme/theme_provider.dart';
@@ -122,8 +123,7 @@ class PositionAndLength extends StatelessWidget {
     final theme = Provider.of<ThemeProvider>(context);
     final playService = Provider.of<PlayService>(context);
     final nowPlaying = playService.nowPlaying;
-    final lengthMinute = PlayService.instance.length ~/ 60;
-    final lengthSecond = (PlayService.instance.length % 60).toInt();
+    final length = PlayService.instance.length;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -133,10 +133,8 @@ class PositionAndLength extends StatelessWidget {
           stream: playService.positionStream,
           builder: (context, snapshot) {
             final pos = snapshot.data ?? 0;
-            final minute = pos ~/ 60;
-            final second = (pos % 60).toInt();
             return Text(
-              "$minute:$second",
+              Duration(milliseconds: (pos * 1000).round()).toStringHMMSS(),
               style: TextStyle(
                 color: theme.palette.onSecondaryContainer,
               ),
@@ -146,7 +144,9 @@ class PositionAndLength extends StatelessWidget {
 
         /// length
         Text(
-          nowPlaying == null ? "N/A" : "$lengthMinute:$lengthSecond",
+          nowPlaying == null
+              ? "N/A"
+              : Duration(milliseconds: (length * 1000).round()).toStringHMMSS(),
           style: TextStyle(
             color: theme.palette.onSecondaryContainer,
           ),
