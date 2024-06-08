@@ -2,7 +2,6 @@ import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/audio_tile.dart';
 import 'page_controller.dart';
 import 'package:coriander_player/play_service.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -31,11 +30,11 @@ class ArtistDetailPage extends StatelessWidget {
   }
 
   Widget _pageBuilder(context, albumCover) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
     final pageController = Provider.of<ArtistDetailPageController>(context);
 
     return Material(
-      color: theme.palette.surface,
+      color: scheme.surface,
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(8.0),
         bottomRight: Radius.circular(8.0),
@@ -62,7 +61,7 @@ class ArtistDetailPage extends StatelessWidget {
                             artist.name,
                             style: TextStyle(
                               fontSize: 22.0,
-                              color: theme.palette.onSurface,
+                              color: scheme.onSurface,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -71,7 +70,7 @@ class ArtistDetailPage extends StatelessWidget {
                           "${artist.works.length} 首乐曲",
                           style: TextStyle(
                             fontSize: 14.0,
-                            color: theme.palette.onSurface,
+                            color: scheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: 8.0),
@@ -90,13 +89,8 @@ class ArtistDetailPage extends StatelessWidget {
                 ],
               ),
             ),
-            SliverToBoxAdapter(
-              child: Divider(
-                height: 32.0,
-                color: theme.palette.outline,
-                indent: 8.0,
-                endIndent: 8.0,
-              ),
+            const SliverToBoxAdapter(
+              child: Divider(height: 32.0, indent: 8.0, endIndent: 8.0),
             ),
 
             /// list of artist works
@@ -113,7 +107,7 @@ class ArtistDetailPage extends StatelessWidget {
                 child: Text(
                   "专辑",
                   style: TextStyle(
-                    color: theme.palette.onSurface,
+                    color: scheme.onSurface,
                     fontSize: 18.0,
                     fontWeight: FontWeight.w600,
                   ),
@@ -134,7 +128,6 @@ class _AlbumsSliverList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
     final pageController = Provider.of<ArtistDetailPageController>(context);
 
     return SliverList.builder(
@@ -144,9 +137,6 @@ class _AlbumsSliverList extends StatelessWidget {
         return ListTile(
           onTap: () => context.push(app_paths.ALBUM_DETAIL_PAGE, extra: album),
           title: Text(album.name),
-          textColor: theme.palette.onSurface,
-          hoverColor: theme.palette.onSurface.withOpacity(0.08),
-          splashColor: theme.palette.onSurface.withOpacity(0.12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
@@ -168,13 +158,13 @@ class _ArtistPicture extends StatelessWidget {
     return FutureBuilder(
       future: artist.picture,
       builder: (context, snapshot) {
-        final theme = Provider.of<ThemeProvider>(context);
+        final scheme = Theme.of(context).colorScheme;
         if (snapshot.data == null) {
           return Flexible(
             child: Icon(
               Symbols.broken_image,
               size: 200.0,
-              color: theme.palette.onSurface,
+              color: scheme.onSurface,
             ),
           );
         }
@@ -196,16 +186,25 @@ class _ShuffleAndPlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pageController = Provider.of<ArtistDetailPageController>(context);
-    final theme = Provider.of<ThemeProvider>(context);
     return FilledButton.icon(
       onPressed: () {
         PlayService.instance.shuffleAndPlay(pageController.works);
       },
       icon: const Icon(Symbols.shuffle),
       label: const Text("随机播放"),
-      style: theme.primaryButtonStyle,
+      style: const ButtonStyle(
+        fixedSize: WidgetStatePropertyAll(Size.fromHeight(40)),
+      ),
     );
   }
+}
+
+class MenuItemDesc {
+  final IconData icon;
+  final SortBy sortBy;
+  final void Function() action;
+
+  MenuItemDesc(this.icon, this.sortBy, this.action);
 }
 
 class _SortMethodComboBox extends StatelessWidget {
@@ -213,93 +212,57 @@ class _SortMethodComboBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
     final pageController = Provider.of<ArtistDetailPageController>(context);
 
-    final menuItemStyle = ButtonStyle(
-      backgroundColor: MaterialStatePropertyAll(
-        theme.palette.secondaryContainer,
+    final menuItemDescs = [
+      MenuItemDesc(
+        Symbols.title,
+        SortBy.title,
+        () => pageController.setSortMethod(SortBy.title),
       ),
-      foregroundColor: MaterialStatePropertyAll(
-        theme.palette.onSecondaryContainer,
+      MenuItemDesc(
+        Symbols.album,
+        SortBy.album,
+        () => pageController.setSortMethod(SortBy.album),
       ),
-      padding: const MaterialStatePropertyAll(
-        EdgeInsets.symmetric(horizontal: 16.0),
+      MenuItemDesc(
+        Symbols.add,
+        SortBy.created,
+        () => pageController.setSortMethod(SortBy.created),
       ),
-      overlayColor: MaterialStatePropertyAll(
-        theme.palette.onSecondaryContainer.withOpacity(0.08),
+      MenuItemDesc(
+        Symbols.edit,
+        SortBy.modified,
+        () => pageController.setSortMethod(SortBy.modified),
       ),
-    );
-
-    final menuStyle = MenuStyle(
-      backgroundColor: MaterialStatePropertyAll(
-        theme.palette.secondaryContainer,
+      MenuItemDesc(
+        Symbols.filter_list_off,
+        SortBy.origin,
+        () => pageController.setSortMethod(SortBy.origin),
       ),
-      surfaceTintColor: MaterialStatePropertyAll(
-        theme.palette.secondaryContainer,
-      ),
-      shape: const MaterialStatePropertyAll(RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20.0),
-          bottomRight: Radius.circular(20.0),
-        ),
-      )),
-      fixedSize: const MaterialStatePropertyAll(Size.fromWidth(149.0)),
-    );
+    ];
 
     return MenuAnchor(
-      /// 这样可以指定菜单栏的大小
       crossAxisUnconstrained: false,
-      style: menuStyle,
-      menuChildren: [
-        MenuItemButton(
-          style: menuItemStyle,
-          onPressed: () => pageController.setSortMethod(SortBy.title),
-          leadingIcon: Icon(
-            Symbols.title,
-            color: theme.palette.onSecondaryContainer,
-          ),
-          child: const Text("标题"),
+      style: MenuStyle(
+        fixedSize: const WidgetStatePropertyAll(Size.fromWidth(141)),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         ),
-        MenuItemButton(
-          style: menuItemStyle,
-          leadingIcon: Icon(
-            Symbols.album,
-            color: theme.palette.onSecondaryContainer,
+      ),
+      menuChildren: List.generate(
+        menuItemDescs.length,
+        (i) => MenuItemButton(
+          style: const ButtonStyle(
+            padding: WidgetStatePropertyAll(EdgeInsets.all(12)),
           ),
-          child: const Text("专辑"),
-          onPressed: () => pageController.setSortMethod(SortBy.album),
+          leadingIcon: Icon(menuItemDescs[i].icon),
+          onPressed: menuItemDescs[i].action,
+          child: Text(menuItemDescs[i].sortBy.methodName),
         ),
-        MenuItemButton(
-          style: menuItemStyle,
-          leadingIcon: Icon(
-            Symbols.add,
-            color: theme.palette.onSecondaryContainer,
-          ),
-          child: const Text("创建时间"),
-          onPressed: () => pageController.setSortMethod(SortBy.created),
-        ),
-        MenuItemButton(
-          style: menuItemStyle,
-          leadingIcon: Icon(
-            Symbols.edit,
-            color: theme.palette.onSecondaryContainer,
-          ),
-          child: const Text("修改时间"),
-          onPressed: () => pageController.setSortMethod(SortBy.modified),
-        ),
-        MenuItemButton(
-          style: menuItemStyle,
-          leadingIcon: Icon(
-            Symbols.filter_list_off,
-            color: theme.palette.onSecondaryContainer,
-          ),
-          child: const Text("默认"),
-          onPressed: () => pageController.setSortMethod(SortBy.origin),
-        ),
-      ],
+      ),
       builder: (context, menuController, _) {
-        final theme = Provider.of<ThemeProvider>(context);
+        final scheme = Theme.of(context).colorScheme;
         final pageController = Provider.of<ArtistDetailPageController>(context);
 
         final sortMethod = pageController.sortBy;
@@ -314,16 +277,12 @@ class _SortMethodComboBox extends StatelessWidget {
 
         return SizedBox(
           height: 40.0,
-          width: 149.0,
+          width: 141.0,
           child: Material(
             borderRadius: borderRadius,
-            color: theme.palette.secondaryContainer,
+            color: scheme.secondaryContainer,
             elevation: isOpen ? 4.0 : 0,
             child: InkWell(
-              hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
-              highlightColor:
-                  theme.palette.onSecondaryContainer.withOpacity(0.12),
-              splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
               borderRadius: borderRadius,
               onTap: isOpen ? menuController.close : menuController.open,
               child: Padding(
@@ -333,22 +292,20 @@ class _SortMethodComboBox extends StatelessWidget {
                     Icon(
                       Symbols.sort,
                       size: 24,
-                      color: theme.palette.onSecondaryContainer,
+                      color: scheme.onSecondaryContainer,
                     ),
-                    const SizedBox(width: 8.0),
+                    const SizedBox(width: 4.0),
                     Expanded(
                       child: Text(
                         sortMethod.methodName,
-                        style: TextStyle(
-                          color: theme.palette.onSecondaryContainer,
-                        ),
+                        style: TextStyle(color: scheme.onSecondaryContainer),
                       ),
                     ),
-                    const SizedBox(width: 8.0),
+                    const SizedBox(width: 4.0),
                     Icon(
                       isOpen ? Symbols.arrow_drop_up : Symbols.arrow_drop_down,
                       size: 24,
-                      color: theme.palette.onSecondaryContainer,
+                      color: scheme.onSecondaryContainer,
                     ),
                   ],
                 ),
@@ -366,10 +323,9 @@ class _ToggleListOrder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
     final pageController = Provider.of<ArtistDetailPageController>(context);
 
-    return IconButton(
+    return IconButton.filledTonal(
       onPressed: () {
         pageController.setListOrder(
           pageController.listOrder == ListOrder.ascending
@@ -382,7 +338,6 @@ class _ToggleListOrder extends StatelessWidget {
             ? Symbols.arrow_upward
             : Symbols.arrow_downward,
       ),
-      style: theme.secondaryIconButtonStyle,
     );
   }
 }

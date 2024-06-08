@@ -1,95 +1,38 @@
 import 'package:coriander_player/app_settings.dart';
-import 'package:coriander_player/theme/color_palette.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
+import 'package:coriander_player/page/settings_page/theme_picker_dialog.dart';
+import 'package:coriander_player/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:provider/provider.dart';
 
-class ThemeSelector extends StatefulWidget {
+class ThemeSelector extends StatelessWidget {
   const ThemeSelector({super.key});
 
   @override
-  State<ThemeSelector> createState() => _ThemeSelectorState();
-}
-
-class _ThemeSelectorState extends State<ThemeSelector> {
-  final settings = AppSettings.instance;
-  final themeCollection = [
-    4292114089,
-    4282283161,
-    4286080703,
-    4290765296,
-    4287059351,
-    4292356666,
-    4293706294,
-    ThemeProvider.instance.palette.seed,
-  ];
-  @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
-    themeCollection.last = theme.palette.seed;
+    final scheme = Theme.of(context).colorScheme;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          "默认主题色",
-          style: TextStyle(
-            color: theme.palette.onSurface,
-            fontSize: 18.0,
-          ),
+          "修改主题",
+          style: TextStyle(color: scheme.onSurface, fontSize: 18.0),
         ),
-        const SizedBox(height: 8.0),
-        Wrap(
-          spacing: 8.0,
-          runSpacing: 8.0,
-          children: List.generate(
-            themeCollection.length,
-            (i) {
-              final themeItem = ColorPalette.fromSeed(
-                seedValue: themeCollection[i],
-                brightness: settings.themeMode,
-              );
-              return MouseRegion(
-                cursor: MaterialStateMouseCursor.clickable,
-                child: GestureDetector(
-                  onTap: () async {
-                    setState(() {
-                      settings.defaultTheme = themeCollection[i];
-                    });
-                    theme.changeTheme(themeItem);
-                    await settings.saveSettings();
-                  },
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Container(
-                        width: 64.0,
-                        height: 64.0,
-                        decoration: BoxDecoration(
-                          color: themeItem.primary,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: i == themeCollection.length - 1
-                            ? Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Text(
-                                  "当前主题",
-                                  style: TextStyle(color: themeItem.onPrimary),
-                                ),
-                              )
-                            : const SizedBox(),
-                      ),
-                      settings.defaultTheme == themeCollection[i]
-                          ? Icon(Symbols.check, color: themeItem.onPrimary)
-                          : const SizedBox(),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        )
+        FilledButton.icon(
+          onPressed: () async {
+            final seedColor = await showDialog<Color>(
+              context: context,
+              builder: (context) => const ThemePickerDialog(),
+            );
+            if(seedColor == null) return;
+
+            ThemeProvider.instance.applyTheme(seedColor: seedColor);
+            AppSettings.instance.defaultTheme = seedColor.value;
+            await AppSettings.instance.saveSettings();
+          },
+          label: const Text("主题选择器"),
+          icon: const Icon(Symbols.palette),
+        ),
       ],
     );
   }
@@ -107,46 +50,36 @@ class _ThemeModeControlState extends State<ThemeModeControl> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
-
-    final leftForeColor = settings.themeMode == Brightness.light
-        ? theme.palette.onSecondaryContainer
-        : theme.palette.onSurface;
-    final rightForeColor = settings.themeMode == Brightness.dark
-        ? theme.palette.onSecondaryContainer
-        : theme.palette.onSurface;
+    final scheme = Theme.of(context).colorScheme;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           "主题模式",
-          style: TextStyle(
-            color: theme.palette.onSurface,
-            fontSize: 18.0,
-          ),
+          style: TextStyle(color: scheme.onSurface, fontSize: 18.0),
         ),
-        SegmentedButton<Brightness>(
+        SegmentedButton<ThemeMode>(
           showSelectedIcon: false,
-          segments: [
-            ButtonSegment<Brightness>(
-              value: Brightness.light,
-              icon: Icon(Symbols.light_mode, color: leftForeColor),
+          segments: const [
+            ButtonSegment<ThemeMode>(
+              value: ThemeMode.light,
+              icon: Icon(Symbols.light_mode),
             ),
-            ButtonSegment<Brightness>(
-              value: Brightness.dark,
-              icon: Icon(Symbols.dark_mode, color: rightForeColor),
+            ButtonSegment<ThemeMode>(
+              value: ThemeMode.dark,
+              icon: Icon(Symbols.dark_mode),
             ),
           ],
           selected: {settings.themeMode},
-          onSelectionChanged: (newSelection) {
+          onSelectionChanged: (newSelection) async {
             if (newSelection.first == settings.themeMode) return;
 
             setState(() {
               settings.themeMode = newSelection.first;
             });
-            theme.toggleThemeMode();
-            settings.saveSettings();
+            ThemeProvider.instance.applyThemeMode(settings.themeMode);
+            await settings.saveSettings();
           },
         ),
       ],
@@ -166,17 +99,14 @@ class _DynamicThemeSwitchState extends State<DynamicThemeSwitch> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           "动态主题",
-          style: TextStyle(
-            color: theme.palette.onSurface,
-            fontSize: 18.0,
-          ),
+          style: TextStyle(color: scheme.onSurface, fontSize: 18.0),
         ),
         Switch(
           value: settings.dynamicTheme,
@@ -204,17 +134,14 @@ class _UseSystemThemeSwitchState extends State<UseSystemThemeSwitch> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           "启动时使用系统主题",
-          style: TextStyle(
-            color: theme.palette.onSurface,
-            fontSize: 18.0,
-          ),
+          style: TextStyle(color: scheme.onSurface, fontSize: 18.0),
         ),
         Switch(
           value: settings.useSystemTheme,
@@ -243,17 +170,14 @@ class _UseSystemThemeModeSwitchState extends State<UseSystemThemeModeSwitch> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           "启动时使用系统主题模式",
-          style: TextStyle(
-            color: theme.palette.onSurface,
-            fontSize: 18.0,
-          ),
+          style: TextStyle(color: scheme.onSurface, fontSize: 18.0),
         ),
         Switch(
           value: settings.useSystemThemeMode,

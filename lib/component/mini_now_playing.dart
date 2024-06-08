@@ -2,12 +2,10 @@ import 'package:coriander_player/component/rectangle_progress_indicator.dart';
 import 'package:coriander_player/component/responsive_builder.dart';
 import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/src/bass/bass_player.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:provider/provider.dart';
 
 class MiniNowPlaying extends StatelessWidget {
   const MiniNowPlaying({
@@ -56,7 +54,7 @@ class _NowPlayingForeground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return Material(
       type: MaterialType.transparency,
@@ -64,15 +62,11 @@ class _NowPlayingForeground extends StatelessWidget {
       child: InkWell(
         onTap: () => context.push(app_paths.NOW_PLAYING_PAGE),
         borderRadius: BorderRadius.circular(8.0),
-        hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
-        highlightColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
-        splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: ListenableBuilder(
             listenable: PlayService.instance,
             builder: (context, _) {
-              final theme = Provider.of<ThemeProvider>(context);
               final nowPlaying = PlayService.instance.nowPlaying;
               return Row(
                 children: [
@@ -85,7 +79,7 @@ class _NowPlayingForeground extends StatelessWidget {
                               return Icon(
                                 Symbols.broken_image,
                                 size: 48.0,
-                                color: theme.palette.onSecondaryContainer,
+                                color: scheme.onSecondaryContainer,
                               );
                             }
 
@@ -107,7 +101,7 @@ class _NowPlayingForeground extends StatelessWidget {
                       : Icon(
                           Symbols.music_note,
                           size: 48.0,
-                          color: theme.palette.onSecondaryContainer,
+                          color: scheme.onSecondaryContainer,
                         ),
                   const SizedBox(width: 8.0),
                   Expanded(
@@ -122,9 +116,7 @@ class _NowPlayingForeground extends StatelessWidget {
                               : "Coriander Player",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: theme.palette.onSecondaryContainer,
-                          ),
+                          style: TextStyle(color: scheme.onSecondaryContainer),
                         ),
 
                         /// artist - album
@@ -134,9 +126,7 @@ class _NowPlayingForeground extends StatelessWidget {
                               : "Enjoy music",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: theme.palette.onSecondaryContainer,
-                          ),
+                          style: TextStyle(color: scheme.onSecondaryContainer),
                         ),
                       ],
                     ),
@@ -157,14 +147,13 @@ class _NowPlayingForeground extends StatelessWidget {
                         onPressed = PlayService.instance.start;
                       }
 
-                      return IconButton(
+                      return IconButton.filled(
                         onPressed: onPressed,
                         icon: Icon(
                           snapshot.data! == PlayerState.playing
                               ? Symbols.pause
                               : Symbols.play_arrow,
                         ),
-                        style: theme.primaryIconButtonStyle,
                       );
                     },
                   ),

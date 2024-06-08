@@ -1,10 +1,8 @@
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/page/uni_page.dart';
 import 'package:coriander_player/play_service.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:provider/provider.dart';
 
 class ShufflePlay<T> extends StatelessWidget {
   final List<T> contentList;
@@ -12,13 +10,15 @@ class ShufflePlay<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
     return FilledButton.icon(
-      onPressed: () =>
-          PlayService.instance.shuffleAndPlay(contentList as List<Audio>),
+      onPressed: () => PlayService.instance.shuffleAndPlay(
+        contentList as List<Audio>,
+      ),
       icon: const Icon(Symbols.shuffle),
       label: const Text("随机播放"),
-      style: theme.primaryButtonStyle,
+      style: const ButtonStyle(
+        fixedSize: WidgetStatePropertyAll(Size.fromHeight(40)),
+      ),
     );
   }
 }
@@ -38,20 +38,23 @@ class SortMethodComboBox<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return MenuAnchor(
-      /// 这样可以指定菜单栏的大小
       crossAxisUnconstrained: false,
-      style: theme.menuStyleWithFixedSize,
+      style: MenuStyle(
+        fixedSize: const WidgetStatePropertyAll(Size.fromWidth(141)),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        ),
+      ),
       menuChildren: List.generate(
         sortMethods.length,
         (i) => MenuItemButton(
-          style: theme.menuItemStyle,
-          leadingIcon: Icon(
-            sortMethods[i].icon,
-            color: theme.palette.onSecondaryContainer,
+          style: const ButtonStyle(
+            padding: WidgetStatePropertyAll(EdgeInsets.all(12)),
           ),
+          leadingIcon: Icon(sortMethods[i].icon),
           child: Text(sortMethods[i].name),
           onPressed: () => setSortMethod(sortMethods[i]),
         ),
@@ -63,12 +66,12 @@ class SortMethodComboBox<T> extends StatelessWidget {
 
         return SizedBox(
           height: 40.0,
-          width: 149.0,
+          width: 141.0,
           child: Material(
             borderRadius: borderRadius,
-            color: theme.palette.secondaryContainer,
+            color: scheme.secondaryContainer,
             child: InkWell(
-              hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
+              hoverColor: scheme.onSecondaryContainer.withOpacity(0.08),
               borderRadius: borderRadius,
               onTap: isOpen ? menuController.close : menuController.open,
               child: Padding(
@@ -78,22 +81,20 @@ class SortMethodComboBox<T> extends StatelessWidget {
                     Icon(
                       Symbols.sort,
                       size: 24,
-                      color: theme.palette.onSecondaryContainer,
+                      color: scheme.onSecondaryContainer,
                     ),
-                    const SizedBox(width: 8.0),
+                    const SizedBox(width: 4.0),
                     Expanded(
                       child: Text(
                         currSortMethod.name,
-                        style: TextStyle(
-                          color: theme.palette.onSecondaryContainer,
-                        ),
+                        style: TextStyle(color: scheme.onSecondaryContainer),
                       ),
                     ),
-                    const SizedBox(width: 8.0),
+                    const SizedBox(width: 4.0),
                     Icon(
                       isOpen ? Symbols.arrow_drop_up : Symbols.arrow_drop_down,
                       size: 24,
-                      color: theme.palette.onSecondaryContainer,
+                      color: scheme.onSecondaryContainer,
                     ),
                   ],
                 ),
@@ -114,14 +115,12 @@ class SortOrderSwitch<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
     var isAscending = sortOrder == SortOrder.ascending;
-    return IconButton(
+    return IconButton.filledTonal(
       onPressed: () => setSortOrder(
         isAscending ? SortOrder.decending : SortOrder.ascending,
       ),
       icon: Icon(isAscending ? Symbols.arrow_upward : Symbols.arrow_downward),
-      style: theme.secondaryIconButtonStyle,
     );
   }
 }
@@ -134,14 +133,12 @@ class ContentViewSwitch<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
     var isListView = contentView == ContentView.list;
-    return IconButton(
+    return IconButton.filledTonal(
       onPressed: () => setContentView(
         isListView ? ContentView.table : ContentView.list,
       ),
       icon: Icon(isListView ? Symbols.list : Symbols.table),
-      style: theme.secondaryIconButtonStyle,
     );
   }
 }

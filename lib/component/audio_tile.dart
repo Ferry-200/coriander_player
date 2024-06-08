@@ -2,12 +2,10 @@ import 'package:coriander_player/extensions.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/library/playlist.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:provider/provider.dart';
 
 /// 由[playlist]和[audioIndex]确定audio，而不是直接传入audio，
 /// 这是为了实现点击列表项播放乐曲时指定该列表为播放列表。
@@ -28,24 +26,8 @@ class AudioTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
     final audio = playlist[audioIndex];
-
-    final menuItemStyle = ButtonStyle(
-      backgroundColor: MaterialStatePropertyAll(
-        theme.palette.surfaceContainer,
-      ),
-      surfaceTintColor: MaterialStatePropertyAll(
-        theme.palette.surfaceContainer,
-      ),
-      foregroundColor: MaterialStatePropertyAll(
-        theme.palette.onSurface,
-      ),
-      overlayColor: MaterialStatePropertyAll(
-        theme.palette.onSurface.withOpacity(0.08),
-      ),
-    );
-
     final menuController = MenuController();
 
     return SizedBox(
@@ -63,35 +45,14 @@ class AudioTile extends StatelessWidget {
         onSecondaryTapDown: (details) {
           menuController.open(position: details.localPosition);
         },
-        hoverColor: theme.palette.onSurface.withOpacity(0.08),
-        highlightColor: theme.palette.onSurface.withOpacity(0.12),
-        splashColor: theme.palette.onSurface.withOpacity(0.12),
         child: MenuAnchor(
           controller: menuController,
-          style: MenuStyle(
-            backgroundColor: MaterialStatePropertyAll(
-              theme.palette.surfaceContainer,
-            ),
-            surfaceTintColor: MaterialStatePropertyAll(
-              theme.palette.surfaceContainer,
-            ),
-          ),
           menuChildren: [
             /// artists
             SubmenuButton(
-              menuStyle: MenuStyle(
-                backgroundColor: MaterialStatePropertyAll(
-                  theme.palette.surfaceContainer,
-                ),
-                surfaceTintColor: MaterialStatePropertyAll(
-                  theme.palette.surfaceContainer,
-                ),
-              ),
-              style: menuItemStyle,
               menuChildren: List.generate(
                 audio.splitedArtists.length,
                 (i) => MenuItemButton(
-                  style: menuItemStyle,
                   onPressed: () {
                     final Artist artist = AudioLibrary
                         .instance.artistCollection[audio.splitedArtists[i]]!;
@@ -100,10 +61,7 @@ class AudioTile extends StatelessWidget {
                       extra: artist,
                     );
                   },
-                  leadingIcon: Icon(
-                    Symbols.artist,
-                    color: theme.palette.onSurface,
-                  ),
+                  leadingIcon: const Icon(Symbols.artist),
                   child: Text(audio.splitedArtists[i]),
                 ),
               ),
@@ -112,30 +70,17 @@ class AudioTile extends StatelessWidget {
 
             /// album
             MenuItemButton(
-              style: menuItemStyle,
               onPressed: () {
                 final Album album =
                     AudioLibrary.instance.albumCollection[audio.album]!;
                 context.push(app_paths.ALBUM_DETAIL_PAGE, extra: album);
               },
-              leadingIcon: Icon(
-                Symbols.album,
-                color: theme.palette.onSurface,
-              ),
+              leadingIcon: const Icon(Symbols.album),
               child: Text(audio.album),
             ),
 
             /// add to playlist
             SubmenuButton(
-              menuStyle: MenuStyle(
-                backgroundColor: MaterialStatePropertyAll(
-                  theme.palette.surfaceContainer,
-                ),
-                surfaceTintColor: MaterialStatePropertyAll(
-                  theme.palette.surfaceContainer,
-                ),
-              ),
-              style: menuItemStyle,
               menuChildren: List.generate(
                 PLAYLISTS.length,
                 (i) => MenuItemButton(
@@ -143,29 +88,21 @@ class AudioTile extends StatelessWidget {
                     final added = PLAYLISTS[i]
                         .audios
                         .any((element) => element.path == audio.path);
-                    if (!added) {
-                      PLAYLISTS[i].audios.add(audio);
+                    if (added) {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text(
-                          "成功将“${audio.title}”添加到歌单“${PLAYLISTS[i].name}”",
-                          style: TextStyle(color: theme.palette.onSecondary),
-                        ),
-                        backgroundColor: theme.palette.secondary,
+                        content: Text("歌曲“${audio.title}”已存在"),
                       ));
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text(
-                          "歌曲“${audio.title}”已存在",
-                          style: TextStyle(color: theme.palette.onSecondary),
-                        ),
-                        backgroundColor: theme.palette.secondary,
-                      ));
+                      return;
                     }
+
+                    PLAYLISTS[i].audios.add(audio);
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(
+                        "成功将“${audio.title}”添加到歌单“${PLAYLISTS[i].name}”",
+                      ),
+                    ));
                   },
-                  leadingIcon: Icon(
-                    Symbols.queue_music,
-                    color: theme.palette.onSurface,
-                  ),
+                  leadingIcon: const Icon(Symbols.queue_music),
                   child: Text(PLAYLISTS[i].name),
                 ),
               ),
@@ -174,18 +111,16 @@ class AudioTile extends StatelessWidget {
 
             /// to detail page
             MenuItemButton(
-              style: menuItemStyle,
               onPressed: () {
                 context.push(app_paths.AUDIO_DETAIL_PAGE, extra: audio);
               },
-              leadingIcon: Icon(
-                Symbols.info,
-                color: theme.palette.onSurface,
-              ),
+              leadingIcon: const Icon(Symbols.info),
               child: const Text("详细信息"),
             ),
           ],
           builder: (context, controller, _) {
+            final textColor = focus ? scheme.primary : scheme.onSurface;
+
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Row(
@@ -194,13 +129,11 @@ class AudioTile extends StatelessWidget {
                   FutureBuilder(
                     future: audio.cover,
                     builder: (context, snapshot) {
-                      final theme = Provider.of<ThemeProvider>(context);
-
                       if (snapshot.data == null) {
                         return Icon(
                           Symbols.broken_image,
                           size: 48.0,
-                          color: theme.palette.onSurface,
+                          color: scheme.onSurface,
                         );
                       }
 
@@ -224,22 +157,14 @@ class AudioTile extends StatelessWidget {
                       children: [
                         Text(
                           audio.title,
-                          style: TextStyle(
-                            color: focus
-                                ? theme.palette.primary
-                                : theme.palette.onSurface,
-                          ),
+                          style: TextStyle(color: textColor),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(width: 4.0),
                         Text(
                           "${audio.artist} - ${audio.album}",
-                          style: TextStyle(
-                            color: focus
-                                ? theme.palette.primary
-                                : theme.palette.onSurface,
-                          ),
+                          style: TextStyle(color: textColor),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -250,9 +175,7 @@ class AudioTile extends StatelessWidget {
                   Text(
                     Duration(seconds: audio.duration).toStringHMMSS(),
                     style: TextStyle(
-                      color: focus
-                          ? theme.palette.primary
-                          : theme.palette.onSurface,
+                      color: focus ? scheme.primary : scheme.onSurface,
                     ),
                   ),
                   const SizedBox(width: 8.0),

@@ -33,6 +33,7 @@ dependencies:
   
   github: ^9.24.0
   flutter_markdown: ^0.7.1
+  flex_color_picker: ^3.5.0
 
 dev_dependencies:
   flutter_test:

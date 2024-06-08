@@ -4,10 +4,8 @@ import 'dart:math';
 import 'package:coriander_player/lyric/lrc.dart';
 import 'package:coriander_player/lyric/lyric.dart';
 import 'package:coriander_player/play_service.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:provider/provider.dart';
 
 class LyricViewTile extends StatelessWidget {
   const LyricViewTile(
@@ -19,8 +17,6 @@ class LyricViewTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
-
     return Align(
       alignment: Alignment.centerLeft,
       child: Opacity(
@@ -28,9 +24,6 @@ class LyricViewTile extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(12.0),
-          hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
-          highlightColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
-          splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
           child: line is SyncLyricLine
               ? _SyncLineContent(
                   syncLine: line as SyncLyricLine,
@@ -55,18 +48,18 @@ class _SyncLineContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     if (!isMainLine) {
       if (syncLine.words.isEmpty) {
         return const SizedBox.shrink();
       }
-      
+
       final List<Text> contents = [
-        buildPrimaryText(syncLine.content, theme),
+        buildPrimaryText(syncLine.content, scheme),
       ];
       if (syncLine.translation != null) {
-        contents.add(buildSecondaryText(syncLine.translation!, theme));
+        contents.add(buildSecondaryText(syncLine.translation!, scheme));
       }
 
       return Padding(
@@ -110,10 +103,10 @@ class _SyncLineContent extends StatelessWidget {
                       shaderCallback: (bounds) {
                         return LinearGradient(
                           colors: [
-                            theme.palette.primary,
-                            theme.palette.primary,
-                            theme.palette.primary.withOpacity(0.10),
-                            theme.palette.primary.withOpacity(0.10),
+                            scheme.primary,
+                            scheme.primary,
+                            scheme.primary.withOpacity(0.10),
+                            scheme.primary.withOpacity(0.10),
                           ],
                           stops: [0, progress, progress, 1],
                         ).createShader(bounds);
@@ -121,7 +114,7 @@ class _SyncLineContent extends StatelessWidget {
                       child: Text(
                         syncLine.words[i].content,
                         style: TextStyle(
-                          color: theme.palette.primary,
+                          color: scheme.primary,
                           fontSize: 22.0,
                           fontWeight: FontWeight.w600,
                         ),
@@ -136,7 +129,7 @@ class _SyncLineContent extends StatelessWidget {
       )
     ];
     if (syncLine.translation != null) {
-      contents.add(buildSecondaryText(syncLine.translation!, theme));
+      contents.add(buildSecondaryText(syncLine.translation!, scheme));
     }
     return Padding(
       padding: const EdgeInsets.all(12.0),
@@ -147,24 +140,21 @@ class _SyncLineContent extends StatelessWidget {
     );
   }
 
-  Text buildPrimaryText(String text, ThemeProvider theme) {
+  Text buildPrimaryText(String text, ColorScheme scheme) {
     return Text(
       text,
       style: TextStyle(
-        color: theme.palette.onSecondaryContainer,
+        color: scheme.onSecondaryContainer,
         fontSize: 22.0,
         fontWeight: FontWeight.w600,
       ),
     );
   }
 
-  Text buildSecondaryText(String text, ThemeProvider theme) {
+  Text buildSecondaryText(String text, ColorScheme scheme) {
     return Text(
       text,
-      style: TextStyle(
-        color: theme.palette.onSecondaryContainer,
-        fontSize: 18.0,
-      ),
+      style: TextStyle(color: scheme.onSecondaryContainer, fontSize: 18.0),
     );
   }
 }
@@ -186,14 +176,14 @@ class _LrcLineContent extends StatelessWidget {
       }
     }
 
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     final splited = lrcLine.content.split("┃");
     final List<Text> contents = [
-      buildPrimaryText(splited.first, theme),
+      buildPrimaryText(splited.first, scheme),
     ];
     for (var i = 1; i < splited.length; i++) {
-      contents.add(buildSecondaryText(splited[i], theme));
+      contents.add(buildSecondaryText(splited[i], scheme));
     }
 
     return Padding(
@@ -205,24 +195,21 @@ class _LrcLineContent extends StatelessWidget {
     );
   }
 
-  Text buildPrimaryText(String text, ThemeProvider theme) {
+  Text buildPrimaryText(String text, ColorScheme scheme) {
     return Text(
       text,
       style: TextStyle(
-        color: theme.palette.onSecondaryContainer,
+        color: scheme.onSecondaryContainer,
         fontSize: 22.0,
         fontWeight: FontWeight.w600,
       ),
     );
   }
 
-  Text buildSecondaryText(String text, ThemeProvider theme) {
+  Text buildSecondaryText(String text, ColorScheme scheme) {
     return Text(
       text,
-      style: TextStyle(
-        color: theme.palette.onSecondaryContainer,
-        fontSize: 18.0,
-      ),
+      style: TextStyle(color: scheme.onSecondaryContainer, fontSize: 18.0),
     );
   }
 }
@@ -236,7 +223,7 @@ class LyricTransitionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return SizedBox(
       height: 40.0,
@@ -245,7 +232,7 @@ class LyricTransitionTile extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(12, 18, 12, 6),
         child: CustomPaint(
           painter: LyricTransitionPainter(
-            theme,
+            scheme,
             LyricTransitionTileController(lrcLine, syncLine),
           ),
         ),
@@ -255,7 +242,7 @@ class LyricTransitionTile extends StatelessWidget {
 }
 
 class LyricTransitionPainter extends CustomPainter {
-  final ThemeProvider theme;
+  final ColorScheme scheme;
   final LyricTransitionTileController controller;
 
   final Paint circlePaint1 = Paint();
@@ -264,18 +251,18 @@ class LyricTransitionPainter extends CustomPainter {
 
   final double radius = 6;
 
-  LyricTransitionPainter(this.theme, this.controller)
+  LyricTransitionPainter(this.scheme, this.controller)
       : super(repaint: controller);
 
   @override
   void paint(Canvas canvas, Size size) {
-    circlePaint1.color = theme.palette.onSecondaryContainer.withOpacity(
+    circlePaint1.color = scheme.onSecondaryContainer.withOpacity(
       0.05 + min(controller.progress * 3, 1) * 0.95,
     );
-    circlePaint2.color = theme.palette.onSecondaryContainer.withOpacity(
+    circlePaint2.color = scheme.onSecondaryContainer.withOpacity(
       0.05 + min(max(controller.progress - 1 / 3, 0) * 3, 1) * 0.95,
     );
-    circlePaint3.color = theme.palette.onSecondaryContainer.withOpacity(
+    circlePaint3.color = scheme.onSecondaryContainer.withOpacity(
       0.05 + min(max(controller.progress - 2 / 3, 0) * 3, 1) * 0.95,
     );
 

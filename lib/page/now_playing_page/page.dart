@@ -8,7 +8,6 @@ import 'package:coriander_player/page/now_playing_page/component/main_view.dart'
 import 'package:coriander_player/page/now_playing_page/component/title_bar.dart';
 import 'package:coriander_player/page/now_playing_page/component/vertical_lyric_view.dart';
 import 'package:coriander_player/play_service.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -26,14 +25,14 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
   final lyricViewKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(80.0),
         child: NowPlayingPageTitleBar(),
       ),
-      backgroundColor: theme.palette.secondaryContainer,
+      backgroundColor: scheme.secondaryContainer,
       body: ChangeNotifierProvider.value(
         value: PlayService.instance,
         builder: (context, _) {
@@ -71,35 +70,25 @@ class _NowPlayingBody_Small extends StatefulWidget {
 
 class __NowPlayingBody_SmallState extends State<_NowPlayingBody_Small> {
   void openPlaylistView() {
-    if (_viewMode == _ViewMode.withPlaylist) {
-      setState(() {
-        _viewMode = _ViewMode.onlyMain;
-      });
-    } else {
-      setState(() {
-        _viewMode = _ViewMode.withPlaylist;
-      });
-    }
+    setState(() {
+      _viewMode = _viewMode == _ViewMode.withPlaylist
+          ? _ViewMode.onlyMain
+          : _ViewMode.withPlaylist;
+    });
   }
 
   void openLyricView() {
-    if (_viewMode == _ViewMode.withLyric) {
-      setState(() {
-        _viewMode = _ViewMode.onlyMain;
-      });
-    } else {
-      setState(() {
-        _viewMode = _ViewMode.withLyric;
-      });
-    }
+    setState(() {
+      _viewMode = _viewMode == _ViewMode.withLyric
+          ? _ViewMode.onlyMain
+          : _ViewMode.withLyric;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    late final List<Widget> mainWidgets;
-    switch (_viewMode) {
-      case _ViewMode.onlyMain:
-        mainWidgets = const [
+    final List<Widget> mainWidgets = switch (_viewMode) {
+      _ViewMode.onlyMain => const [
           Expanded(child: NowPlayingCover()),
           SizedBox(height: 16.0),
           NowPlayingTitle(),
@@ -107,27 +96,18 @@ class __NowPlayingBody_SmallState extends State<_NowPlayingBody_Small> {
           SizedBox(height: 16.0),
           NowPlayingProgressIndicator(),
           PositionAndLength(),
-        ];
-        break;
-      case _ViewMode.withLyric:
-        mainWidgets = [
-          Expanded(
-            child: VerticalLyricView(key: widget.lyricViewKey),
-          ),
+        ],
+      _ViewMode.withLyric => [
+          Expanded(child: VerticalLyricView(key: widget.lyricViewKey)),
           const SizedBox(height: 16.0),
           const _CompactAudioInfo(),
-        ];
-        break;
-      case _ViewMode.withPlaylist:
-        mainWidgets = const [
-          Expanded(
-            child: CurrentPlaylistView(),
-          ),
+        ],
+      _ViewMode.withPlaylist => const [
+          Expanded(child: CurrentPlaylistView()),
           SizedBox(height: 16.0),
           _CompactAudioInfo(),
-        ];
-        break;
-    }
+        ]
+    };
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 48.0, vertical: 16.0),
       child: Center(
@@ -166,7 +146,7 @@ class _CompactAudioInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     final playService = Provider.of<PlayService>(context);
     final nowPlaying = playService.nowPlaying;
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -177,17 +157,17 @@ class _CompactAudioInfo extends StatelessWidget {
               ? Icon(
                   Symbols.broken_image,
                   size: 48.0,
-                  color: theme.palette.onSecondaryContainer,
+                  color: scheme.onSecondaryContainer,
                 )
               : FutureBuilder(
                   future: nowPlaying.cover,
                   builder: (context, snapshot) {
-                    final theme = Provider.of<ThemeProvider>(context);
+                    final scheme = Theme.of(context).colorScheme;
                     if (snapshot.data == null) {
                       return Icon(
                         Symbols.broken_image,
                         size: 48.0,
-                        color: theme.palette.onSecondaryContainer,
+                        color: scheme.onSecondaryContainer,
                       );
                     }
                     return ClipRRect(
@@ -211,7 +191,7 @@ class _CompactAudioInfo extends StatelessWidget {
                 nowPlaying == null ? "Coriander Music" : nowPlaying.title,
                 maxLines: 1,
                 style: TextStyle(
-                  color: theme.palette.onSecondaryContainer,
+                  color: scheme.onSecondaryContainer,
                   fontWeight: FontWeight.w600,
                   fontSize: 20.0,
                 ),
@@ -221,9 +201,7 @@ class _CompactAudioInfo extends StatelessWidget {
                     ? "Enjoy Music"
                     : "${nowPlaying.artist} - ${nowPlaying.album}",
                 maxLines: 1,
-                style: TextStyle(
-                  color: theme.palette.onSecondaryContainer,
-                ),
+                style: TextStyle(color: scheme.onSecondaryContainer),
               )
             ],
           ),
@@ -315,17 +293,11 @@ class _LyricViewBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
-    return IconButton(
-      onPressed: onTap,
-      hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
-      highlightColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
-      splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
-      icon: Icon(
-        Symbols.lyrics,
-        color: _viewMode == _ViewMode.withLyric
-            ? theme.palette.onSecondaryContainer
-            : theme.palette.onSecondaryContainer.withOpacity(0.5),
+    return Opacity(
+      opacity: _viewMode == _ViewMode.withLyric ? 1 : 0.5,
+      child: IconButton(
+        onPressed: onTap,
+        icon: const Icon(Symbols.lyrics),
       ),
     );
   }
@@ -338,17 +310,11 @@ class _PlaylistViewBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
-    return IconButton(
-      onPressed: onTap,
-      hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
-      highlightColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
-      splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
-      icon: Icon(
-        Symbols.queue_music,
-        color: _viewMode == _ViewMode.withPlaylist
-            ? theme.palette.onSecondaryContainer
-            : theme.palette.onSecondaryContainer.withOpacity(0.5),
+    return Opacity(
+      opacity: _viewMode == _ViewMode.withPlaylist ? 1 : 0.5,
+      child: IconButton(
+        onPressed: onTap,
+        icon: const Icon(Symbols.queue_music),
       ),
     );
   }
@@ -359,50 +325,21 @@ class _MoreActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
     final playService = Provider.of<PlayService>(context);
     final nowPlaying = playService.nowPlaying;
-    final menuItemStyle = ButtonStyle(
-      backgroundColor: MaterialStatePropertyAll(
-        theme.palette.surface,
-      ),
-      foregroundColor: MaterialStatePropertyAll(
-        theme.palette.onSurface,
-      ),
-      overlayColor: MaterialStatePropertyAll(
-        theme.palette.onSecondaryContainer.withOpacity(0.08),
-      ),
-    );
 
     return nowPlaying == null
-        ? Icon(
-            Symbols.more_vert,
-            color: theme.palette.onSecondaryContainer.withOpacity(0.5),
+        ? Opacity(
+            opacity: 0.5,
+            child: Icon(Symbols.more_vert, color: scheme.onSecondaryContainer),
           )
         : MenuAnchor(
-            style: MenuStyle(
-              backgroundColor: MaterialStatePropertyAll(
-                theme.palette.surface,
-              ),
-              surfaceTintColor: MaterialStatePropertyAll(
-                theme.palette.surface,
-              ),
-            ),
             menuChildren: [
               SubmenuButton(
-                menuStyle: MenuStyle(
-                  backgroundColor: MaterialStatePropertyAll(
-                    theme.palette.surface,
-                  ),
-                  surfaceTintColor: MaterialStatePropertyAll(
-                    theme.palette.surface,
-                  ),
-                ),
-                style: menuItemStyle,
                 menuChildren: List.generate(
                   nowPlaying.splitedArtists.length,
                   (i) => MenuItemButton(
-                    style: menuItemStyle,
                     onPressed: () {
                       final Artist artist = AudioLibrary.instance
                           .artistCollection[nowPlaying.splitedArtists[i]]!;
@@ -411,41 +348,30 @@ class _MoreActions extends StatelessWidget {
                         extra: artist,
                       );
                     },
-                    leadingIcon: Icon(
-                      Symbols.people,
-                      color: theme.palette.onSurface,
-                    ),
+                    leadingIcon: const Icon(Symbols.people),
                     child: Text(nowPlaying.splitedArtists[i]),
                   ),
                 ),
                 child: const Text("艺术家"),
               ),
               MenuItemButton(
-                style: menuItemStyle,
                 onPressed: () {
                   final Album album =
                       AudioLibrary.instance.albumCollection[nowPlaying.album]!;
                   context.pushReplacement(app_paths.ALBUM_DETAIL_PAGE,
                       extra: album);
                 },
-                leadingIcon: Icon(
-                  Symbols.album,
-                  color: theme.palette.onSurface,
-                ),
+                leadingIcon: const Icon(Symbols.album),
                 child: Text(nowPlaying.album),
               ),
               MenuItemButton(
-                style: menuItemStyle,
                 onPressed: () {
                   showDialog(
                     context: context,
                     builder: (context) => LyricSourceView(audio: nowPlaying),
                   );
                 },
-                leadingIcon: Icon(
-                  Symbols.lyrics,
-                  color: theme.palette.onSurface,
-                ),
+                leadingIcon: const Icon(Symbols.lyrics),
                 child: const Text("指定默认歌词"),
               ),
             ],
@@ -458,16 +384,7 @@ class _MoreActions extends StatelessWidget {
                     controller.open();
                   }
                 },
-                hoverColor:
-                    theme.palette.onSecondaryContainer.withOpacity(0.08),
-                highlightColor:
-                    theme.palette.onSecondaryContainer.withOpacity(0.12),
-                splashColor:
-                    theme.palette.onSecondaryContainer.withOpacity(0.12),
-                icon: Icon(
-                  Symbols.more_vert,
-                  color: theme.palette.onSecondaryContainer,
-                ),
+                icon: const Icon(Symbols.more_vert),
               );
             },
           );
@@ -479,7 +396,6 @@ class _TogglePlayMode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
     return ListenableBuilder(
       listenable: PlayService.instance.playMode,
       builder: (context, _) {
@@ -502,13 +418,7 @@ class _TogglePlayMode extends StatelessWidget {
               playMode.value = PlayMode.forward;
             }
           },
-          hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
-          highlightColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
-          splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
-          icon: Icon(
-            result,
-            color: theme.palette.onSecondaryContainer,
-          ),
+          icon: Icon(result),
         );
       },
     );
@@ -520,7 +430,6 @@ class _ToggleShuffle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
     return ListenableBuilder(
       listenable: PlayService.instance.shuffle,
       builder: (context, _) {
@@ -529,12 +438,8 @@ class _ToggleShuffle extends StatelessWidget {
           onPressed: () {
             playService.toggleShuffle();
           },
-          hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
-          highlightColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
-          splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
           icon: Icon(
             playService.shuffle.value ? Symbols.shuffle_on : Symbols.shuffle,
-            color: theme.palette.onSecondaryContainer,
           ),
         );
       },

@@ -1,7 +1,6 @@
 import 'package:coriander_player/extensions.dart';
 import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/src/bass/bass_player.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
@@ -35,23 +34,134 @@ class NowPlayingMainView extends StatelessWidget {
   }
 }
 
+class FilledSecondaryIconButtonStyle extends ButtonStyle {
+  FilledSecondaryIconButtonStyle(this.context)
+      : super(
+          animationDuration: kThemeChangeDuration,
+          enableFeedback: true,
+          alignment: Alignment.center,
+        );
+
+  final BuildContext context;
+  late final ColorScheme scheme = Theme.of(context).colorScheme;
+
+  // No default text style
+
+  @override
+  WidgetStateProperty<Color?>? get backgroundColor =>
+      WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+        if (states.contains(WidgetState.disabled)) {
+          return scheme.onSurface.withOpacity(0.12);
+        }
+        if (states.contains(WidgetState.selected)) {
+          return scheme.secondary;
+        }
+        return scheme.secondary;
+      });
+
+  @override
+  WidgetStateProperty<Color?>? get foregroundColor =>
+      WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+        if (states.contains(WidgetState.disabled)) {
+          return scheme.onSurface.withOpacity(0.38);
+        }
+        if (states.contains(WidgetState.selected)) {
+          return scheme.onSecondary;
+        }
+        return scheme.onSecondary;
+      });
+
+  @override
+  WidgetStateProperty<Color?>? get overlayColor =>
+      WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+        if (states.contains(WidgetState.selected)) {
+          if (states.contains(WidgetState.pressed)) {
+            return scheme.onSecondary.withOpacity(0.1);
+          }
+          if (states.contains(WidgetState.hovered)) {
+            return scheme.onSecondary.withOpacity(0.08);
+          }
+          if (states.contains(WidgetState.focused)) {
+            return scheme.onSecondary.withOpacity(0.1);
+          }
+        }
+        if (states.contains(WidgetState.pressed)) {
+          return scheme.onSecondary.withOpacity(0.1);
+        }
+        if (states.contains(WidgetState.hovered)) {
+          return scheme.onSecondary.withOpacity(0.08);
+        }
+        if (states.contains(WidgetState.focused)) {
+          return scheme.onSecondary.withOpacity(0.1);
+        }
+        return Colors.transparent;
+      });
+
+  @override
+  WidgetStateProperty<double>? get elevation =>
+      const WidgetStatePropertyAll<double>(0.0);
+
+  @override
+  WidgetStateProperty<Color>? get shadowColor =>
+      const WidgetStatePropertyAll<Color>(Colors.transparent);
+
+  @override
+  WidgetStateProperty<Color>? get surfaceTintColor =>
+      const WidgetStatePropertyAll<Color>(Colors.transparent);
+
+  @override
+  WidgetStateProperty<EdgeInsetsGeometry>? get padding =>
+      const WidgetStatePropertyAll<EdgeInsetsGeometry>(EdgeInsets.all(8.0));
+
+  @override
+  WidgetStateProperty<Size>? get minimumSize =>
+      const WidgetStatePropertyAll<Size>(Size(64.0, 64.0));
+
+  // No default fixedSize
+
+  @override
+  WidgetStateProperty<Size>? get maximumSize =>
+      const WidgetStatePropertyAll<Size>(Size.infinite);
+
+  @override
+  WidgetStateProperty<double>? get iconSize =>
+      const WidgetStatePropertyAll<double>(24.0);
+
+  @override
+  WidgetStateProperty<BorderSide?>? get side => null;
+
+  @override
+  WidgetStateProperty<OutlinedBorder>? get shape =>
+      const WidgetStatePropertyAll<OutlinedBorder>(StadiumBorder());
+
+  @override
+  WidgetStateProperty<MouseCursor?>? get mouseCursor =>
+      WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+        if (states.contains(WidgetState.disabled)) {
+          return SystemMouseCursors.basic;
+        }
+        return SystemMouseCursors.click;
+      });
+
+  @override
+  VisualDensity? get visualDensity => VisualDensity.standard;
+
+  @override
+  MaterialTapTargetSize? get tapTargetSize =>
+      Theme.of(context).materialTapTargetSize;
+
+  @override
+  InteractiveInkFeatureFactory? get splashFactory =>
+      Theme.of(context).splashFactory;
+}
+
 class NowPlayingControls extends StatelessWidget {
   const NowPlayingControls({super.key});
 
   @override
   Widget build(BuildContext context) {
     final playService = Provider.of<PlayService>(context);
-    final theme = Provider.of<ThemeProvider>(context);
-    final secondaryBtnStyle = ButtonStyle(
-      backgroundColor: MaterialStatePropertyAll(
-        theme.palette.secondary,
-      ),
-      foregroundColor: MaterialStatePropertyAll(theme.palette.onSecondary),
-      fixedSize: const MaterialStatePropertyAll(Size(64, 64)),
-      overlayColor: MaterialStatePropertyAll(
-        theme.palette.onSecondary.withOpacity(0.08),
-      ),
-    );
+    final scheme = Theme.of(context).colorScheme;
     return SizedBox(
       height: 64.0,
       child: Row(
@@ -61,7 +171,7 @@ class NowPlayingControls extends StatelessWidget {
           SizedBox(
             width: 156,
             child: Material(
-              color: theme.palette.primary,
+              color: scheme.primary,
               borderRadius: BorderRadius.circular(32.0),
               child: StreamBuilder(
                 stream: playService.playerStateStream,
@@ -77,7 +187,6 @@ class NowPlayingControls extends StatelessWidget {
                   }
 
                   return InkWell(
-                    hoverColor: theme.palette.onPrimary.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(32.0),
                     onTap: onTap,
                     child: Center(
@@ -85,7 +194,7 @@ class NowPlayingControls extends StatelessWidget {
                         snapshot.data! == PlayerState.playing
                             ? Symbols.pause
                             : Symbols.play_arrow,
-                        color: theme.palette.onPrimary,
+                        color: scheme.onPrimary,
                       ),
                     ),
                   );
@@ -99,7 +208,7 @@ class NowPlayingControls extends StatelessWidget {
           IconButton(
             onPressed: playService.lastAudio,
             icon: const Icon(Symbols.skip_previous),
-            style: secondaryBtnStyle,
+            style: FilledSecondaryIconButtonStyle(context),
           ),
           const SizedBox(width: 24.0),
 
@@ -107,7 +216,7 @@ class NowPlayingControls extends StatelessWidget {
           IconButton(
             onPressed: playService.nextAudio,
             icon: const Icon(Symbols.skip_next),
-            style: secondaryBtnStyle,
+            style: FilledSecondaryIconButtonStyle(context),
           ),
         ],
       ),
@@ -120,7 +229,7 @@ class PositionAndLength extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
     final playService = Provider.of<PlayService>(context);
     final nowPlaying = playService.nowPlaying;
     final length = PlayService.instance.length;
@@ -135,9 +244,7 @@ class PositionAndLength extends StatelessWidget {
             final pos = snapshot.data ?? 0;
             return Text(
               Duration(milliseconds: (pos * 1000).round()).toStringHMMSS(),
-              style: TextStyle(
-                color: theme.palette.onSecondaryContainer,
-              ),
+              style: TextStyle(color: scheme.onSecondaryContainer),
             );
           },
         ),
@@ -147,9 +254,7 @@ class PositionAndLength extends StatelessWidget {
           nowPlaying == null
               ? "N/A"
               : Duration(milliseconds: (length * 1000).round()).toStringHMMSS(),
-          style: TextStyle(
-            color: theme.palette.onSecondaryContainer,
-          ),
+          style: TextStyle(color: scheme.onSecondaryContainer),
         ),
       ],
     );
@@ -171,8 +276,8 @@ class NowPlayingProgressIndicatorState
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final playService = Provider.of<PlayService>(context);
-    final theme = Provider.of<ThemeProvider>(context);
 
     return GestureDetector(
       onHorizontalDragStart: (details) {
@@ -200,10 +305,10 @@ class NowPlayingProgressIndicatorState
             builder: (context, _) {
               return LinearProgressIndicator(
                 value: isDragging ? dragProgress.value : progress,
-                color: theme.palette.outline,
-                backgroundColor: theme.palette.outlineVariant,
                 minHeight: 12.0,
                 borderRadius: BorderRadius.circular(6.0),
+                color: scheme.outline,
+                backgroundColor: scheme.outlineVariant,
               );
             },
           );
@@ -224,7 +329,7 @@ class NowPlayingArtistAlbum extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
     final playService = Provider.of<PlayService>(context);
     final nowPlaying = playService.nowPlaying;
 
@@ -235,9 +340,7 @@ class NowPlayingArtistAlbum extends StatelessWidget {
             ? "Enjoy Music"
             : "${nowPlaying.artist} - ${nowPlaying.album}",
         maxLines: 1,
-        style: TextStyle(
-          color: theme.palette.onSecondaryContainer,
-        ),
+        style: TextStyle(color: scheme.onSecondaryContainer),
       ),
     );
   }
@@ -248,7 +351,7 @@ class NowPlayingTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
     final playService = Provider.of<PlayService>(context);
     final nowPlaying = playService.nowPlaying;
 
@@ -258,7 +361,7 @@ class NowPlayingTitle extends StatelessWidget {
         nowPlaying == null ? "Coriander Music" : nowPlaying.title,
         maxLines: 1,
         style: TextStyle(
-          color: theme.palette.onSecondaryContainer,
+          color: scheme.onSecondaryContainer,
           fontWeight: FontWeight.w600,
           fontSize: 20,
         ),
@@ -274,7 +377,7 @@ class NowPlayingCover extends StatelessWidget {
   Widget build(BuildContext context) {
     final playService = Provider.of<PlayService>(context);
     final nowPlaying = playService.nowPlaying;
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return RepaintBoundary(
       child: nowPlaying == null
@@ -282,19 +385,19 @@ class NowPlayingCover extends StatelessWidget {
               child: Icon(
                 Symbols.broken_image,
                 size: 400.0,
-                color: theme.palette.onSecondaryContainer,
+                color: scheme.onSecondaryContainer,
               ),
             )
           : FutureBuilder(
               future: nowPlaying.largeCover,
               builder: (context, snapshot) {
-                final theme = Provider.of<ThemeProvider>(context);
+                final scheme = Theme.of(context).colorScheme;
                 if (snapshot.data == null) {
                   return FittedBox(
                     child: Icon(
                       Symbols.broken_image,
                       size: 400.0,
-                      color: theme.palette.onSecondaryContainer,
+                      color: scheme.onSecondaryContainer,
                     ),
                   );
                 }

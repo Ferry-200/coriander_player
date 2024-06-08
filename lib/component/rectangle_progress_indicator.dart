@@ -1,9 +1,6 @@
 import 'dart:async';
 import 'package:coriander_player/play_service.dart';
-import 'package:coriander_player/theme/color_palette.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class RectangleProgressIndicator extends StatefulWidget {
   const RectangleProgressIndicator({
@@ -38,13 +35,10 @@ class _RectangleProgressIndicatorState
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
     return CustomPaint(
       size: widget.size,
-      painter: RectangleProgressPainter(
-        progress: progress,
-        palette: theme.palette,
-      ),
+      painter: RectangleProgressPainter(progress: progress, scheme: scheme),
       child: widget.child,
     );
   }
@@ -60,18 +54,18 @@ class RectangleProgressPainter extends CustomPainter {
   /// position / length, [0, 1]
   final ValueNotifier<double> progress;
 
-  final ColorPalette palette;
+  final ColorScheme scheme;
 
-  RectangleProgressPainter({required this.progress, required this.palette})
+  RectangleProgressPainter({required this.progress, required this.scheme})
       : super(repaint: progress);
 
   @override
   void paint(Canvas canvas, Size size) {
     final progressPainter = Paint();
-    progressPainter.color = palette.secondaryContainer;
+    progressPainter.color = scheme.secondaryContainer;
 
     final trackPainter = Paint();
-    trackPainter.color = palette.surfaceContainer;
+    trackPainter.color = scheme.surfaceContainer;
 
     /// 进度条背景
     canvas.drawRect(

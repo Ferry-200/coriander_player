@@ -1,10 +1,9 @@
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:provider/provider.dart';
 
 class FolderTile extends StatelessWidget {
-  const FolderTile({super.key, 
+  const FolderTile({
+    super.key,
     required this.path,
     required this.onDelete,
   });
@@ -14,14 +13,13 @@ class FolderTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: theme.palette.surface,
-          border: Border.all(color: theme.palette.outline),
+          border: Border.all(color: scheme.outline),
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Padding(
@@ -33,20 +31,15 @@ class FolderTile extends StatelessWidget {
                 child: Text(
                   path,
                   style: TextStyle(
-                    color: theme.palette.onSurface,
+                    color: scheme.onSurface,
                     fontSize: 16.0,
                   ),
                 ),
               ),
               IconButton(
                 onPressed: onDelete,
-                hoverColor: theme.palette.error.withOpacity(0.08),
-                highlightColor: theme.palette.error.withOpacity(0.12),
-                splashColor: theme.palette.error.withOpacity(0.12),
-                icon: Icon(
-                  Symbols.delete,
-                  color: theme.palette.error,
-                ),
+                color: scheme.error,
+                icon: const Icon(Symbols.delete),
               ),
             ],
           ),

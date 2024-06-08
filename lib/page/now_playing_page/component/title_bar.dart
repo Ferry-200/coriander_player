@@ -1,11 +1,9 @@
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/lyric/lyric_source.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 
 class NowPlayingPageTitleBar extends StatelessWidget {
@@ -13,7 +11,7 @@ class NowPlayingPageTitleBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return Column(
       children: [
@@ -31,15 +29,11 @@ class NowPlayingPageTitleBar extends StatelessWidget {
           child: Material(
             type: MaterialType.transparency,
             child: InkWell(
-              hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
-              highlightColor:
-                  theme.palette.onSecondaryContainer.withOpacity(0.12),
-              splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
-              onTap: () => context.pop(),
+              onTap: context.pop,
               child: Center(
                 child: Icon(
                   Symbols.arrow_drop_down,
-                  color: theme.palette.onSecondaryContainer,
+                  color: scheme.onSecondaryContainer,
                 ),
               ),
             ),
@@ -87,7 +81,6 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
     return Padding(
       padding: const EdgeInsets.only(right: 8.0),
       child: Row(
@@ -96,14 +89,7 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
         children: [
           IconButton(
             onPressed: windowManager.minimize,
-            icon: Icon(
-              Symbols.remove,
-              color: theme.palette.onSecondaryContainer,
-            ),
-            hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
-            highlightColor:
-                theme.palette.onSecondaryContainer.withOpacity(0.12),
-            splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
+            icon: const Icon(Symbols.remove),
           ),
           const SizedBox(width: 8.0),
           FutureBuilder(
@@ -116,14 +102,7 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
                     : windowManager.maximize,
                 icon: Icon(
                   isMaximized ? Symbols.fullscreen_exit : Symbols.fullscreen,
-                  color: theme.palette.onSecondaryContainer,
                 ),
-                hoverColor:
-                    theme.palette.onSecondaryContainer.withOpacity(0.08),
-                highlightColor:
-                    theme.palette.onSecondaryContainer.withOpacity(0.12),
-                splashColor:
-                    theme.palette.onSecondaryContainer.withOpacity(0.12),
               );
             },
           ),
@@ -135,14 +114,7 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
               await AppSettings.instance.saveSettings();
               windowManager.close();
             },
-            icon: Icon(
-              Symbols.close,
-              color: theme.palette.onSecondaryContainer,
-            ),
-            hoverColor: theme.palette.onSecondaryContainer.withOpacity(0.08),
-            highlightColor:
-                theme.palette.onSecondaryContainer.withOpacity(0.12),
-            splashColor: theme.palette.onSecondaryContainer.withOpacity(0.12),
+            icon: const Icon(Symbols.close),
           ),
         ],
       ),

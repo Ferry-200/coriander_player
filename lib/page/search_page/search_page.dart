@@ -1,10 +1,8 @@
 import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:coriander_player/library/audio_library.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:provider/provider.dart';
 
 class UnionSearchResult {
   String query;
@@ -63,11 +61,11 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: theme.palette.surface,
+        color: scheme.surface,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(8.0),
           bottomRight: Radius.circular(8.0),
@@ -81,7 +79,7 @@ class _SearchPageState extends State<SearchPage> {
             Text(
               "搜索",
               style: TextStyle(
-                color: theme.palette.onSurface,
+                color: scheme.onSurface,
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
               ),
@@ -94,8 +92,6 @@ class _SearchPageState extends State<SearchPage> {
 
                 /// when 'enter' is pressed
                 onSubmitted: (_) => toUnionPage(),
-                cursorColor: theme.palette.primary,
-                style: TextStyle(color: theme.palette.onSurface),
                 decoration: InputDecoration(
                   suffixIcon: Padding(
                     padding: const EdgeInsets.only(right: 12.0),
@@ -104,25 +100,8 @@ class _SearchPageState extends State<SearchPage> {
                       onPressed: toUnionPage,
                     ),
                   ),
-                  suffixIconColor: theme.palette.onSurface,
                   hintText: "搜索歌曲、艺术家、专辑",
-                  hintStyle: TextStyle(
-                    color: theme.palette.onSurfaceVariant,
-                  ),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: theme.palette.outline,
-                      width: 1.0,
-                    ),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: theme.palette.primary,
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
+                  border: const OutlineInputBorder(),
                 ),
               ),
             ),

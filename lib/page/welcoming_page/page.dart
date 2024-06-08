@@ -6,13 +6,11 @@ import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/title_bar.dart';
 import 'package:coriander_player/src/rust/api/tag_reader.dart';
 import 'package:coriander_player/src/rust/api/utils.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 
 class WelcomingPage extends StatelessWidget {
@@ -20,10 +18,10 @@ class WelcomingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: theme.palette.surface,
+      backgroundColor: scheme.surface,
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(48.0),
         child: _TitleBar(),
@@ -35,10 +33,7 @@ class WelcomingPage extends StatelessWidget {
           children: [
             Text(
               "你的音乐都在哪些文件夹呢？",
-              style: TextStyle(
-                color: theme.palette.onSurface,
-                fontSize: 22,
-              ),
+              style: TextStyle(color: scheme.onSurface, fontSize: 22),
             ),
             const SizedBox(height: 32.0),
             const _AudioFolderEdit(),
@@ -75,8 +70,6 @@ class __AudioFolderEditState extends State<_AudioFolderEdit> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -103,7 +96,6 @@ class __AudioFolderEditState extends State<_AudioFolderEdit> {
               onPressed: _addPath,
               icon: const Icon(Symbols.create_new_folder),
               label: const Text("添加"),
-              style: theme.secondaryButtonStyle,
             ),
             const SizedBox(width: 8.0),
             FilledButton.icon(
@@ -124,7 +116,6 @@ class __AudioFolderEditState extends State<_AudioFolderEdit> {
               },
               icon: const Icon(Symbols.folder),
               label: const Text("从父文件夹中添加路径"),
-              style: theme.secondaryButtonStyle,
             ),
             const SizedBox(width: 8.0),
             _SaveButton(folderPaths: folderPaths),
@@ -158,7 +149,7 @@ class __SaveButtonState extends State<_SaveButton> {
     setState(() {
       isSaving = false;
     });
-    
+
     final ctx = context;
     if (ctx.mounted) {
       ctx.go(app_paths.AUDIOS_PAGE);
@@ -167,22 +158,12 @@ class __SaveButtonState extends State<_SaveButton> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
-
     return FilledButton.icon(
       onPressed: isSaving ? null : save,
       icon: isSaving
-          ? SizedBox(
-              width: 18,
-              height: 18,
-              child: CircularProgressIndicator(
-                color: theme.palette.primary,
-                backgroundColor: theme.palette.primaryContainer,
-              ),
-            )
+          ? const CircularProgressIndicator()
           : const Icon(Symbols.save),
       label: const Text("保存"),
-      style: theme.primaryButtonStyle,
     );
   }
 }
@@ -192,7 +173,7 @@ class _TitleBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
     return DragToMoveArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(0, 4.0, 4.0, 8.0),
@@ -207,14 +188,14 @@ class _TitleBar extends StatelessWidget {
                   children: [
                     Icon(
                       Symbols.music_note,
-                      color: theme.palette.onSurface,
+                      color: scheme.onSurface,
                       size: 24.0,
                     ),
                     const SizedBox(width: 8.0),
                     Text(
                       "Coriander Player",
                       style: TextStyle(
-                        color: theme.palette.onSurface,
+                        color: scheme.onSurface,
                         fontSize: 16,
                       ),
                     ),

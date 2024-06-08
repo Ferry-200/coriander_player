@@ -1,10 +1,8 @@
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/page/uni_page.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:provider/provider.dart';
 
 import 'package:coriander_player/app_paths.dart' as app_paths;
 
@@ -81,15 +79,11 @@ class AudioFolderTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.watch<ThemeProvider>();
     return ListTile(
       title: Text(audioFolder.path),
       subtitle: Text(
         "修改日期：${DateTime.fromMillisecondsSinceEpoch(audioFolder.modified * 1000).toString()}",
       ),
-      textColor: theme.palette.onSurface,
-      hoverColor: theme.palette.onSurface.withOpacity(0.08),
-      splashColor: theme.palette.onSurface.withOpacity(0.12),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8.0),
       ),

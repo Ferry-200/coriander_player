@@ -3,11 +3,9 @@ import 'package:coriander_player/component/folder_tile.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/src/rust/api/tag_reader.dart';
 import 'package:coriander_player/src/rust/api/utils.dart';
-import 'package:coriander_player/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
 
 class DefaultLyricSourceControl extends StatefulWidget {
   const DefaultLyricSourceControl({super.key});
@@ -22,52 +20,37 @@ class _DefaultLyricSourceControlState extends State<DefaultLyricSourceControl> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
 
-    final leftForeColor = settings.localLyricFirst
-        ? theme.palette.onSecondaryContainer
-        : theme.palette.onSurface;
-    final rightForeColor = !settings.localLyricFirst
-        ? theme.palette.onSecondaryContainer
-        : theme.palette.onSurface;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           "首选歌词来源",
-          style: TextStyle(
-            color: theme.palette.onSurface,
-            fontSize: 18.0,
-          ),
+          style: TextStyle(color: scheme.onSurface, fontSize: 18.0),
         ),
         SegmentedButton<bool>(
           showSelectedIcon: false,
-          segments: [
+          segments: const [
             ButtonSegment<bool>(
               value: true,
-              icon: Icon(Symbols.cloud_off, color: leftForeColor),
-              label: Text(
-                "本地",
-                style: TextStyle(color: leftForeColor),
-              ),
+              icon: Icon(Symbols.cloud_off),
+              label: Text("本地"),
             ),
             ButtonSegment<bool>(
               value: false,
-              icon: Icon(Symbols.cloud, color: rightForeColor),
-              label: Text(
-                "在线",
-                style: TextStyle(color: rightForeColor),
-              ),
+              icon: Icon(Symbols.cloud),
+              label: Text("在线"),
             ),
           ],
           selected: {settings.localLyricFirst},
-          onSelectionChanged: (newSelection) {
+          onSelectionChanged: (newSelection) async {
             if (newSelection.first == settings.localLyricFirst) return;
 
             setState(() {
               settings.localLyricFirst = newSelection.first;
             });
-            settings.saveSettings();
+            await settings.saveSettings();
           },
         ),
       ],
@@ -85,7 +68,7 @@ class AudioLibraryEditField extends StatefulWidget {
 class _AudioLibraryEditFieldState extends State<AudioLibraryEditField> {
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
     final audioLibrary = AudioLibrary.instance;
 
     return Column(
@@ -99,10 +82,7 @@ class _AudioLibraryEditFieldState extends State<AudioLibraryEditField> {
             children: [
               Text(
                 "文件夹管理",
-                style: TextStyle(
-                  color: theme.palette.onSurface,
-                  fontSize: 18.0,
-                ),
+                style: TextStyle(color: scheme.onSurface, fontSize: 18.0),
               ),
               Row(
                 children: [
@@ -116,13 +96,7 @@ class _AudioLibraryEditFieldState extends State<AudioLibraryEditField> {
                         );
                       });
                     },
-                    hoverColor: theme.palette.onSurface.withOpacity(0.08),
-                    highlightColor: theme.palette.onSurface.withOpacity(0.12),
-                    splashColor: theme.palette.onSurface.withOpacity(0.12),
-                    icon: Icon(
-                      Symbols.add,
-                      color: theme.palette.onSurface,
-                    ),
+                    icon: const Icon(Symbols.add),
                   ),
                   const SizedBox(width: 8.0),
                   const _BuildIndexButton(),
@@ -186,26 +160,15 @@ class __BuildIndexButtonState extends State<_BuildIndexButton> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
-
     return IconButton(
       onPressed: isLoading ? null : save,
-      hoverColor: theme.palette.onSurface.withOpacity(0.08),
-      highlightColor: theme.palette.onSurface.withOpacity(0.12),
-      splashColor: theme.palette.onSurface.withOpacity(0.12),
       icon: isLoading
-          ? SizedBox(
+          ? const SizedBox(
               width: 18,
               height: 18,
-              child: CircularProgressIndicator(
-                color: theme.palette.primary,
-                backgroundColor: theme.palette.surface,
-              ),
+              child: CircularProgressIndicator(),
             )
-          : Icon(
-              Symbols.refresh,
-              color: theme.palette.onSurface,
-            ),
+          : const Icon(Symbols.refresh),
     );
   }
 }
