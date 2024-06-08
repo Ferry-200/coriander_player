@@ -1,97 +1,42 @@
 import 'package:coriander_player/app_settings.dart';
+import 'package:coriander_player/page/settings_page/theme_picker_dialog.dart';
 import 'package:coriander_player/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-// class ThemeSelector extends StatefulWidget {
-//   const ThemeSelector({super.key});
+class ThemeSelector extends StatelessWidget {
+  const ThemeSelector({super.key});
 
-//   @override
-//   State<ThemeSelector> createState() => _ThemeSelectorState();
-// }
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
 
-// class _ThemeSelectorState extends State<ThemeSelector> {
-//   final settings = AppSettings.instance;
-//   final themeCollection = [
-//     4292114089,
-//     4282283161,
-//     4286080703,
-//     4290765296,
-//     4287059351,
-//     4292356666,
-//     4293706294,
-//     ThemeProvider.instance.scheme.seed,
-//   ];
-//   @override
-//   Widget build(BuildContext context) {
-//     final theme = Provider.of<ThemeProvider>(context);
-//     themeCollection.last = theme.scheme.seed;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "修改主题",
+          style: TextStyle(color: scheme.onSurface, fontSize: 18.0),
+        ),
+        FilledButton.icon(
+          onPressed: () async {
+            final seedColor = await showDialog<Color>(
+              context: context,
+              builder: (context) => const ThemePickerDialog(),
+            );
+            if(seedColor == null) return;
 
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         Text(
-//           "默认主题色",
-//           style: TextStyle(
-//             color: theme.scheme.onSurface,
-//             fontSize: 18.0,
-//           ),
-//         ),
-//         const SizedBox(height: 8.0),
-//         Wrap(
-//           spacing: 8.0,
-//           runSpacing: 8.0,
-//           children: List.generate(
-//             themeCollection.length,
-//             (i) {
-//               final themeItem = ColorPalette.fromSeed(
-//                 seedValue: themeCollection[i],
-//                 brightness: settings.themeMode,
-//               );
-//               return MouseRegion(
-//                 cursor: WidgetStateMouseCursor.clickable,
-//                 child: GestureDetector(
-//                   onTap: () async {
-//                     setState(() {
-//                       settings.defaultTheme = themeCollection[i];
-//                     });
-//                     theme.changeTheme(themeItem);
-//                     await settings.saveSettings();
-//                   },
-//                   child: Stack(
-//                     alignment: Alignment.center,
-//                     children: [
-//                       Container(
-//                         width: 64.0,
-//                         height: 64.0,
-//                         decoration: BoxDecoration(
-//                           color: themeItem.primary,
-//                           borderRadius: BorderRadius.circular(8.0),
-//                         ),
-//                         child: i == themeCollection.length - 1
-//                             ? Align(
-//                                 alignment: Alignment.bottomCenter,
-//                                 child: Text(
-//                                   "当前主题",
-//                                   style: TextStyle(color: themeItem.onPrimary),
-//                                 ),
-//                               )
-//                             : const SizedBox(),
-//                       ),
-//                       settings.defaultTheme == themeCollection[i]
-//                           ? Icon(Symbols.check, color: themeItem.onPrimary)
-//                           : const SizedBox(),
-//                     ],
-//                   ),
-//                 ),
-//               );
-//             },
-//           ),
-//         )
-//       ],
-//     );
-//   }
-// }
+            ThemeProvider.instance.applyTheme(seedColor: seedColor);
+            AppSettings.instance.defaultTheme = seedColor.value;
+            await AppSettings.instance.saveSettings();
+          },
+          label: const Text("主题选择器"),
+          icon: const Icon(Symbols.palette),
+        ),
+      ],
+    );
+  }
+}
 
 class ThemeModeControl extends StatefulWidget {
   const ThemeModeControl({super.key});
@@ -127,14 +72,14 @@ class _ThemeModeControlState extends State<ThemeModeControl> {
             ),
           ],
           selected: {settings.themeMode},
-          onSelectionChanged: (newSelection) {
+          onSelectionChanged: (newSelection) async {
             if (newSelection.first == settings.themeMode) return;
 
             setState(() {
               settings.themeMode = newSelection.first;
             });
             ThemeProvider.instance.applyThemeMode(settings.themeMode);
-            settings.saveSettings();
+            await settings.saveSettings();
           },
         ),
       ],

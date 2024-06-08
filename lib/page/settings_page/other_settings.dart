@@ -44,13 +44,13 @@ class _DefaultLyricSourceControlState extends State<DefaultLyricSourceControl> {
             ),
           ],
           selected: {settings.localLyricFirst},
-          onSelectionChanged: (newSelection) {
+          onSelectionChanged: (newSelection) async {
             if (newSelection.first == settings.localLyricFirst) return;
 
             setState(() {
               settings.localLyricFirst = newSelection.first;
             });
-            settings.saveSettings();
+            await settings.saveSettings();
           },
         ),
       ],
