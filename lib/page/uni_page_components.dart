@@ -60,8 +60,6 @@ class SortMethodComboBox<T> extends StatelessWidget {
         ),
       ),
       builder: (context, menuController, _) {
-        final isOpen = menuController.isOpen;
-
         final borderRadius = BorderRadius.circular(20.0);
 
         return SizedBox(
@@ -73,7 +71,13 @@ class SortMethodComboBox<T> extends StatelessWidget {
             child: InkWell(
               hoverColor: scheme.onSecondaryContainer.withOpacity(0.08),
               borderRadius: borderRadius,
-              onTap: isOpen ? menuController.close : menuController.open,
+              onTap: () {
+                if (menuController.isOpen) {
+                  menuController.close();
+                } else {
+                  menuController.open();
+                }
+              },
               child: Padding(
                 padding: const EdgeInsets.only(left: 16.0, right: 12.0),
                 child: Row(
@@ -92,7 +96,9 @@ class SortMethodComboBox<T> extends StatelessWidget {
                     ),
                     const SizedBox(width: 4.0),
                     Icon(
-                      isOpen ? Symbols.arrow_drop_up : Symbols.arrow_drop_down,
+                      menuController.isOpen
+                          ? Symbols.arrow_drop_up
+                          : Symbols.arrow_drop_down,
                       size: 24,
                       color: scheme.onSecondaryContainer,
                     ),
