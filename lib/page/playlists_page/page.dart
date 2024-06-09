@@ -1,6 +1,7 @@
 import 'package:coriander_player/component/audio_tile.dart';
+import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/page/page_scaffold.dart';
-import 'package:coriander_player/play_service.dart';
+import 'package:coriander_player/page/uni_page.dart';
 import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:flutter/material.dart';
@@ -240,50 +241,104 @@ class PlaylistDetailPage extends StatefulWidget {
 }
 
 class _PlaylistDetailPageState extends State<PlaylistDetailPage> {
+  late final contentList = widget.playlist.audios;
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return PageScaffold(
+    return UniPage<Audio>(
       title: widget.playlist.name,
-      subtitle: "${widget.playlist.audios.length} 首乐曲",
-      actions: [
-        FilledButton.icon(
+      subtitle: "${contentList.length} 首乐曲",
+      contentList: contentList,
+      contentBuilder: (context, item, i) => AudioTile(
+        audioIndex: i,
+        playlist: contentList,
+        action: IconButton(
           onPressed: () {
-            PlayService.instance.shuffleAndPlay(widget.playlist.audios);
+            setState(() {
+              widget.playlist.audios.removeAt(i);
+            });
           },
-          icon: const Icon(Symbols.shuffle),
-          label: const Text("随机播放"),
-          style: const ButtonStyle(
-            fixedSize: WidgetStatePropertyAll(Size.fromHeight(40)),
-          ),
-        ),
-      ],
-      body: Material(
-        type: MaterialType.transparency,
-        child: ListView.builder(
-          padding: const EdgeInsets.only(bottom: 96.0),
-          itemCount: widget.playlist.audios.length,
-          itemBuilder: (context, i) {
-            return Stack(
-              children: [
-                AudioTile(
-                  audioIndex: i,
-                  playlist: widget.playlist.audios,
-                  action: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        widget.playlist.audios.removeAt(i);
-                      });
-                    },
-                    color: scheme.error,
-                    icon: const Icon(Symbols.delete),
-                  ),
-                ),
-              ],
-            );
-          },
+          color: scheme.error,
+          icon: const Icon(Symbols.delete),
         ),
       ),
+      enableShufflePlay: true,
+      enableSortMethod: true,
+      enableSortOrder: true,
+      enableContentViewSwitch: true,
+      defaultContentView: ContentView.list,
+      sortMethods: [
+        SortMethodDesc(
+          icon: Symbols.title,
+          name: "标题",
+          method: (list, order) {
+            switch (order) {
+              case SortOrder.ascending:
+                list.sort((a, b) => a.title.compareTo(b.title));
+                break;
+              case SortOrder.decending:
+                list.sort((a, b) => b.title.compareTo(a.title));
+                break;
+            }
+          },
+        ),
+        SortMethodDesc(
+          icon: Symbols.artist,
+          name: "艺术家",
+          method: (list, order) {
+            switch (order) {
+              case SortOrder.ascending:
+                list.sort((a, b) => a.artist.compareTo(b.artist));
+                break;
+              case SortOrder.decending:
+                list.sort((a, b) => b.artist.compareTo(a.artist));
+                break;
+            }
+          },
+        ),
+        SortMethodDesc(
+          icon: Symbols.album,
+          name: "专辑",
+          method: (list, order) {
+            switch (order) {
+              case SortOrder.ascending:
+                list.sort((a, b) => a.album.compareTo(b.album));
+                break;
+              case SortOrder.decending:
+                list.sort((a, b) => b.album.compareTo(a.album));
+                break;
+            }
+          },
+        ),
+        SortMethodDesc(
+          icon: Symbols.add,
+          name: "创建时间",
+          method: (list, order) {
+            switch (order) {
+              case SortOrder.ascending:
+                list.sort((a, b) => a.created.compareTo(b.created));
+                break;
+              case SortOrder.decending:
+                list.sort((a, b) => b.created.compareTo(a.created));
+                break;
+            }
+          },
+        ),
+        SortMethodDesc(
+          icon: Symbols.edit,
+          name: "修改时间",
+          method: (list, order) {
+            switch (order) {
+              case SortOrder.ascending:
+                list.sort((a, b) => a.modified.compareTo(b.modified));
+                break;
+              case SortOrder.decending:
+                list.sort((a, b) => b.modified.compareTo(a.modified));
+                break;
+            }
+          },
+        ),
+      ],
     );
   }
 }
