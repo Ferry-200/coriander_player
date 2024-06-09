@@ -1,8 +1,8 @@
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/app_shell.dart';
-import 'package:coriander_player/page/album_detail_page/page.dart';
+import 'package:coriander_player/page/album_detail_page.dart';
 import 'package:coriander_player/page/albums_page.dart';
-import 'package:coriander_player/page/artist_detail_page/page.dart';
+import 'package:coriander_player/page/artist_detail_page.dart';
 import 'package:coriander_player/page/artists_page.dart';
 import 'package:coriander_player/page/audio_detail_page/page.dart';
 import 'package:coriander_player/page/audios_page.dart';
