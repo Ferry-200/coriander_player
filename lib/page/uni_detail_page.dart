@@ -1,27 +1,3 @@
-// # UniDetailPage
-
-// 提取艺术家详情页和专辑详情页的重复代码，统一两者页面行为（类似于之前 UniPage 的工作）。
-// 尽量重用 UniPage 的代码。
-
-// ### 页面内容
-
-// 上部分：
-// * Row（左对齐）
-//   * 图片
-//   * Column（下对齐）
-//     * 标题
-//     * 副标题
-//     * Row（左对齐）
-//       * 随机播放、排序方式、升降序、页面视图（新增）
-
-// 分割线
-
-// 下部分：
-// * Column
-//   * PrimaryContentList
-//   * SecondaryContentTitle
-//   * SecondaryContentList
-
 import 'package:coriander_player/page/uni_page.dart';
 import 'package:coriander_player/page/uni_page_components.dart';
 import 'package:flutter/material.dart';
