@@ -6,33 +6,39 @@
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
+// The type `Audio` is not used by any `pub` functions, thus it is ignored.
 // The type `AudioFolder` is not used by any `pub` functions, thus it is ignored.
-// The type `Metadata` is not used by any `pub` functions, thus it is ignored.
 
-/// 扫描给定的多个目录，建立索引并导出到index_path/index.json
-Future<void> buildIndexFromPaths(
-        {required List<String> paths,
-        required String indexPath,
-        dynamic hint}) =>
+/// for Flutter
+/// 扫描给定路径下所有子文件夹（包括自己）的音乐文件并把索引保存在 index_path/index.json。
+/// true：成功；false：失败
+Future<bool> buildIndexFromPath(
+        {required String path, required String indexPath, dynamic hint}) =>
     RustLib.instance.api
-        .buildIndexFromPaths(paths: paths, indexPath: indexPath, hint: hint);
+        .buildIndexFromPath(path: path, indexPath: indexPath, hint: hint);
 
-/// 解析给定的MP3文件中id3v2，返回USLT帧的内容
-Future<String?> loadLyricFromMp3({required String path, dynamic hint}) =>
-    RustLib.instance.api.loadLyricFromMp3(path: path, hint: hint);
-
-/// 解析给定flac文件中的vorbis comments，返回LYRICS字段的内容
-Future<String?> loadLyricFromFlac({required String path, dynamic hint}) =>
-    RustLib.instance.api.loadLyricFromFlac(path: path, hint: hint);
-
-/// 给定音乐文件的路径，返回相同路径下同名的lrc文件的内容
-Future<String?> loadLyricFromLrc({required String path, dynamic hint}) =>
-    RustLib.instance.api.loadLyricFromLrc(path: path, hint: hint);
-
-/// 给定音乐文件的路径，返回图像的数据
-Future<Uint8List?> loadCoverBytes({required String path, dynamic hint}) =>
-    RustLib.instance.api.loadCoverBytes(path: path, hint: hint);
-
-/// 读取并更新index_path/index.json
-Future<void> updateIndex({required String indexPath, dynamic hint}) =>
+/// for Flutter
+/// 读取 index_path/index.json，检查更新。不可能重新读取被修改的文件夹下所有的音乐标签，这样太耗时。
+///
+/// [LOWEST_VERSION] 指定可以继承的 index 的最低版本。
+/// 如果 index version < [LOWEST_VERSION] 或者是 index 根本没有 version 再或者格式不符合要求，就转到
+/// [_update_index_below_1_1_0] 更新 index；
+/// 如果 index version >= [LOWEST_VERSION] 则进行更新。
+///
+/// 如果文件夹不存在，删除记录。
+/// 如果文件夹被修改（再次读取到的 modified > 记录的 modified），就更新它。没有则跳过它
+/// 1. 遍历该文件夹索引，判断文件是否存在，不存在则删除记录
+/// 2. 遍历该文件夹索引，如果文件被修改（再次读取到的 modified > 记录的 modified），重新读取标签；没有则跳过它
+/// 3. 遍历该文件夹，添加新增（读取到的 created > 记录的 latest）的音乐文件
+Future<bool> updateIndex({required String indexPath, dynamic hint}) =>
     RustLib.instance.api.updateIndex(indexPath: indexPath, hint: hint);
+
+/// for Flutter
+/// 只支持读取 ID3V2, VorbisComment, Mp4Ilst 存储的歌词
+Future<String?> getLyricFromPath({required String path, dynamic hint}) =>
+    RustLib.instance.api.getLyricFromPath(path: path, hint: hint);
+
+/// for Flutter
+/// 如果无法通过 Lofty 获取
+Future<Uint8List?> getPictureFromPath({required String path, dynamic hint}) =>
+    RustLib.instance.api.getPictureFromPath(path: path, hint: hint);

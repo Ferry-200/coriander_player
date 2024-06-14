@@ -32,7 +32,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.0.0-dev.32";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 711307370;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -332601342;
 
 // Section: executor
 
@@ -287,7 +287,7 @@ fn wire_system_theme_on_system_theme_changed_impl(
         },
     )
 }
-fn wire_build_index_from_paths_impl(
+fn wire_build_index_from_path_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -295,7 +295,7 @@ fn wire_build_index_from_paths_impl(
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "build_index_from_paths",
+            debug_name: "build_index_from_path",
             port: Some(port_),
             mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
@@ -309,13 +309,13 @@ fn wire_build_index_from_paths_impl(
             };
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_paths = <Vec<String>>::sse_decode(&mut deserializer);
+            let api_path = <String>::sse_decode(&mut deserializer);
             let api_index_path = <String>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse((move || {
-                    Result::<_, ()>::Ok(crate::api::tag_reader::build_index_from_paths(
-                        api_paths,
+                    Result::<_, ()>::Ok(crate::api::tag_reader::build_index_from_path(
+                        api_path,
                         api_index_path,
                     ))
                 })())
@@ -323,7 +323,7 @@ fn wire_build_index_from_paths_impl(
         },
     )
 }
-fn wire_load_cover_bytes_impl(
+fn wire_get_lyric_from_path_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -331,7 +331,7 @@ fn wire_load_cover_bytes_impl(
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "load_cover_bytes",
+            debug_name: "get_lyric_from_path",
             port: Some(port_),
             mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
@@ -349,13 +349,13 @@ fn wire_load_cover_bytes_impl(
             deserializer.end();
             move |context| {
                 transform_result_sse((move || {
-                    Result::<_, ()>::Ok(crate::api::tag_reader::load_cover_bytes(api_path))
+                    Result::<_, ()>::Ok(crate::api::tag_reader::get_lyric_from_path(api_path))
                 })())
             }
         },
     )
 }
-fn wire_load_lyric_from_flac_impl(
+fn wire_get_picture_from_path_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -363,7 +363,7 @@ fn wire_load_lyric_from_flac_impl(
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "load_lyric_from_flac",
+            debug_name: "get_picture_from_path",
             port: Some(port_),
             mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
@@ -381,71 +381,7 @@ fn wire_load_lyric_from_flac_impl(
             deserializer.end();
             move |context| {
                 transform_result_sse((move || {
-                    Result::<_, ()>::Ok(crate::api::tag_reader::load_lyric_from_flac(api_path))
-                })())
-            }
-        },
-    )
-}
-fn wire_load_lyric_from_lrc_impl(
-    port_: flutter_rust_bridge::for_generated::MessagePort,
-    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
-    rust_vec_len_: i32,
-    data_len_: i32,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
-        flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "load_lyric_from_lrc",
-            port: Some(port_),
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
-        },
-        move || {
-            let message = unsafe {
-                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
-                    ptr_,
-                    rust_vec_len_,
-                    data_len_,
-                )
-            };
-            let mut deserializer =
-                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_path = <String>::sse_decode(&mut deserializer);
-            deserializer.end();
-            move |context| {
-                transform_result_sse((move || {
-                    Result::<_, ()>::Ok(crate::api::tag_reader::load_lyric_from_lrc(api_path))
-                })())
-            }
-        },
-    )
-}
-fn wire_load_lyric_from_mp3_impl(
-    port_: flutter_rust_bridge::for_generated::MessagePort,
-    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
-    rust_vec_len_: i32,
-    data_len_: i32,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
-        flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "load_lyric_from_mp3",
-            port: Some(port_),
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
-        },
-        move || {
-            let message = unsafe {
-                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
-                    ptr_,
-                    rust_vec_len_,
-                    data_len_,
-                )
-            };
-            let mut deserializer =
-                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_path = <String>::sse_decode(&mut deserializer);
-            deserializer.end();
-            move |context| {
-                transform_result_sse((move || {
-                    Result::<_, ()>::Ok(crate::api::tag_reader::load_lyric_from_mp3(api_path))
+                    Result::<_, ()>::Ok(crate::api::tag_reader::get_picture_from_path(api_path))
                 })())
             }
         },
@@ -655,18 +591,6 @@ impl SseDecode for i32 {
     }
 }
 
-impl SseDecode for Vec<String> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut len_ = <i32>::sse_decode(deserializer);
-        let mut ans_ = vec![];
-        for idx_ in 0..len_ {
-            ans_.push(<String>::sse_decode(deserializer));
-        }
-        return ans_;
-    }
-}
-
 impl SseDecode for Vec<u8> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -784,15 +708,13 @@ fn pde_ffi_dispatcher_primary_impl(
         4 => wire_SmtcFlutter_update_display_impl(port, ptr, rust_vec_len, data_len),
         3 => wire_SmtcFlutter_update_state_impl(port, ptr, rust_vec_len, data_len),
         7 => wire_system_theme_on_system_theme_changed_impl(port, ptr, rust_vec_len, data_len),
-        8 => wire_build_index_from_paths_impl(port, ptr, rust_vec_len, data_len),
-        12 => wire_load_cover_bytes_impl(port, ptr, rust_vec_len, data_len),
-        10 => wire_load_lyric_from_flac_impl(port, ptr, rust_vec_len, data_len),
-        11 => wire_load_lyric_from_lrc_impl(port, ptr, rust_vec_len, data_len),
-        9 => wire_load_lyric_from_mp3_impl(port, ptr, rust_vec_len, data_len),
-        13 => wire_update_index_impl(port, ptr, rust_vec_len, data_len),
-        16 => wire_launch_in_browser_impl(port, ptr, rust_vec_len, data_len),
-        15 => wire_pick_single_folder_impl(port, ptr, rust_vec_len, data_len),
-        14 => wire_show_in_explorer_impl(port, ptr, rust_vec_len, data_len),
+        8 => wire_build_index_from_path_impl(port, ptr, rust_vec_len, data_len),
+        10 => wire_get_lyric_from_path_impl(port, ptr, rust_vec_len, data_len),
+        11 => wire_get_picture_from_path_impl(port, ptr, rust_vec_len, data_len),
+        9 => wire_update_index_impl(port, ptr, rust_vec_len, data_len),
+        14 => wire_launch_in_browser_impl(port, ptr, rust_vec_len, data_len),
+        13 => wire_pick_single_folder_impl(port, ptr, rust_vec_len, data_len),
+        12 => wire_show_in_explorer_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -953,16 +875,6 @@ impl SseEncode for i32 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         serializer.cursor.write_i32::<NativeEndian>(self).unwrap();
-    }
-}
-
-impl SseEncode for Vec<String> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <i32>::sse_encode(self.len() as _, serializer);
-        for item in self {
-            <String>::sse_encode(item, serializer);
-        }
     }
 }
 
