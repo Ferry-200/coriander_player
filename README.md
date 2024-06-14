@@ -48,3 +48,4 @@
 - [music_api](https://github.com/yhsj0919/music_api.git)：实现歌曲的匹配和歌词的获取
 - [Lofty](https://crates.io/crates/lofty)：歌曲标签获取
 - [BASS](https://www.un4seen.com/bass.html)：播放乐曲
+- [flutter_rust_bridge](https://pub.dev/packages/flutter_rust_bridge)
