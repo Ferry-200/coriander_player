@@ -498,7 +498,7 @@ pub fn get_lyric_from_path(path: String) -> Option<String> {
 }
 
 /// for Flutter  
-/// 如果无法通过 Lofty 获取
+/// TODO: 如果无法通过 Lofty 获取则使用 Windows 获取
 pub fn get_picture_from_path(path: String) -> Option<Vec<u8>> {
     if let Ok(tagged_file) = lofty::read_from_path(path) {
         let tag = tagged_file.primary_tag().or(tagged_file.first_tag())?;
