@@ -39,6 +39,6 @@ Future<String?> getLyricFromPath({required String path, dynamic hint}) =>
     RustLib.instance.api.getLyricFromPath(path: path, hint: hint);
 
 /// for Flutter
-/// TODO: 如果无法通过 Lofty 获取则使用 Windows 获取
+/// 如果无法通过 Lofty 获取则通过 Windows 获取
 Future<Uint8List?> getPictureFromPath({required String path, dynamic hint}) =>
     RustLib.instance.api.getPictureFromPath(path: path, hint: hint);
