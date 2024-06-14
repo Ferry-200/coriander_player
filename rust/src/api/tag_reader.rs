@@ -5,8 +5,15 @@ use std::{
     time::{Duration, UNIX_EPOCH},
 };
 
-use lofty::prelude::{Accessor, AudioFile, TaggedFileExt, ItemKey};
-use windows::{core::HSTRING, Storage::StorageFile};
+use lofty::prelude::{Accessor, AudioFile, ItemKey, TaggedFileExt};
+use windows::{
+    core::HSTRING,
+    Storage::{
+        FileProperties::ThumbnailMode,
+        StorageFile,
+        Streams::DataReader,
+    },
+};
 
 const UNKNOWN_COW: std::borrow::Cow<'_, str> = std::borrow::Cow::Borrowed("UNKNOWN");
 const UNKNOWN_STR: &str = "UNKNOWN";
@@ -451,6 +458,19 @@ fn _update_index(index_path: String) -> Result<(), io::Error> {
     Ok(())
 }
 
+fn _get_picture_by_windows(path: String) -> Result<Vec<u8>, windows::core::Error> {
+    let file = StorageFile::GetFileFromPathAsync(&HSTRING::from(path))?.get()?;
+    let thumbnail = file
+        .GetThumbnailAsyncOverloadDefaultSizeDefaultOptions(ThumbnailMode::MusicView)?
+        .get()?;
+
+    let mut buf: Vec<u8> = vec![];
+    let reader = DataReader::CreateDataReader(&thumbnail)?;
+    reader.ReadBytes(&mut buf)?;
+
+    Ok(buf)
+}
+
 /// for Flutter  
 /// 扫描给定路径下所有子文件夹（包括自己）的音乐文件并把索引保存在 index_path/index.json。
 /// true：成功；false：失败
@@ -486,23 +506,22 @@ pub fn update_index(index_path: String) -> bool {
 pub fn get_lyric_from_path(path: String) -> Option<String> {
     if let Ok(tagged_file) = lofty::read_from_path(path) {
         let tag = tagged_file.primary_tag().or(tagged_file.first_tag())?;
-        return Some(
-            tag.get(&ItemKey::Lyrics)?
-                .value()
-                .text()?
-                .to_string(),
-        );
+        return Some(tag.get(&ItemKey::Lyrics)?.value().text()?.to_string());
     }
 
     None
 }
 
 /// for Flutter  
-/// TODO: 如果无法通过 Lofty 获取则使用 Windows 获取
+/// 如果无法通过 Lofty 获取则通过 Windows 获取
 pub fn get_picture_from_path(path: String) -> Option<Vec<u8>> {
-    if let Ok(tagged_file) = lofty::read_from_path(path) {
+    if let Ok(tagged_file) = lofty::read_from_path(&path) {
         let tag = tagged_file.primary_tag().or(tagged_file.first_tag())?;
         return Some(tag.pictures().first()?.data().to_vec());
+    }
+
+    if let Ok(pic) = _get_picture_by_windows(path) {
+        return Some(pic);
     }
 
     None
