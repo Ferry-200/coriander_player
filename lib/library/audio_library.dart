@@ -197,7 +197,7 @@ class Audio {
   /// 48*48
   Future<ImageProvider?> get cover {
     if (_cover == null) {
-      return loadCoverBytes(path: path).then((value) {
+      return getPictureFromPath(path: path).then((value) {
         if (value == null) {
           return null;
         }
@@ -212,7 +212,7 @@ class Audio {
   /// audio detail page 不需要频繁调用，所以不缓存图片
   /// 200 * 200
   Future<ImageProvider?> get mediumCover =>
-      loadCoverBytes(path: path).then((value) {
+      getPictureFromPath(path: path).then((value) {
         if (value == null) {
           return null;
         }
@@ -222,7 +222,7 @@ class Audio {
   /// now playing 不需要频繁调用，所以不缓存图片
   /// 400 * 400
   Future<ImageProvider?> get largeCover =>
-      loadCoverBytes(path: path).then((value) {
+      getPictureFromPath(path: path).then((value) {
         if (value == null) {
           return null;
         }
@@ -255,7 +255,7 @@ class Artist {
   /// 只能用在artist detail page
   /// 200*200
   Future<ImageProvider?> get picture =>
-      loadCoverBytes(path: works.first.path).then((value) {
+      getPictureFromPath(path: works.first.path).then((value) {
         if (value == null) {
           return null;
         }
@@ -277,7 +277,7 @@ class Album {
   /// 只能用在album detail page
   /// 200*200
   Future<ImageProvider?> get cover =>
-      loadCoverBytes(path: works.first.path).then((value) {
+      getPictureFromPath(path: works.first.path).then((value) {
         if (value == null) {
           return null;
         }
