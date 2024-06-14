@@ -37,26 +37,25 @@ impl SMTCFlutter {
         Self::_new().unwrap()
     }
 
-    pub fn subscribe_to_control_events(
-        &self,
-        sink: StreamSink<SMTCControlEvent>,
-    ) {
-        self._smtc.ButtonPressed(&TypedEventHandler::<
-            SystemMediaTransportControls,
-            SystemMediaTransportControlsButtonPressedEventArgs,
-        >::new(move |_, event| {
-            let event = event.as_ref().unwrap().Button().unwrap();
-            let event = match event {
-                SystemMediaTransportControlsButton::Play => SMTCControlEvent::Play,
-                SystemMediaTransportControlsButton::Pause => SMTCControlEvent::Pause,
-                SystemMediaTransportControlsButton::Next => SMTCControlEvent::Next,
-                SystemMediaTransportControlsButton::Previous => SMTCControlEvent::Previous,
-                _ => SMTCControlEvent::Unknown,
-            };
-            sink.add(event).unwrap();
+    pub fn subscribe_to_control_events(&self, sink: StreamSink<SMTCControlEvent>) {
+        self._smtc
+            .ButtonPressed(&TypedEventHandler::<
+                SystemMediaTransportControls,
+                SystemMediaTransportControlsButtonPressedEventArgs,
+            >::new(move |_, event| {
+                let event = event.as_ref().unwrap().Button().unwrap();
+                let event = match event {
+                    SystemMediaTransportControlsButton::Play => SMTCControlEvent::Play,
+                    SystemMediaTransportControlsButton::Pause => SMTCControlEvent::Pause,
+                    SystemMediaTransportControlsButton::Next => SMTCControlEvent::Next,
+                    SystemMediaTransportControlsButton::Previous => SMTCControlEvent::Previous,
+                    _ => SMTCControlEvent::Unknown,
+                };
+                sink.add(event).unwrap();
 
-            Ok(())
-        })).unwrap();
+                Ok(())
+            }))
+            .unwrap();
     }
 
     pub fn update_state(&self, state: SMTCState) {
@@ -132,8 +131,7 @@ impl SMTCFlutter {
         let file = StorageFile::GetFileFromPathAsync(&HSTRING::from(path))?.get()?;
         let thumbnail = file
             .GetThumbnailAsyncOverloadDefaultSizeDefaultOptions(ThumbnailMode::MusicView)?
-            .get()?
-            .CloneStream()?;
+            .get()?;
         updater.SetThumbnail(&RandomAccessStreamReference::CreateFromStream(&thumbnail)?)?;
 
         updater.Update()?;
