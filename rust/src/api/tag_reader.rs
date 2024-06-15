@@ -8,11 +8,7 @@ use std::{
 use lofty::prelude::{Accessor, AudioFile, ItemKey, TaggedFileExt};
 use windows::{
     core::HSTRING,
-    Storage::{
-        FileProperties::ThumbnailMode,
-        StorageFile,
-        Streams::DataReader,
-    },
+    Storage::{FileProperties::ThumbnailMode, StorageFile, Streams::DataReader},
 };
 
 const UNKNOWN_COW: std::borrow::Cow<'_, str> = std::borrow::Cow::Borrowed("UNKNOWN");
@@ -502,11 +498,40 @@ pub fn update_index(index_path: String) -> bool {
 }
 
 /// for Flutter   
-/// 只支持读取 ID3V2, VorbisComment, Mp4Ilst 存储的歌词
+/// 只支持读取 ID3V2, VorbisComment, Mp4Ilst 存储的内嵌歌词
+/// 以及相同目录相同文件名的 .lrc 外挂歌词（utf-8 or utf-16）
 pub fn get_lyric_from_path(path: String) -> Option<String> {
-    if let Ok(tagged_file) = lofty::read_from_path(path) {
+    if let Ok(tagged_file) = lofty::read_from_path(&path) {
         let tag = tagged_file.primary_tag().or(tagged_file.first_tag())?;
         return Some(tag.get(&ItemKey::Lyrics)?.value().text()?.to_string());
+    }
+
+    let mut lrc_file_path = PathBuf::from(path);
+    lrc_file_path.set_extension("lrc");
+
+    if let Ok(lrc_bytes) = fs::read(lrc_file_path) {
+        let is_le = lrc_bytes.starts_with(&[0xFF, 0xFE]);
+        let is_utf16 = (is_le || lrc_bytes.starts_with(&[0xFE, 0xFF])) && lrc_bytes.len() % 2 == 0;
+
+        if is_utf16 {
+            let convert_fn = match is_le {
+                true => u16::from_le_bytes,
+                false => u16::from_be_bytes,
+            };
+
+            let mut u16_bytes: Vec<u16> = vec![];
+            let chunk_iter = lrc_bytes.chunks_exact(2);
+            for chunk in chunk_iter {
+                u16_bytes.push(convert_fn([chunk[0], chunk[1]]));
+            }
+            if let Ok(lrc_str) = String::from_utf16(&u16_bytes) {
+                return Some(lrc_str);
+            }
+        } else {
+            if let Ok(lrc_str) = String::from_utf8(lrc_bytes.clone()) {
+                return Some(lrc_str);
+            }
+        }
     }
 
     None

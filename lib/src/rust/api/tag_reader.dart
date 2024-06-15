@@ -34,7 +34,8 @@ Future<bool> updateIndex({required String indexPath, dynamic hint}) =>
     RustLib.instance.api.updateIndex(indexPath: indexPath, hint: hint);
 
 /// for Flutter
-/// 只支持读取 ID3V2, VorbisComment, Mp4Ilst 存储的歌词
+/// 只支持读取 ID3V2, VorbisComment, Mp4Ilst 存储的内嵌歌词
+/// 以及相同目录相同文件名的 .lrc 外挂歌词（utf-8 or utf-16）
 Future<String?> getLyricFromPath({required String path, dynamic hint}) =>
     RustLib.instance.api.getLyricFromPath(path: path, hint: hint);
 
