@@ -6,17 +6,13 @@
 ### 特色
 详见 [官网](https://ferry-200.github.io/coriander_player_website/)
 
-[斥资10元搭建的官网](http://coriander-player.fun/)
-
 ### 安装
 1. 下载 [Release](https://github.com/Ferry-200/coriander_player/releases) 里的发行版，直接双击release.zip里的exe运行
-2. 下载 [Release](https://github.com/Ferry-200/coriander_player/releases) 里的 msix 文件，按照 [MSIX_install使用方法](MSIX_install.md) 安装
 
 ### 提供建议、提交 Bug 或者提 PR
 我正处于学习和适应 Github 工作流的阶段，所以目前不设置太多的要求。你只需要注意以下几点： 
 1. 如果要提交 Bug，请创建一个新的 issue。尽可能说明复现步骤并提供截图。
 2. 如果你提交 PR，由于我正在学习相关知识，可能会在处理 PR 时和你沟通如何操作分支之类的问题。
-
 
 ### 编译
 1. 开发 flutter 需要的环境
@@ -49,8 +45,7 @@
 在这个界面中，你可以在本地歌词（如果有）和几个匹配程度高的在线歌词中选择一个作为默认歌词。之后再播放这首音乐时，软件会加载你指定的歌词。
 
 ### 感谢
-[music_api](https://github.com/yhsj0919/music_api.git)：实现歌曲的匹配和歌词的获取
-
-[Lofty](https://crates.io/crates/lofty)：歌曲标签获取
-
-[BASS](https://www.un4seen.com/bass.html)：播放乐曲
+- [music_api](https://github.com/yhsj0919/music_api.git)：实现歌曲的匹配和歌词的获取
+- [Lofty](https://crates.io/crates/lofty)：歌曲标签获取
+- [BASS](https://www.un4seen.com/bass.html)：播放乐曲
+- [flutter_rust_bridge](https://pub.dev/packages/flutter_rust_bridge)
