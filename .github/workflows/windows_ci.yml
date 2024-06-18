@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Windows CI
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.22.2'
+        
+    - name: Get dependencies
+      run: flutter pub get
+
+    - name: Build Windows
+      run: flutter build windows
+
+    - name: Download dll
+      run: |
+        mkdir -p build\dll
+        curl -o bass.zip https://www.un4seen.com/files/bass24.zip
+        curl -o bassflac.zip https://www.un4seen.com/files/bassflac24.zip
+        Expand-Archive -Path bass.zip -DestinationPath build\dll -Force
+        Expand-Archive -Path bassflac.zip -DestinationPath build\dll -Force
+        mv build\dll\x64\* build\windows\x64\runner\Release\
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: "Coriander Player CI"
+        path: build\windows\x64\runner\Release\*
