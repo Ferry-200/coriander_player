@@ -31,12 +31,13 @@ jobs:
 
     - name: Download dll
       run: |
-        mkdir -p build\dll
+        mkdir -p build\tmp
+        mkdir -p build\windows\x64\runner\Release\BASS
         curl -o bass.zip https://www.un4seen.com/files/bass24.zip
         curl -o bassflac.zip https://www.un4seen.com/files/bassflac24.zip
-        Expand-Archive -Path bass.zip -DestinationPath build\dll -Force
-        Expand-Archive -Path bassflac.zip -DestinationPath build\dll -Force
-        mv build\dll\x64\* build\windows\x64\runner\Release\
+        Expand-Archive -Path bass.zip -DestinationPath build\tmp -Force
+        Expand-Archive -Path bassflac.zip -DestinationPath build\tmp -Force
+        mv build\tmp\x64\* build\windows\x64\runner\Release\BASS
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
