@@ -3,10 +3,10 @@ name: CI
 on:
   push:
     branches:
-      - better-scan
+      - main
   pull_request:
     branches:
-      - better-scan
+      - main
   workflow_dispatch:
 
 jobs:
@@ -32,26 +32,27 @@ jobs:
     - name: Download dll
       run: |
         mkdir -p build\tmp
-        mkdir -p build\windows\x64\runner\Release\BASS
+        # mkdir -p build\windows\x64\runner\Release\BASS
         
         # download BASS add-ons from UN4SEEN
         curl -o bass.zip https://www.un4seen.com/files/bass24.zip
-        curl -o bassape24.zip https://www.un4seen.com/files/bassape24.zip
-        curl -o bassdsd24.zip https://www.un4seen.com/files/bassdsd24.zip
+        # curl -o bassape24.zip https://www.un4seen.com/files/bassape24.zip
+        # curl -o bassdsd24.zip https://www.un4seen.com/files/bassdsd24.zip
         curl -o bassflac.zip https://www.un4seen.com/files/bassflac24.zip
-        curl -o bassmidi24.zip https://www.un4seen.com/files/bassmidi24.zip
-        curl -o bassopus24.zip https://www.un4seen.com/files/bassopus24.zip
-        curl -o basswv24.zip https://www.un4seen.com/files/basswv24.zip
+        # curl -o bassmidi24.zip https://www.un4seen.com/files/bassmidi24.zip
+        # curl -o bassopus24.zip https://www.un4seen.com/files/bassopus24.zip
+        # curl -o basswv24.zip https://www.un4seen.com/files/basswv24.zip
         
         Expand-Archive -Path bass.zip -DestinationPath build\tmp -Force
-        Expand-Archive -Path bassape24.zip -DestinationPath build\tmp -Force
-        Expand-Archive -Path bassdsd24.zip -DestinationPath build\tmp -Force
+        # Expand-Archive -Path bassape24.zip -DestinationPath build\tmp -Force
+        # Expand-Archive -Path bassdsd24.zip -DestinationPath build\tmp -Force
         Expand-Archive -Path bassflac.zip -DestinationPath build\tmp -Force
-        Expand-Archive -Path bassmidi24.zip -DestinationPath build\tmp -Force
-        Expand-Archive -Path bassopus24.zip -DestinationPath build\tmp -Force
-        Expand-Archive -Path basswv24.zip -DestinationPath build\tmp -Force
+        # Expand-Archive -Path bassmidi24.zip -DestinationPath build\tmp -Force
+        # Expand-Archive -Path bassopus24.zip -DestinationPath build\tmp -Force
+        # Expand-Archive -Path basswv24.zip -DestinationPath build\tmp -Force
         
-        mv build\tmp\x64\* build\windows\x64\runner\Release\BASS
+        mv build\tmp\x64\* build\windows\x64\runner\Release\
+        # mv build\tmp\x64\* build\windows\x64\runner\Release\BASS\
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
