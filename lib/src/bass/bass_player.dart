@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'dart:async';
 import 'dart:io';
 import 'package:ffi/ffi.dart';
@@ -28,6 +30,15 @@ enum PlayerState {
 
   unknown,
 }
+
+const BASS_PLUGINS = [
+  "BASS\\bassape.dll",
+  "BASS\\bassdsd.dll",
+  "BASS\\bassflac.dll",
+  "BASS\\bassmidi.dll",
+  "BASS\\bassopus.dll",
+  "BASS\\basswv.dll"
+];
 
 class BassPlayer {
   late final ffi.DynamicLibrary _dyLib;
@@ -101,12 +112,15 @@ class BassPlayer {
     );
   }
 
-  /// load bass.dll from the exe's path
-  /// ensure that there's bass.dll at path of .exe
+  /// load bass.dll from the exe's path\\BASS
+  /// ensure that there's bass.dll at path of .exe\\BASS
   /// leave the device's output freq as it is
   BassPlayer() {
-    final dyLibPath =
-        path.join(path.dirname(Platform.resolvedExecutable), 'bass.dll');
+    final dyLibPath = path.join(
+      path.dirname(Platform.resolvedExecutable),
+      "BASS",
+      'bass.dll',
+    );
     _dyLib = ffi.DynamicLibrary.open(dyLibPath);
     _bass = Bass(_dyLib);
 
@@ -137,25 +151,26 @@ class BassPlayer {
       }
     }
 
-    // load bassflac add-on to avoid using os codec
-    final flacPluginPath =
-        "bassflac.dll".toNativeUtf16() as ffi.Pointer<ffi.Char>;
-    final hplugin = _bass.BASS_PluginLoad(flacPluginPath, BASS_UNICODE);
+    // load add-ons to avoid using os codec or support more format
+    for (final plugin in BASS_PLUGINS) {
+      final pluginPathP = plugin.toNativeUtf16() as ffi.Pointer<ffi.Char>;
+      final hplugin = _bass.BASS_PluginLoad(pluginPathP, BASS_UNICODE);
 
-    if (hplugin == 0) {
-      switch (_bass.BASS_ErrorGetCode()) {
-        case BASS_ERROR_FILEOPEN:
-          throw const FormatException("The file could not be opened.");
-        case BASS_ERROR_FILEFORM:
-          throw const FormatException("The file is not a plugin.");
-        case BASS_ERROR_VERSION:
-          throw const FormatException(
-              "The plugin requires a different BASS version.");
-        case BASS_ERROR_ALREADY:
-          throw const FormatException("The plugin is already loaded.");
+      if (hplugin != 0) {
+        pluginHandles.add(hplugin);
+      } else {
+        switch (_bass.BASS_ErrorGetCode()) {
+          case BASS_ERROR_FILEOPEN:
+            throw const FormatException("The file could not be opened.");
+          case BASS_ERROR_FILEFORM:
+            throw const FormatException("The file is not a plugin.");
+          case BASS_ERROR_VERSION:
+            throw const FormatException(
+                "The plugin requires a different BASS version.");
+          case BASS_ERROR_ALREADY:
+            throw const FormatException("The plugin is already loaded.");
+        }
       }
-    } else {
-      pluginHandles.add(hplugin);
     }
 
     _positionStreamController = StreamController.broadcast(
