@@ -186,7 +186,7 @@ class BassPlayer {
       pathPointer,
       0,
       0,
-      BASS_UNICODE | BASS_SAMPLE_FLOAT,
+      BASS_UNICODE | BASS_SAMPLE_FLOAT | BASS_ASYNCFILE,
     );
 
     if (_fstream == 0) {
