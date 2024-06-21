@@ -468,33 +468,18 @@ fn _get_picture_by_windows(path: String) -> Result<Vec<u8>, windows::core::Error
 }
 
 /// for Flutter  
-/// 扫描给定路径下所有子文件夹（包括自己）的音乐文件并把索引保存在 index_path/index.json。
-/// true：成功；false：失败
-pub fn build_index_from_path(path: String, index_path: String) -> bool {
-    match _build_index_from_path(&Path::new(&path), index_path) {
-        Ok(_) => true,
-        Err(_) => false,
+/// 如果无法通过 Lofty 获取则通过 Windows 获取
+pub fn get_picture_from_path(path: String) -> Option<Vec<u8>> {
+    if let Ok(tagged_file) = lofty::read_from_path(&path) {
+        let tag = tagged_file.primary_tag().or(tagged_file.first_tag())?;
+        return Some(tag.pictures().first()?.data().to_vec());
     }
-}
 
-/// for Flutter   
-/// 读取 index_path/index.json，检查更新。不可能重新读取被修改的文件夹下所有的音乐标签，这样太耗时。  
-///
-/// [LOWEST_VERSION] 指定可以继承的 index 的最低版本。
-/// 如果 index version < [LOWEST_VERSION] 或者是 index 根本没有 version 再或者格式不符合要求，就转到
-/// [_update_index_below_1_1_0] 更新 index；
-/// 如果 index version >= [LOWEST_VERSION] 则进行更新。
-///
-/// 如果文件夹不存在，删除记录。  
-/// 如果文件夹被修改（再次读取到的 modified > 记录的 modified），就更新它。没有则跳过它
-/// 1. 遍历该文件夹索引，判断文件是否存在，不存在则删除记录
-/// 2. 遍历该文件夹索引，如果文件被修改（再次读取到的 modified > 记录的 modified），重新读取标签；没有则跳过它
-/// 3. 遍历该文件夹，添加新增（读取到的 created > 记录的 latest）的音乐文件
-pub fn update_index(index_path: String) -> bool {
-    match _update_index(index_path) {
-        Ok(_) => true,
-        Err(_) => false,
+    if let Ok(pic) = _get_picture_by_windows(path) {
+        return Some(pic);
     }
+
+    None
 }
 
 /// for Flutter   
@@ -527,10 +512,8 @@ pub fn get_lyric_from_path(path: String) -> Option<String> {
             if let Ok(lrc_str) = String::from_utf16(&u16_bytes) {
                 return Some(lrc_str);
             }
-        } else {
-            if let Ok(lrc_str) = String::from_utf8(lrc_bytes.clone()) {
-                return Some(lrc_str);
-            }
+        } else if let Ok(lrc_str) = String::from_utf8(lrc_bytes.clone()) {
+            return Some(lrc_str);
         }
     }
 
@@ -538,16 +521,31 @@ pub fn get_lyric_from_path(path: String) -> Option<String> {
 }
 
 /// for Flutter  
-/// 如果无法通过 Lofty 获取则通过 Windows 获取
-pub fn get_picture_from_path(path: String) -> Option<Vec<u8>> {
-    if let Ok(tagged_file) = lofty::read_from_path(&path) {
-        let tag = tagged_file.primary_tag().or(tagged_file.first_tag())?;
-        return Some(tag.pictures().first()?.data().to_vec());
+/// 扫描给定路径下所有子文件夹（包括自己）的音乐文件并把索引保存在 index_path/index.json。
+/// true：成功；false：失败
+pub fn build_index_from_path(path: String, index_path: String) -> bool {
+    match _build_index_from_path(&Path::new(&path), index_path) {
+        Ok(_) => true,
+        Err(_) => false,
     }
+}
 
-    if let Ok(pic) = _get_picture_by_windows(path) {
-        return Some(pic);
+/// for Flutter   
+/// 读取 index_path/index.json，检查更新。不可能重新读取被修改的文件夹下所有的音乐标签，这样太耗时。  
+///
+/// [LOWEST_VERSION] 指定可以继承的 index 的最低版本。
+/// 如果 index version < [LOWEST_VERSION] 或者是 index 根本没有 version 再或者格式不符合要求，就转到
+/// [_update_index_below_1_1_0] 更新 index；
+/// 如果 index version >= [LOWEST_VERSION] 则进行更新。
+///
+/// 如果文件夹不存在，删除记录。  
+/// 如果文件夹被修改（再次读取到的 modified > 记录的 modified），就更新它。没有则跳过它
+/// 1. 遍历该文件夹索引，判断文件是否存在，不存在则删除记录
+/// 2. 遍历该文件夹索引，如果文件被修改（再次读取到的 modified > 记录的 modified），重新读取标签；没有则跳过它
+/// 3. 遍历该文件夹，添加新增（读取到的 created > 记录的 latest）的音乐文件
+pub fn update_index(index_path: String) -> bool {
+    match _update_index(index_path) {
+        Ok(_) => true,
+        Err(_) => false,
     }
-
-    None
 }
