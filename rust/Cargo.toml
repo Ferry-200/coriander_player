@@ -7,7 +7,7 @@ edition = "2021"
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
-flutter_rust_bridge = "=2.0.0-dev.32"
+flutter_rust_bridge = "=2.0.0"
 lofty = "0.20.0"
 serde_json = "1.0.117"
 phf = { version = "0.11", features = ["macros"] }

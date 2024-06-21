@@ -11,6 +11,8 @@ use windows::{
     Storage::{FileProperties::ThumbnailMode, StorageFile, Streams::DataReader},
 };
 
+use crate::frb_generated::StreamSink;
+
 const UNKNOWN_COW: std::borrow::Cow<'_, str> = std::borrow::Cow::Borrowed("UNKNOWN");
 const UNKNOWN_STR: &str = "UNKNOWN";
 /// 索引的最低版本。低于该版本或没有版本号的索引将被完全重建。现在是 1.1.0
@@ -37,6 +39,14 @@ static SUPPORT_FORMAT: phf::Map<&'static str, bool> = phf::phf_map! {
     "dsf" => false, "dff" => false,
     "ape" => true,
 };
+
+pub struct IndexActionState {
+    /// completed / total
+    pub progress: f64,
+
+    /// describe action state
+    pub message: String,
+}
 
 #[derive(Debug)]
 struct Audio {
@@ -277,8 +287,18 @@ impl AudioFolder {
     }
 
     /// 扫描路径为 path 的文件夹及其所有子文件夹。
-    fn read_from_folder_recursively(path: &Path, result: &mut Vec<Self>) -> Result<(), io::Error> {
+    fn read_from_folder_recursively(
+        path: &Path,
+        result: &mut Vec<Self>,
+        scaned: &mut u64,
+        total: u64,
+        sink: &StreamSink<IndexActionState>,
+    ) -> Result<(), io::Error> {
         if let Ok(dir) = fs::read_dir(path) {
+            sink.add(IndexActionState {
+                progress: *scaned as f64 / total as f64,
+                message: String::from("正在扫描 ") + &path.to_string_lossy(),
+            });
             let mut audios: Vec<Audio> = vec![];
             let mut latest: u64 = 0;
 
@@ -286,7 +306,13 @@ impl AudioFolder {
                 let entry = item?;
 
                 if entry.file_type()?.is_dir() {
-                    Self::read_from_folder_recursively(&entry.path(), result)?;
+                    Self::read_from_folder_recursively(
+                        &entry.path(),
+                        result,
+                        scaned,
+                        total + 1,
+                        &sink,
+                    )?;
                 } else if let Some(metadata) = Audio::read_from_path(&entry.path()) {
                     if metadata.created > latest {
                         latest = metadata.created;
@@ -308,6 +334,12 @@ impl AudioFolder {
                     audios,
                 });
             }
+
+            *scaned += 1;
+            sink.add(IndexActionState {
+                progress: *scaned as f64 / total as f64,
+                message: String::new(),
+            });
         }
 
         Ok(())
@@ -315,9 +347,14 @@ impl AudioFolder {
 }
 
 /// 扫描给定路径下所有子文件夹（包括自己）的音乐文件并把索引保存在 index_path/index.json。
-fn _build_index_from_path(path: &Path, index_path: String) -> Result<(), io::Error> {
+fn _build_index_from_path(
+    path: &Path,
+    index_path: String,
+    sink: &StreamSink<IndexActionState>,
+) -> Result<(), io::Error> {
     let mut audio_folders: Vec<AudioFolder> = vec![];
-    AudioFolder::read_from_folder_recursively(path, &mut audio_folders)?;
+    let mut scaned: u64 = 0;
+    AudioFolder::read_from_folder_recursively(path, &mut audio_folders, &mut scaned, 1, &sink)?;
 
     let mut audio_folders_json: Vec<serde_json::Value> = vec![];
     for item in &audio_folders {
@@ -338,12 +375,22 @@ fn _build_index_from_path(path: &Path, index_path: String) -> Result<(), io::Err
 fn _update_index_below_1_1_0(
     index: &serde_json::Value,
     index_path: &PathBuf,
+    sink: &StreamSink<IndexActionState>,
 ) -> Result<(), io::Error> {
     let mut audio_folders_json: Vec<serde_json::Value> = vec![];
     let folders = index.as_array().unwrap();
     for item in folders {
-        let folder_path = Path::new(item["path"].as_str().unwrap());
-        audio_folders_json.push(AudioFolder::read_from_folder(folder_path)?.to_json_value())
+        let path = item["path"].as_str().unwrap();
+        sink.add(IndexActionState {
+            progress: audio_folders_json.len() as f64 / folders.len() as f64,
+            message: String::from("正在扫描 ") + path,
+        });
+        let folder_path = Path::new(path);
+        audio_folders_json.push(AudioFolder::read_from_folder(folder_path)?.to_json_value());
+        sink.add(IndexActionState {
+            progress: audio_folders_json.len() as f64 / folders.len() as f64,
+            message: String::new(),
+        });
     }
     fs::File::create(index_path)?.write(
         serde_json::json!({
@@ -357,7 +404,7 @@ fn _update_index_below_1_1_0(
     Ok(())
 }
 
-fn _update_index(index_path: String) -> Result<(), io::Error> {
+fn _update_index(index_path: String, sink: &StreamSink<IndexActionState>) -> Result<(), io::Error> {
     let mut index_path = PathBuf::from(index_path);
     index_path.push("index.json");
     let index = fs::read(&index_path)?;
@@ -365,7 +412,7 @@ fn _update_index(index_path: String) -> Result<(), io::Error> {
 
     let version = index["version"].as_u64();
     if let None = version {
-        return _update_index_below_1_1_0(&index, &index_path);
+        return _update_index_below_1_1_0(&index, &index_path, &sink);
     }
 
     let folders = index["folders"].as_array_mut().unwrap();
@@ -375,6 +422,9 @@ fn _update_index(index_path: String) -> Result<(), io::Error> {
 
         Path::new(path).exists()
     });
+
+    let mut updated = 0;
+    let total = folders.len();
 
     for folder_item in folders {
         let folder_path = folder_item["path"].as_str().unwrap().to_string();
@@ -388,8 +438,14 @@ fn _update_index(index_path: String) -> Result<(), io::Error> {
             .as_secs();
         // 跳过没有被修改的文件夹
         if new_folder_modified <= old_folder_modified {
+            updated += 1;
             continue;
         }
+
+        sink.add(IndexActionState {
+            progress: updated as f64 / total as f64,
+            message: String::from("正在更新 ") + &folder_path,
+        });
 
         folder_item["modified"] = serde_json::json!(new_folder_modified);
 
@@ -447,6 +503,12 @@ fn _update_index(index_path: String) -> Result<(), io::Error> {
         }
 
         folder_item["latest"] = serde_json::json!(new_latest);
+
+        updated += 1;
+        sink.add(IndexActionState {
+            progress: updated as f64 / total as f64,
+            message: String::new(),
+        });
     }
 
     fs::File::create(index_path)?.write(index.to_string().as_bytes())?;
@@ -523,8 +585,12 @@ pub fn get_lyric_from_path(path: String) -> Option<String> {
 /// for Flutter  
 /// 扫描给定路径下所有子文件夹（包括自己）的音乐文件并把索引保存在 index_path/index.json。
 /// true：成功；false：失败
-pub fn build_index_from_path(path: String, index_path: String) -> bool {
-    match _build_index_from_path(&Path::new(&path), index_path) {
+pub fn build_index_from_path(
+    path: String,
+    index_path: String,
+    sink: StreamSink<IndexActionState>,
+) -> bool {
+    match _build_index_from_path(&Path::new(&path), index_path, &sink) {
         Ok(_) => true,
         Err(_) => false,
     }
@@ -543,8 +609,8 @@ pub fn build_index_from_path(path: String, index_path: String) -> bool {
 /// 1. 遍历该文件夹索引，判断文件是否存在，不存在则删除记录
 /// 2. 遍历该文件夹索引，如果文件被修改（再次读取到的 modified > 记录的 modified），重新读取标签；没有则跳过它
 /// 3. 遍历该文件夹，添加新增（读取到的 created > 记录的 latest）的音乐文件
-pub fn update_index(index_path: String) -> bool {
-    match _update_index(index_path) {
+pub fn update_index(index_path: String, sink: StreamSink<IndexActionState>) -> bool {
+    match _update_index(index_path, &sink) {
         Ok(_) => true,
         Err(_) => false,
     }
