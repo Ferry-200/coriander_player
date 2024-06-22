@@ -59,7 +59,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.0.0';
 
   @override
-  int get rustContentHash => 476843784;
+  int get rustContentHash => 300065024;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -92,10 +92,10 @@ abstract class RustLibApi extends BaseApi {
 
   Stream<SystemTheme> crateApiSystemThemeSystemThemeOnSystemThemeChanged();
 
-  Stream<IndexActionState> crateApiTagReaderBuildIndexFromFolderRecursively(
-      {required String folder, required String indexPath});
-
   Stream<IndexActionState> crateApiTagReaderBuildIndexFromFolders(
+      {required List<String> folders, required String indexPath});
+
+  Stream<IndexActionState> crateApiTagReaderBuildIndexFromFoldersRecursively(
       {required List<String> folders, required String indexPath});
 
   Future<String?> crateApiTagReaderGetLyricFromPath({required String path});
@@ -328,37 +328,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
 
   @override
-  Stream<IndexActionState> crateApiTagReaderBuildIndexFromFolderRecursively(
-      {required String folder, required String indexPath}) {
-    final sink = RustStreamSink<IndexActionState>();
-    unawaited(handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(folder, serializer);
-        sse_encode_String(indexPath, serializer);
-        sse_encode_StreamSink_index_action_state_Sse(sink, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 8, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_unit,
-        decodeErrorData: sse_decode_AnyhowException,
-      ),
-      constMeta: kCrateApiTagReaderBuildIndexFromFolderRecursivelyConstMeta,
-      argValues: [folder, indexPath, sink],
-      apiImpl: this,
-    )));
-    return sink.stream;
-  }
-
-  TaskConstMeta
-      get kCrateApiTagReaderBuildIndexFromFolderRecursivelyConstMeta =>
-          const TaskConstMeta(
-            debugName: "build_index_from_folder_recursively",
-            argNames: ["folder", "indexPath", "sink"],
-          );
-
-  @override
   Stream<IndexActionState> crateApiTagReaderBuildIndexFromFolders(
       {required List<String> folders, required String indexPath}) {
     final sink = RustStreamSink<IndexActionState>();
@@ -369,7 +338,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(indexPath, serializer);
         sse_encode_StreamSink_index_action_state_Sse(sink, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 9, port: port_);
+            funcId: 8, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -387,6 +356,37 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         debugName: "build_index_from_folders",
         argNames: ["folders", "indexPath", "sink"],
       );
+
+  @override
+  Stream<IndexActionState> crateApiTagReaderBuildIndexFromFoldersRecursively(
+      {required List<String> folders, required String indexPath}) {
+    final sink = RustStreamSink<IndexActionState>();
+    unawaited(handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_list_String(folders, serializer);
+        sse_encode_String(indexPath, serializer);
+        sse_encode_StreamSink_index_action_state_Sse(sink, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 9, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_unit,
+        decodeErrorData: sse_decode_AnyhowException,
+      ),
+      constMeta: kCrateApiTagReaderBuildIndexFromFoldersRecursivelyConstMeta,
+      argValues: [folders, indexPath, sink],
+      apiImpl: this,
+    )));
+    return sink.stream;
+  }
+
+  TaskConstMeta
+      get kCrateApiTagReaderBuildIndexFromFoldersRecursivelyConstMeta =>
+          const TaskConstMeta(
+            debugName: "build_index_from_folders_recursively",
+            argNames: ["folders", "indexPath", "sink"],
+          );
 
   @override
   Future<String?> crateApiTagReaderGetLyricFromPath({required String path}) {

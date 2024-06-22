@@ -31,10 +31,10 @@ Stream<IndexActionState> buildIndexFromFolders(
 
 /// for Flutter
 /// 扫描给定路径下所有子文件夹（包括自己）的音乐文件并把索引保存在 index_path/index.json。
-Stream<IndexActionState> buildIndexFromFolderRecursively(
-        {required String folder, required String indexPath}) =>
-    RustLib.instance.api.crateApiTagReaderBuildIndexFromFolderRecursively(
-        folder: folder, indexPath: indexPath);
+Stream<IndexActionState> buildIndexFromFoldersRecursively(
+        {required List<String> folders, required String indexPath}) =>
+    RustLib.instance.api.crateApiTagReaderBuildIndexFromFoldersRecursively(
+        folders: folders, indexPath: indexPath);
 
 /// for Flutter
 /// 读取 index_path/index.json，检查更新。不可能重新读取被修改的文件夹下所有的音乐标签，这样太耗时。

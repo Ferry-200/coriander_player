@@ -447,20 +447,23 @@ pub fn build_index_from_folders(
 
 /// for Flutter  
 /// 扫描给定路径下所有子文件夹（包括自己）的音乐文件并把索引保存在 index_path/index.json。
-pub fn build_index_from_folder_recursively(
-    folder: String,
+pub fn build_index_from_folders_recursively(
+    folders: Vec<String>,
     index_path: String,
     sink: StreamSink<IndexActionState>,
 ) -> Result<(), io::Error> {
     let mut audio_folders: Vec<AudioFolder> = vec![];
-    let mut scaned: u64 = 0;
-    AudioFolder::read_from_folder_recursively(
-        Path::new(&folder),
-        &mut audio_folders,
-        &mut scaned,
-        1,
-        &sink,
-    )?;
+
+    for item in &folders {
+        let mut scaned: u64 = 0;
+        AudioFolder::read_from_folder_recursively(
+            Path::new(item),
+            &mut audio_folders,
+            &mut scaned,
+            folders.len() as u64,
+            &sink,
+        )?;
+    }
 
     let mut audio_folders_json: Vec<serde_json::Value> = vec![];
     for item in &audio_folders {
