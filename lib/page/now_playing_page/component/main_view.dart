@@ -370,36 +370,50 @@ class NowPlayingTitle extends StatelessWidget {
   }
 }
 
-class NowPlayingCover extends StatelessWidget {
+class NowPlayingCover extends StatefulWidget {
   const NowPlayingCover({super.key});
 
   @override
+  State<NowPlayingCover> createState() => _NowPlayingCoverState();
+}
+
+class _NowPlayingCoverState extends State<NowPlayingCover> {
+  final playService = PlayService.instance;
+  Future<ImageProvider<Object>?>? nowPlayingCover;
+
+  void updateCover() {
+    setState(() {
+      nowPlayingCover = playService.nowPlaying?.largeCover;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    playService.addListener(updateCover);
+    nowPlayingCover = playService.nowPlaying?.largeCover;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final playService = Provider.of<PlayService>(context);
-    final nowPlaying = playService.nowPlaying;
     final scheme = Theme.of(context).colorScheme;
 
+    final placeHolder = FittedBox(
+      child: Icon(
+        Symbols.broken_image,
+        size: 400.0,
+        color: scheme.onSecondaryContainer,
+      ),
+    );
+
     return RepaintBoundary(
-      child: nowPlaying == null
-          ? FittedBox(
-              child: Icon(
-                Symbols.broken_image,
-                size: 400.0,
-                color: scheme.onSecondaryContainer,
-              ),
-            )
+      child: nowPlayingCover == null
+          ? placeHolder
           : FutureBuilder(
-              future: nowPlaying.largeCover,
+              future: nowPlayingCover,
               builder: (context, snapshot) {
-                final scheme = Theme.of(context).colorScheme;
                 if (snapshot.data == null) {
-                  return FittedBox(
-                    child: Icon(
-                      Symbols.broken_image,
-                      size: 400.0,
-                      color: scheme.onSecondaryContainer,
-                    ),
-                  );
+                  return placeHolder;
                 }
                 return Image(
                   image: snapshot.data!,
@@ -409,5 +423,11 @@ class NowPlayingCover extends StatelessWidget {
               },
             ),
     );
+  }
+
+  @override
+  void dispose() {
+    playService.removeListener(updateCover);
+    super.dispose();
   }
 }
