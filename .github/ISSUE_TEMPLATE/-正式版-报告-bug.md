@@ -1,7 +1,7 @@
 ---
-name: 提交 Bug
-about: Bug issue 模板
-title: "[BUG]"
+name: "（正式版）报告 Bug"
+about: 报告正式版的 Bug
+title: ''
 labels: bug
 assignees: ''
 
