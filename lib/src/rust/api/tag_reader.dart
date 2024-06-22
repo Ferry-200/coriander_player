@@ -6,7 +6,7 @@
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `_build_index_from_path`, `_get_picture_by_windows`, `_update_index_below_1_1_0`, `_update_index`, `new_with_path`, `read_by_lofty`, `read_by_win_music_properties`, `read_from_folder_recursively`, `read_from_folder`, `read_from_path`, `to_json_value`, `to_json_value`
+// These functions are ignored because they are not marked as `pub`: `_get_picture_by_windows`, `_update_index_below_1_1_0`, `new_with_path`, `read_by_lofty`, `read_by_win_music_properties`, `read_from_folder_recursively`, `read_from_folder`, `read_from_path`, `to_json_value`, `to_json_value`
 // These types are ignored because they are not used by any `pub` functions: `AudioFolder`, `Audio`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `fmt`, `fmt`
 
@@ -22,12 +22,19 @@ Future<String?> getLyricFromPath({required String path}) =>
     RustLib.instance.api.crateApiTagReaderGetLyricFromPath(path: path);
 
 /// for Flutter
+/// 扫描给定的所有文件夹的音乐文件并把索引保存在 index_path/index.json。
+/// 用在文件夹管理界面
+Stream<IndexActionState> buildIndexFromFolders(
+        {required List<String> folders, required String indexPath}) =>
+    RustLib.instance.api.crateApiTagReaderBuildIndexFromFolders(
+        folders: folders, indexPath: indexPath);
+
+/// for Flutter
 /// 扫描给定路径下所有子文件夹（包括自己）的音乐文件并把索引保存在 index_path/index.json。
-/// true：成功；false：失败
-Stream<IndexActionState> buildIndexFromPath(
-        {required String path, required String indexPath}) =>
-    RustLib.instance.api
-        .crateApiTagReaderBuildIndexFromPath(path: path, indexPath: indexPath);
+Stream<IndexActionState> buildIndexFromFolderRecursively(
+        {required String folder, required String indexPath}) =>
+    RustLib.instance.api.crateApiTagReaderBuildIndexFromFolderRecursively(
+        folder: folder, indexPath: indexPath);
 
 /// for Flutter
 /// 读取 index_path/index.json，检查更新。不可能重新读取被修改的文件夹下所有的音乐标签，这样太耗时。

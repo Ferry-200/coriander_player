@@ -288,16 +288,16 @@ impl AudioFolder {
 
     /// 扫描路径为 path 的文件夹及其所有子文件夹。
     fn read_from_folder_recursively(
-        path: &Path,
+        folder: &Path,
         result: &mut Vec<Self>,
         scaned: &mut u64,
         total: u64,
         sink: &StreamSink<IndexActionState>,
     ) -> Result<(), io::Error> {
-        if let Ok(dir) = fs::read_dir(path) {
+        if let Ok(dir) = fs::read_dir(folder) {
             sink.add(IndexActionState {
                 progress: *scaned as f64 / total as f64,
-                message: String::from("正在扫描 ") + &path.to_string_lossy(),
+                message: String::from("正在扫描 ") + &folder.to_string_lossy(),
             });
             let mut audios: Vec<Audio> = vec![];
             let mut latest: u64 = 0;
@@ -324,8 +324,8 @@ impl AudioFolder {
 
             if !audios.is_empty() {
                 result.push(AudioFolder {
-                    path: path.to_string_lossy().to_string(),
-                    modified: fs::metadata(path)?
+                    path: folder.to_string_lossy().to_string(),
+                    modified: fs::metadata(folder)?
                         .modified()?
                         .duration_since(UNIX_EPOCH)
                         .unwrap_or(Duration::ZERO)
@@ -346,15 +346,121 @@ impl AudioFolder {
     }
 }
 
-/// 扫描给定路径下所有子文件夹（包括自己）的音乐文件并把索引保存在 index_path/index.json。
-fn _build_index_from_path(
-    path: &Path,
+fn _get_picture_by_windows(path: String) -> Result<Vec<u8>, windows::core::Error> {
+    let file = StorageFile::GetFileFromPathAsync(&HSTRING::from(path))?.get()?;
+    let thumbnail = file
+        .GetThumbnailAsyncOverloadDefaultSizeDefaultOptions(ThumbnailMode::MusicView)?
+        .get()?;
+
+    let mut buf: Vec<u8> = vec![];
+    let reader = DataReader::CreateDataReader(&thumbnail)?;
+    reader.ReadBytes(&mut buf)?;
+
+    Ok(buf)
+}
+
+/// for Flutter  
+/// 如果无法通过 Lofty 获取则通过 Windows 获取
+pub fn get_picture_from_path(path: String) -> Option<Vec<u8>> {
+    if let Ok(tagged_file) = lofty::read_from_path(&path) {
+        let tag = tagged_file.primary_tag().or(tagged_file.first_tag())?;
+        return Some(tag.pictures().first()?.data().to_vec());
+    }
+
+    if let Ok(pic) = _get_picture_by_windows(path) {
+        return Some(pic);
+    }
+
+    None
+}
+
+/// for Flutter   
+/// 只支持读取 ID3V2, VorbisComment, Mp4Ilst 存储的内嵌歌词
+/// 以及相同目录相同文件名的 .lrc 外挂歌词（utf-8 or utf-16）
+pub fn get_lyric_from_path(path: String) -> Option<String> {
+    if let Ok(tagged_file) = lofty::read_from_path(&path) {
+        let tag = tagged_file.primary_tag().or(tagged_file.first_tag())?;
+        return Some(tag.get(&ItemKey::Lyrics)?.value().text()?.to_string());
+    }
+
+    let mut lrc_file_path = PathBuf::from(path);
+    lrc_file_path.set_extension("lrc");
+
+    if let Ok(lrc_bytes) = fs::read(lrc_file_path) {
+        let is_le = lrc_bytes.starts_with(&[0xFF, 0xFE]);
+        let is_utf16 = (is_le || lrc_bytes.starts_with(&[0xFE, 0xFF])) && lrc_bytes.len() % 2 == 0;
+
+        if is_utf16 {
+            let convert_fn = match is_le {
+                true => u16::from_le_bytes,
+                false => u16::from_be_bytes,
+            };
+
+            let mut u16_bytes: Vec<u16> = vec![];
+            let chunk_iter = lrc_bytes.chunks_exact(2);
+            for chunk in chunk_iter {
+                u16_bytes.push(convert_fn([chunk[0], chunk[1]]));
+            }
+            if let Ok(lrc_str) = String::from_utf16(&u16_bytes) {
+                return Some(lrc_str);
+            }
+        } else if let Ok(lrc_str) = String::from_utf8(lrc_bytes.clone()) {
+            return Some(lrc_str);
+        }
+    }
+
+    None
+}
+
+/// for Flutter  
+/// 扫描给定的所有文件夹的音乐文件并把索引保存在 index_path/index.json。
+/// 用在文件夹管理界面
+pub fn build_index_from_folders(
+    folders: Vec<String>,
     index_path: String,
-    sink: &StreamSink<IndexActionState>,
+    sink: StreamSink<IndexActionState>,
+) -> Result<(), io::Error> {
+    let mut audio_folders_json: Vec<serde_json::Value> = vec![];
+    for item in &folders {
+        sink.add(IndexActionState {
+            progress: audio_folders_json.len() as f64 / folders.len() as f64,
+            message: String::from("正在扫描 ") + item,
+        });
+        let folder_path = Path::new(item);
+        audio_folders_json.push(AudioFolder::read_from_folder(folder_path)?.to_json_value());
+        sink.add(IndexActionState {
+            progress: audio_folders_json.len() as f64 / folders.len() as f64,
+            message: String::new(),
+        });
+    }
+    fs::File::create(index_path)?.write(
+        serde_json::json!({
+            "version": LOWEST_VERSION,
+            "folders": audio_folders_json,
+        })
+        .to_string()
+        .as_bytes(),
+    )?;
+
+    Ok(())
+}
+
+/// for Flutter  
+/// 扫描给定路径下所有子文件夹（包括自己）的音乐文件并把索引保存在 index_path/index.json。
+pub fn build_index_from_folder_recursively(
+    folder: String,
+    index_path: String,
+    sink: StreamSink<IndexActionState>,
 ) -> Result<(), io::Error> {
     let mut audio_folders: Vec<AudioFolder> = vec![];
     let mut scaned: u64 = 0;
-    AudioFolder::read_from_folder_recursively(path, &mut audio_folders, &mut scaned, 1, &sink)?;
+    AudioFolder::read_from_folder_recursively(
+        Path::new(&folder),
+        &mut audio_folders,
+        &mut scaned,
+        1,
+        &sink,
+    )?;
 
     let mut audio_folders_json: Vec<serde_json::Value> = vec![];
     for item in &audio_folders {
@@ -404,7 +510,23 @@ fn _update_index_below_1_1_0(
     Ok(())
 }
 
-fn _update_index(index_path: String, sink: &StreamSink<IndexActionState>) -> Result<(), io::Error> {
+/// for Flutter   
+/// 读取 index_path/index.json，检查更新。不可能重新读取被修改的文件夹下所有的音乐标签，这样太耗时。  
+///
+/// [LOWEST_VERSION] 指定可以继承的 index 的最低版本。
+/// 如果 index version < [LOWEST_VERSION] 或者是 index 根本没有 version 再或者格式不符合要求，就转到
+/// [_update_index_below_1_1_0] 更新 index；
+/// 如果 index version >= [LOWEST_VERSION] 则进行更新。
+///
+/// 如果文件夹不存在，删除记录。  
+/// 如果文件夹被修改（再次读取到的 modified > 记录的 modified），就更新它。没有则跳过它
+/// 1. 遍历该文件夹索引，判断文件是否存在，不存在则删除记录
+/// 2. 遍历该文件夹索引，如果文件被修改（再次读取到的 modified > 记录的 modified），重新读取标签；没有则跳过它
+/// 3. 遍历该文件夹，添加新增（读取到的 created > 记录的 latest）的音乐文件
+pub fn update_index(
+    index_path: String,
+    sink: StreamSink<IndexActionState>,
+) -> Result<(), io::Error> {
     let mut index_path = PathBuf::from(index_path);
     index_path.push("index.json");
     let index = fs::read(&index_path)?;
@@ -514,104 +636,4 @@ fn _update_index(index_path: String, sink: &StreamSink<IndexActionState>) -> Res
     fs::File::create(index_path)?.write(index.to_string().as_bytes())?;
 
     Ok(())
-}
-
-fn _get_picture_by_windows(path: String) -> Result<Vec<u8>, windows::core::Error> {
-    let file = StorageFile::GetFileFromPathAsync(&HSTRING::from(path))?.get()?;
-    let thumbnail = file
-        .GetThumbnailAsyncOverloadDefaultSizeDefaultOptions(ThumbnailMode::MusicView)?
-        .get()?;
-
-    let mut buf: Vec<u8> = vec![];
-    let reader = DataReader::CreateDataReader(&thumbnail)?;
-    reader.ReadBytes(&mut buf)?;
-
-    Ok(buf)
-}
-
-/// for Flutter  
-/// 如果无法通过 Lofty 获取则通过 Windows 获取
-pub fn get_picture_from_path(path: String) -> Option<Vec<u8>> {
-    if let Ok(tagged_file) = lofty::read_from_path(&path) {
-        let tag = tagged_file.primary_tag().or(tagged_file.first_tag())?;
-        return Some(tag.pictures().first()?.data().to_vec());
-    }
-
-    if let Ok(pic) = _get_picture_by_windows(path) {
-        return Some(pic);
-    }
-
-    None
-}
-
-/// for Flutter   
-/// 只支持读取 ID3V2, VorbisComment, Mp4Ilst 存储的内嵌歌词
-/// 以及相同目录相同文件名的 .lrc 外挂歌词（utf-8 or utf-16）
-pub fn get_lyric_from_path(path: String) -> Option<String> {
-    if let Ok(tagged_file) = lofty::read_from_path(&path) {
-        let tag = tagged_file.primary_tag().or(tagged_file.first_tag())?;
-        return Some(tag.get(&ItemKey::Lyrics)?.value().text()?.to_string());
-    }
-
-    let mut lrc_file_path = PathBuf::from(path);
-    lrc_file_path.set_extension("lrc");
-
-    if let Ok(lrc_bytes) = fs::read(lrc_file_path) {
-        let is_le = lrc_bytes.starts_with(&[0xFF, 0xFE]);
-        let is_utf16 = (is_le || lrc_bytes.starts_with(&[0xFE, 0xFF])) && lrc_bytes.len() % 2 == 0;
-
-        if is_utf16 {
-            let convert_fn = match is_le {
-                true => u16::from_le_bytes,
-                false => u16::from_be_bytes,
-            };
-
-            let mut u16_bytes: Vec<u16> = vec![];
-            let chunk_iter = lrc_bytes.chunks_exact(2);
-            for chunk in chunk_iter {
-                u16_bytes.push(convert_fn([chunk[0], chunk[1]]));
-            }
-            if let Ok(lrc_str) = String::from_utf16(&u16_bytes) {
-                return Some(lrc_str);
-            }
-        } else if let Ok(lrc_str) = String::from_utf8(lrc_bytes.clone()) {
-            return Some(lrc_str);
-        }
-    }
-
-    None
-}
-
-/// for Flutter  
-/// 扫描给定路径下所有子文件夹（包括自己）的音乐文件并把索引保存在 index_path/index.json。
-/// true：成功；false：失败
-pub fn build_index_from_path(
-    path: String,
-    index_path: String,
-    sink: StreamSink<IndexActionState>,
-) -> bool {
-    match _build_index_from_path(&Path::new(&path), index_path, &sink) {
-        Ok(_) => true,
-        Err(_) => false,
-    }
-}
-
-/// for Flutter   
-/// 读取 index_path/index.json，检查更新。不可能重新读取被修改的文件夹下所有的音乐标签，这样太耗时。  
-///
-/// [LOWEST_VERSION] 指定可以继承的 index 的最低版本。
-/// 如果 index version < [LOWEST_VERSION] 或者是 index 根本没有 version 再或者格式不符合要求，就转到
-/// [_update_index_below_1_1_0] 更新 index；
-/// 如果 index version >= [LOWEST_VERSION] 则进行更新。
-///
-/// 如果文件夹不存在，删除记录。  
-/// 如果文件夹被修改（再次读取到的 modified > 记录的 modified），就更新它。没有则跳过它
-/// 1. 遍历该文件夹索引，判断文件是否存在，不存在则删除记录
-/// 2. 遍历该文件夹索引，如果文件被修改（再次读取到的 modified > 记录的 modified），重新读取标签；没有则跳过它
-/// 3. 遍历该文件夹，添加新增（读取到的 created > 记录的 latest）的音乐文件
-pub fn update_index(index_path: String, sink: StreamSink<IndexActionState>) -> bool {
-    match _update_index(index_path, &sink) {
-        Ok(_) => true,
-        Err(_) => false,
-    }
 }
