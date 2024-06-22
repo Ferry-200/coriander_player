@@ -17,7 +17,7 @@
 
 ### 编译
 1. 开发 flutter 需要的环境
-2. 编译后要把 BASS 音频库和 BASSFLAC 插件放在 exe 相同目录下
+2. 编译后要把 BASS 库的 64 位的 `bass.dll`, `bassape.dll`, `bassdsd.dll`, `bassflac.dll`, `bassmidi.dll`, `bassopus.dll`, `basswv.dll` 放在软件目录的 `BASS` 文件夹下
 
 ### 歌词特性解释
 1. lrc歌词的间奏识别   
