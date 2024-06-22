@@ -291,12 +291,12 @@ impl AudioFolder {
         folder: &Path,
         result: &mut Vec<Self>,
         scaned: &mut u64,
-        total: u64,
+        total: &mut u64,
         sink: &StreamSink<IndexActionState>,
     ) -> Result<(), io::Error> {
         if let Ok(dir) = fs::read_dir(folder) {
             sink.add(IndexActionState {
-                progress: *scaned as f64 / total as f64,
+                progress: *scaned as f64 / *total as f64,
                 message: String::from("正在扫描 ") + &folder.to_string_lossy(),
             });
             let mut audios: Vec<Audio> = vec![];
@@ -306,11 +306,12 @@ impl AudioFolder {
                 let entry = item?;
 
                 if entry.file_type()?.is_dir() {
+                    *total += 1;
                     Self::read_from_folder_recursively(
                         &entry.path(),
                         result,
                         scaned,
-                        total + 1,
+                        total,
                         &sink,
                     )?;
                 } else if let Some(metadata) = Audio::read_from_path(&entry.path()) {
@@ -337,7 +338,7 @@ impl AudioFolder {
 
             *scaned += 1;
             sink.add(IndexActionState {
-                progress: *scaned as f64 / total as f64,
+                progress: *scaned as f64 / *total as f64,
                 message: String::new(),
             });
         }
@@ -453,14 +454,15 @@ pub fn build_index_from_folders_recursively(
     sink: StreamSink<IndexActionState>,
 ) -> Result<(), io::Error> {
     let mut audio_folders: Vec<AudioFolder> = vec![];
+    let mut scaned: u64 = 0;
+    let mut total: u64 = folders.len() as u64;
 
     for item in &folders {
-        let mut scaned: u64 = 0;
         AudioFolder::read_from_folder_recursively(
             Path::new(item),
             &mut audio_folders,
             &mut scaned,
-            folders.len() as u64,
+            &mut total,
             &sink,
         )?;
     }
