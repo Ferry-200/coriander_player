@@ -147,6 +147,11 @@ class _CompactAudioInfo extends StatelessWidget {
     final playService = Provider.of<PlayService>(context);
     final nowPlaying = playService.nowPlaying;
     final scheme = Theme.of(context).colorScheme;
+    final placeholder = Icon(
+      Symbols.broken_image,
+      size: 48.0,
+      color: scheme.onSecondaryContainer,
+    );
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -162,13 +167,8 @@ class _CompactAudioInfo extends StatelessWidget {
               : FutureBuilder(
                   future: nowPlaying.cover,
                   builder: (context, snapshot) {
-                    final scheme = Theme.of(context).colorScheme;
                     if (snapshot.data == null) {
-                      return Icon(
-                        Symbols.broken_image,
-                        size: 48.0,
-                        color: scheme.onSecondaryContainer,
-                      );
+                      return placeholder;
                     }
                     return ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
@@ -176,6 +176,7 @@ class _CompactAudioInfo extends StatelessWidget {
                         image: snapshot.data!,
                         width: 48.0,
                         height: 48.0,
+                        errorBuilder: (_, __, ___) => placeholder,
                       ),
                     );
                   },

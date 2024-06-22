@@ -15,6 +15,11 @@ class ArtistTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final placeholder = Icon(
+      Symbols.broken_image,
+      color: scheme.onSurface,
+      size: 48,
+    );
     return InkWell(
       onTap: () => context.push(app_paths.ARTIST_DETAIL_PAGE, extra: artist),
       borderRadius: BorderRadius.circular(8.0),
@@ -26,17 +31,14 @@ class ArtistTile extends StatelessWidget {
               future: artist.works.first.cover,
               builder: (context, snapshot) {
                 if (snapshot.data == null) {
-                  return Icon(
-                    Symbols.broken_image,
-                    color: scheme.onSurface,
-                    size: 48,
-                  );
+                  return placeholder;
                 }
                 return ClipOval(
                   child: Image(
                     image: snapshot.data!,
                     width: 48.0,
                     height: 48.0,
+                    errorBuilder: (_, __, ___) => placeholder,
                   ),
                 );
               },

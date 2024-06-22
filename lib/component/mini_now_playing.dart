@@ -68,6 +68,11 @@ class _NowPlayingForeground extends StatelessWidget {
             listenable: PlayService.instance,
             builder: (context, _) {
               final nowPlaying = PlayService.instance.nowPlaying;
+              final placeholder = Icon(
+                Symbols.broken_image,
+                size: 48.0,
+                color: scheme.onSecondaryContainer,
+              );
               return Row(
                 children: [
                   /// now playing cover
@@ -76,11 +81,7 @@ class _NowPlayingForeground extends StatelessWidget {
                           future: nowPlaying.cover,
                           builder: (context, snapshot) {
                             if (snapshot.data == null) {
-                              return Icon(
-                                Symbols.broken_image,
-                                size: 48.0,
-                                color: scheme.onSecondaryContainer,
-                              );
+                              return placeholder;
                             }
 
                             return DecoratedBox(
@@ -93,16 +94,13 @@ class _NowPlayingForeground extends StatelessWidget {
                                   image: snapshot.data!,
                                   width: 48.0,
                                   height: 48.0,
+                                  errorBuilder: (_, __, ___) => placeholder,
                                 ),
                               ),
                             );
                           },
                         )
-                      : Icon(
-                          Symbols.music_note,
-                          size: 48.0,
-                          color: scheme.onSecondaryContainer,
-                        ),
+                      : placeholder,
                   const SizedBox(width: 8.0),
                   Expanded(
                     child: Column(
