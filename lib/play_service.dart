@@ -357,14 +357,12 @@ class PlayService with ChangeNotifier {
     _findCurrLyricLine();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() async {
     _bassPlayer.free();
-    _lyricLineStreamController.close();
-    _playerStateStreamSub.cancel();
-    _positionStreamSub.cancel();
-    _smtcEventStreamSub.cancel();
-    _smtc.close();
+    await _lyricLineStreamController.close();
+    await _playerStateStreamSub.cancel();
+    await _positionStreamSub.cancel();
+    await _smtcEventStreamSub.cancel();
+    await _smtc.close();
   }
 }
