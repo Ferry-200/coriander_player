@@ -5,6 +5,7 @@ import 'package:coriander_player/component/horizontal_lyric_view.dart';
 import 'package:coriander_player/component/responsive_builder.dart';
 import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/lyric/lyric_source.dart';
+import 'package:coriander_player/play_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
@@ -247,7 +248,8 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
             await savePlaylists();
             await saveLyricSources();
             await AppSettings.instance.saveSettings();
-            windowManager.close();
+            await PlayService.instance.close();
+            await windowManager.close();
           },
           icon: const Icon(Symbols.close),
         ),
