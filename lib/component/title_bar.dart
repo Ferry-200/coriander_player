@@ -244,15 +244,12 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
           },
         ),
         IconButton(
-          onPressed: () {
-            Future.wait([
-              savePlaylists(),
-              saveLyricSources(),
-              AppSettings.instance.saveSettings(),
-              PlayService.instance.close(),
-            ]).whenComplete(() {
-              windowManager.close();
-            });
+          onPressed: () async {
+            await savePlaylists();
+            await saveLyricSources();
+            await AppSettings.instance.saveSettings();
+            await PlayService.instance.close();
+            windowManager.close();
           },
           icon: const Icon(Symbols.close),
         ),
