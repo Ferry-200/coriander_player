@@ -252,22 +252,33 @@ class _PrimaryContentPicture extends StatelessWidget {
       future: pic,
       builder: (context, snapshot) {
         final scheme = Theme.of(context).colorScheme;
+        final placeholder = Icon(
+          Symbols.broken_image,
+          size: 200.0,
+          color: scheme.onSurface,
+        );
         if (snapshot.data == null) {
           return Flexible(
-            child: Icon(
-              Symbols.broken_image,
-              size: 200.0,
-              color: scheme.onSurface,
-            ),
+            child: placeholder,
           );
         }
         return switch (picShape) {
           PicShape.oval => ClipOval(
-              child: Image(image: snapshot.data!, width: 200.0, height: 200.0),
+              child: Image(
+                image: snapshot.data!,
+                width: 200.0,
+                height: 200.0,
+                errorBuilder: (_, __, ___) => placeholder,
+              ),
             ),
           PicShape.rrect => ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
-              child: Image(image: snapshot.data!, width: 200.0, height: 200.0),
+              child: Image(
+                image: snapshot.data!,
+                width: 200.0,
+                height: 200.0,
+                errorBuilder: (_, __, ___) => placeholder,
+              ),
             ),
         };
       },

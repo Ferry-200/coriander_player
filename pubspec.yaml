@@ -15,13 +15,16 @@ dependencies:
   provider: ^6.1.1
   rust_builder:
     path: rust_builder
-  flutter_rust_bridge: 2.0.0-dev.32
+  flutter_rust_bridge: ^2.0.0
   path_provider: ^2.0.15
   flutter_localizations:
     sdk: flutter
   ffi: ^2.1.0
   path: ^1.8.3
   material_symbols_icons: ^4.2719.1
+  github: ^9.24.0
+  flutter_markdown: ^0.7.1
+  flex_color_picker: ^3.5.0
 
   # music_api
   encrypt: ^5.0.3
@@ -30,10 +33,6 @@ dependencies:
   crypto: ^3.0.3
   xml: ^6.5.0
   collection: ^1.18.0
-  
-  github: ^9.24.0
-  flutter_markdown: ^0.7.1
-  flex_color_picker: ^3.5.0
 
 dev_dependencies:
   flutter_test:

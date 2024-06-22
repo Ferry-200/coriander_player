@@ -63,8 +63,7 @@ class LrcLine extends UnsyncLyricLine {
 enum LrcSource {
   /// mp3: USLT frame
   /// flac: LYRICS comment
-  embedded("内嵌"),
-  lrcFile("外挂"),
+  local("本地"),
   web("网络");
 
   final String name;
@@ -158,65 +157,22 @@ class Lrc extends Lyric {
     return result._combineLrcLine(separator);
   }
 
-  /// .mp3: parse from USLT frame
-  /// .flac: parse from LYRICS comment
-  /// other: parse from .lrc file content
-  static Future<Lrc?> fromAudioPath(Audio belongTo,
-      {String? separator = "┃"}) async {
-    final path = belongTo.path;
-    final suffix = path.split(".").last.toLowerCase();
-    Lrc? lyric;
-
-    if (suffix == "mp3") {
-      lyric = await _fromMp3(path, separator);
-    } else if (suffix == "flac") {
-      lyric = await _fromFlac(path, separator);
-    } else {
-      lyric = await _fromLrcFile(path, separator);
-    }
+  /// 只支持读取 ID3V2, VorbisComment, Mp4Ilst 存储的内嵌歌词
+  /// 以及相同目录相同文件名的 .lrc 外挂歌词（utf-8 or utf-16）
+  static Future<Lrc?> fromAudioPath(
+    Audio belongTo, {
+    String? separator = "┃",
+  }) async {
+    Lrc? lyric = await getLyricFromPath(path: belongTo.path).then((value) {
+      if (value == null) {
+        return null;
+      }
+      return Lrc.fromLrcText(value, LrcSource.local, separator: separator);
+    });
 
     if (lyric != null) {
       lyric.belongTo = belongTo;
     }
     return lyric;
-  }
-
-  static Future<Lrc?> _fromLrcFile(String path, String? separator) {
-    return loadLyricFromLrc(path: path).then((value) {
-      if (value == null) {
-        return null;
-      }
-      return Lrc.fromLrcText(
-        value,
-        LrcSource.lrcFile,
-        separator: separator,
-      );
-    });
-  }
-
-  static Future<Lrc?> _fromFlac(String path, String? separator) {
-    return loadLyricFromFlac(path: path).then((value) {
-      if (value == null) {
-        return _fromLrcFile(path, separator);
-      }
-      return Lrc.fromLrcText(
-        value,
-        LrcSource.embedded,
-        separator: separator,
-      );
-    });
-  }
-
-  static Future<Lrc?> _fromMp3(String path, String? separator) {
-    return loadLyricFromMp3(path: path).then((value) {
-      if (value == null) {
-        return _fromLrcFile(path, separator);
-      }
-      return Lrc.fromLrcText(
-        value,
-        LrcSource.embedded,
-        separator: separator,
-      );
-    });
   }
 }

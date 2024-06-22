@@ -14,7 +14,7 @@ import 'package:coriander_player/page/search_page/search_page.dart';
 import 'package:coriander_player/page/search_page/single_result.dart';
 import 'package:coriander_player/page/search_page/union_result.dart';
 import 'package:coriander_player/page/settings_page/page.dart';
-import 'package:coriander_player/page/updating_dialog/dialog.dart';
+import 'package:coriander_player/page/updating_page.dart';
 import 'package:coriander_player/page/welcoming_page/page.dart';
 import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/theme_provider.dart';
@@ -268,7 +268,7 @@ class Entry extends StatelessWidget {
       GoRoute(
         path: app_paths.UPDATING_DIALOG,
         pageBuilder: (context, state) => const SlideTransitionPage(
-          child: UpdatingDialog(),
+          child: UpdatingPage(),
         ),
       ),
     ],

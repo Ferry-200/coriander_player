@@ -21,21 +21,38 @@ class AudioLibrary {
   /// must call [initFromIndex]
   static late AudioLibrary instance;
 
+  /// 目前 index 结构：  
+  /// ```json
+  /// {
+  ///     "folders": [
+  ///         {
+  ///             "audios": [
+  ///                 {...}, 
+  ///                 ...
+  ///             ], 
+  ///             ...
+  ///         }, 
+  ///         ...
+  ///     ],
+  ///     "version": 110
+  /// }
+  /// ```
   static Future<void> initFromIndex() async {
     final supportPath = (await getApplicationSupportDirectory()).path;
     final indexPath = "$supportPath\\index.json";
 
     final indexStr = File(indexPath).readAsStringSync();
-    final List foldersJson = json.decode(indexStr);
+    final Map indexJson = json.decode(indexStr);
+    final List foldersJson = indexJson["folders"];
     final List<AudioFolder> folders = [];
 
-    for (Map folderJson in foldersJson) {
-      final List audiosJson = folderJson["audios"];
+    for (Map folderMap in foldersJson) {
+      final List audiosJson = folderMap["audios"];
       final List<Audio> audios = [];
-      for (Map audioJson in audiosJson) {
-        audios.add(Audio.fromMap(audioJson));
+      for (Map audioMap in audiosJson) {
+        audios.add(Audio.fromMap(audioMap));
       }
-      folders.add(AudioFolder.fromMap(folderJson, audios));
+      folders.add(AudioFolder.fromMap(folderMap, audios));
     }
 
     instance = AudioLibrary._(folders);
@@ -107,13 +124,16 @@ class AudioFolder {
   /// absolute path
   String path;
 
-  /// secs from UNIX EPOCH
+  /// secs since UNIX EPOCH
   int modified;
 
-  AudioFolder(this.audios, this.path, this.modified);
+  /// secs since UNIX EPOCH
+  int latest;
+
+  AudioFolder(this.audios, this.path, this.modified, this.latest);
 
   factory AudioFolder.fromMap(Map map, List<Audio> audios) =>
-      AudioFolder(audios, map["path"], map["modified"]);
+      AudioFolder(audios, map["path"], map["modified"], map["latest"]);
 
   @override
   String toString() {
@@ -143,14 +163,22 @@ class Audio {
   /// audio's duration in secs
   int duration;
 
+  /// kbps
+  int? bitrate;
+
+  int? sampleRate;
+
   /// absolute path
   String path;
 
-  /// secs from UNIX EPOCH
+  /// secs since UNIX EPOCH
   int modified;
 
-  /// secs from UNIX EPOCH
+  /// secs since UNIX EPOCH
   int created;
+
+  /// 标签来源（Lofty、Windows、null）
+  String? by;
 
   ImageProvider? _cover;
 
@@ -162,9 +190,12 @@ class Audio {
     this.album,
     this.track,
     this.duration,
+    this.bitrate,
+    this.sampleRate,
     this.path,
     this.modified,
     this.created,
+    this.by,
   ) : splitedArtists = artist.split(
           RegExp(AppSettings.instance.artistSplitPattern),
         );
@@ -175,9 +206,12 @@ class Audio {
         map["album"],
         map["track"] ?? 0,
         map["duration"] ?? 0,
+        map["bitrate"],
+        map["sample_rate"],
         map["path"],
         map["modified"],
         map["created"],
+        map["by"],
       );
 
   Map toMap() => {
@@ -186,9 +220,12 @@ class Audio {
         "album": album,
         "track": track,
         "duration": duration,
+        "bitrate": bitrate,
+        "sample_rate": sampleRate,
         "path": path,
         "modified": modified,
         "created": created,
+        "by": by
       };
 
   /// 缓存ImageProvider而不是Uint8List（bytes）
@@ -197,7 +234,7 @@ class Audio {
   /// 48*48
   Future<ImageProvider?> get cover {
     if (_cover == null) {
-      return loadCoverBytes(path: path).then((value) {
+      return getPictureFromPath(path: path).then((value) {
         if (value == null) {
           return null;
         }
@@ -212,7 +249,7 @@ class Audio {
   /// audio detail page 不需要频繁调用，所以不缓存图片
   /// 200 * 200
   Future<ImageProvider?> get mediumCover =>
-      loadCoverBytes(path: path).then((value) {
+      getPictureFromPath(path: path).then((value) {
         if (value == null) {
           return null;
         }
@@ -222,7 +259,7 @@ class Audio {
   /// now playing 不需要频繁调用，所以不缓存图片
   /// 400 * 400
   Future<ImageProvider?> get largeCover =>
-      loadCoverBytes(path: path).then((value) {
+      getPictureFromPath(path: path).then((value) {
         if (value == null) {
           return null;
         }
@@ -255,7 +292,7 @@ class Artist {
   /// 只能用在artist detail page
   /// 200*200
   Future<ImageProvider?> get picture =>
-      loadCoverBytes(path: works.first.path).then((value) {
+      getPictureFromPath(path: works.first.path).then((value) {
         if (value == null) {
           return null;
         }
@@ -277,7 +314,7 @@ class Album {
   /// 只能用在album detail page
   /// 200*200
   Future<ImageProvider?> get cover =>
-      loadCoverBytes(path: works.first.path).then((value) {
+      getPictureFromPath(path: works.first.path).then((value) {
         if (value == null) {
           return null;
         }

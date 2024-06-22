@@ -19,21 +19,20 @@ class LyricSourceLabel extends StatelessWidget {
           valueListenable: PlayService.instance.currentLyric,
           builder: (context, lyric, _) {
             late final String decription;
-            bool isEmbedded = false;
+            bool isLocal = false;
             if (lyric is Lrc) {
               decription = lyric.source.name;
-              isEmbedded = (lyric.source == LrcSource.embedded) ||
-                  (lyric.source == LrcSource.lrcFile);
+              isLocal = lyric.source == LrcSource.local;
             } else if (lyric is Krc) {
               decription = "Kugou";
             } else if (lyric is Qrc) {
               decription = "QQ";
             } else {
               decription = "无";
-              isEmbedded = !isEmbedded;
+              isLocal = !isLocal;
             }
             return TextButton(
-              onPressed: isEmbedded
+              onPressed: isLocal
                   ? PlayService.instance.useOnlineLyric
                   : PlayService.instance.useEmbeddedLyric,
               child: Text(

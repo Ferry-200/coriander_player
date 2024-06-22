@@ -15,6 +15,11 @@ class AlbumTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final placeholder = Icon(
+      Symbols.broken_image,
+      size: 48,
+      color: scheme.onSurface,
+    );
     return InkWell(
       onTap: () => context.push(app_paths.ALBUM_DETAIL_PAGE, extra: album),
       borderRadius: BorderRadius.circular(8.0),
@@ -26,11 +31,7 @@ class AlbumTile extends StatelessWidget {
               future: album.works.first.cover,
               builder: (context, snapshot) {
                 if (snapshot.data == null) {
-                  return Icon(
-                    Symbols.broken_image,
-                    size: 48,
-                    color: scheme.onSurface,
-                  );
+                  return placeholder;
                 }
                 return ClipRRect(
                   borderRadius: BorderRadius.circular(8.0),
@@ -38,6 +39,7 @@ class AlbumTile extends StatelessWidget {
                     image: snapshot.data!,
                     width: 48.0,
                     height: 48.0,
+                    errorBuilder: (_, __, ___) => placeholder,
                   ),
                 );
               },

@@ -398,7 +398,7 @@ class _NowPlayingCoverState extends State<NowPlayingCover> {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    final placeHolder = FittedBox(
+    final placeholder = FittedBox(
       child: Icon(
         Symbols.broken_image,
         size: 400.0,
@@ -408,17 +408,18 @@ class _NowPlayingCoverState extends State<NowPlayingCover> {
 
     return RepaintBoundary(
       child: nowPlayingCover == null
-          ? placeHolder
+          ? placeholder
           : FutureBuilder(
               future: nowPlayingCover,
               builder: (context, snapshot) {
                 if (snapshot.data == null) {
-                  return placeHolder;
+                  return placeholder;
                 }
                 return Image(
                   image: snapshot.data!,
                   width: 400.0,
                   height: 400.0,
+                  errorBuilder: (_, __, ___) => placeholder,
                 );
               },
             ),

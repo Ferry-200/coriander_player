@@ -120,6 +120,11 @@ class AudioTile extends StatelessWidget {
           ],
           builder: (context, controller, _) {
             final textColor = focus ? scheme.primary : scheme.onSurface;
+            final placeholder = Icon(
+              Symbols.broken_image,
+              size: 48.0,
+              color: scheme.onSurface,
+            );
 
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -130,11 +135,7 @@ class AudioTile extends StatelessWidget {
                     future: audio.cover,
                     builder: (context, snapshot) {
                       if (snapshot.data == null) {
-                        return Icon(
-                          Symbols.broken_image,
-                          size: 48.0,
-                          color: scheme.onSurface,
-                        );
+                        return placeholder;
                       }
 
                       return ClipRRect(
@@ -143,6 +144,7 @@ class AudioTile extends StatelessWidget {
                           image: snapshot.data!,
                           width: 48.0,
                           height: 48.0,
+                          errorBuilder: (_, __, ___) => placeholder,
                         ),
                       );
                     },
