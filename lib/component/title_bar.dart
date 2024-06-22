@@ -195,8 +195,8 @@ class WindowControlls extends StatefulWidget {
 class _WindowControllsState extends State<WindowControlls> with WindowListener {
   @override
   void initState() {
-    windowManager.addListener(this);
     super.initState();
+    windowManager.addListener(this);
   }
 
   @override
@@ -244,12 +244,15 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
           },
         ),
         IconButton(
-          onPressed: () async {
-            await savePlaylists();
-            await saveLyricSources();
-            await AppSettings.instance.saveSettings();
-            await PlayService.instance.close();
-            await windowManager.close();
+          onPressed: () {
+            Future.wait([
+              savePlaylists(),
+              saveLyricSources(),
+              AppSettings.instance.saveSettings(),
+              PlayService.instance.close(),
+            ]).whenComplete(() {
+              windowManager.close();
+            });
           },
           icon: const Icon(Symbols.close),
         ),
