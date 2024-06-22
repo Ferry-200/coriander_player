@@ -358,11 +358,11 @@ class PlayService with ChangeNotifier {
   }
 
   Future<void> close() async {
+    _lyricLineStreamController.close();
+    _playerStateStreamSub.cancel();
+    _positionStreamSub.cancel();
+    _smtcEventStreamSub.cancel();
     _bassPlayer.free();
-    await _lyricLineStreamController.close();
-    await _playerStateStreamSub.cancel();
-    await _positionStreamSub.cancel();
-    await _smtcEventStreamSub.cancel();
     await _smtc.close();
   }
 }

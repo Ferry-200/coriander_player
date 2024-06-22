@@ -44,7 +44,7 @@ class BassPlayer {
   late final ffi.DynamicLibrary _dyLib;
   late final Bass _bass;
   int? _fstream;
-  late Timer _positionUpdater;
+  Timer? _positionUpdater;
   late final StreamController<double> _positionStreamController;
   late final StreamController<PlayerState> _playerStateStreamController;
 
@@ -175,7 +175,7 @@ class BassPlayer {
 
     _positionStreamController = StreamController.broadcast(
       onCancel: () {
-        _positionUpdater.cancel();
+        _positionUpdater?.cancel();
       },
     );
 
@@ -190,7 +190,7 @@ class BassPlayer {
   /// it will pause current channel and free current stream.
   void setSource(String path) {
     if (_fstream != null) {
-      _positionUpdater.cancel();
+      _positionUpdater?.cancel();
       freeFStream();
     }
     final pathPointer = path.toNativeUtf16() as ffi.Pointer<ffi.Void>;
@@ -304,7 +304,7 @@ class BassPlayer {
     }
 
     _playerStateStreamController.add(PlayerState.paused);
-    _positionUpdater.cancel();
+    _positionUpdater?.cancel();
   }
 
   /// pause channel. can't resume by calling [start]
@@ -321,7 +321,7 @@ class BassPlayer {
     }
 
     _playerStateStreamController.add(PlayerState.stopped);
-    _positionUpdater.cancel();
+    _positionUpdater?.cancel();
   }
 
   /// set channel's position to given [position]
@@ -394,6 +394,6 @@ class BassPlayer {
     _dyLib.close();
     _playerStateStreamController.close();
     _positionStreamController.close();
-    _positionUpdater.cancel();
+    _positionUpdater?.cancel();
   }
 }
