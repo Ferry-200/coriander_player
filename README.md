@@ -8,6 +8,7 @@
 
 ### 安装
 1. 下载 [Release](https://github.com/Ferry-200/coriander_player/releases) 里的发行版，直接双击release.zip里的exe运行
+2. 你也可以到 [Action 构建版本（体验版）介绍](https://github.com/Ferry-200/coriander_player/issues/49) 下载体验版 :)
 
 ### 提供建议、提交 Bug 或者提 PR
 我正处于学习和适应 Github 工作流的阶段，所以目前不设置太多的要求。你只需要注意以下几点： 
@@ -16,7 +17,7 @@
 
 ### 编译
 1. 开发 flutter 需要的环境
-2. 编译后要把 BASS 音频库和 BASSFLAC 插件放在 exe 相同目录下
+2. 编译后要把 BASS 库的 64 位的 `bass.dll`, `bassape.dll`, `bassdsd.dll`, `bassflac.dll`, `bassmidi.dll`, `bassopus.dll`, `basswv.dll` 放在软件目录的 `BASS` 文件夹下
 
 ### 歌词特性解释
 1. lrc歌词的间奏识别   
