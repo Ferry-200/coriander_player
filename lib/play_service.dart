@@ -255,6 +255,14 @@ class PlayService with ChangeNotifier {
     _playAfterLoaded(0, playlist);
   }
 
+  /// 下一首播放
+  void addToNext(Audio audio) {
+    if (_nowPlayingIndex != null) {
+      playlist.insert(_nowPlayingIndex! + 1, audio);
+      _playlistBackup = List.from(playlist);
+    }
+  }
+
   void toggleShuffle() {
     if (nowPlaying == null) return;
 

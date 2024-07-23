@@ -79,6 +79,15 @@ class AudioTile extends StatelessWidget {
               child: Text(audio.album),
             ),
 
+            /// 下一首播放
+            MenuItemButton(
+              onPressed: () {
+                PlayService.instance.addToNext(audio);
+              },
+              leadingIcon: const Icon(Symbols.plus_one),
+              child: const Text("下一首播放"),
+            ),
+
             /// add to playlist
             SubmenuButton(
               menuChildren: List.generate(
