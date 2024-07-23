@@ -156,18 +156,18 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_markdown
-      sha256: "9921f9deda326f8a885e202b1e35237eadfc1345239a0f6f0f1ff287e047547f"
+      sha256: ff76a9300a06ad1f2b394e54c0b4beaaf6a95f95c98540c918b870221499bb10
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.1"
+    version: "0.7.2"
   flutter_rust_bridge:
     dependency: "direct main"
     description:
       name: flutter_rust_bridge
-      sha256: d65dbdd271de6050d3204bab69a8ae25a291deb359403cd4f95a86055cab66c3
+      sha256: f703c4b50e253e53efc604d50281bbaefe82d615856f8ae1e7625518ae252e98
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0-dev.32"
+    version: "2.0.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -195,10 +195,10 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: "7685acd06244ba4be60f455c5cafe5790c63dc91fc03f7385b1e922a6b85b17c"
+      sha256: cdae1b9c8bd7efadcef6112e81c903662ef2ce105cbd220a04bbb7c3425b5554
       url: "https://pub.dev"
     source: hosted
-    version: "14.1.1"
+    version: "14.2.0"
   http:
     dependency: transitive
     description:
@@ -312,10 +312,10 @@ packages:
     dependency: "direct main"
     description:
       name: material_symbols_icons
-      sha256: "36d4e5dd72f2fd282aca127cc4c4c29786d702cb506231ea73a5497fc324bf46"
+      sha256: a2c78726048c755f0f90fd2b7c8799cd94338e2e9b7ab6498ae56503262c14bc
       url: "https://pub.dev"
     source: hosted
-    version: "4.2741.0"
+    version: "4.2762.0"
   meta:
     dependency: "direct main"
     description:
@@ -352,10 +352,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_android
-      sha256: a248d8146ee5983446bf03ed5ea8f6533129a12b11f12057ad1b4a67a2b3b41d
+      sha256: "9c96da072b421e98183f9ea7464898428e764bc0ce5567f27ec8693442e72514"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.4"
+    version: "2.2.5"
   path_provider_foundation:
     dependency: transitive
     description:
@@ -564,10 +564,10 @@ packages:
     dependency: "direct main"
     description:
       name: window_manager
-      sha256: b3c895bdf936c77b83c5254bec2e6b3f066710c1f89c38b20b8acc382b525494
+      sha256: "8699323b30da4cdbe2aa2e7c9de567a6abd8a97d9a5c850a3c86dcd0b34bbfbf"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.8"
+    version: "0.3.9"
   xdg_directories:
     dependency: transitive
     description:

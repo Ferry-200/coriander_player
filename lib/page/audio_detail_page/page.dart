@@ -26,6 +26,11 @@ class AudioDetailPage extends StatelessWidget {
 
     final styleTitle = TextStyle(fontSize: 22, color: scheme.onSurface);
     final styleContent = TextStyle(fontSize: 16, color: scheme.onSurface);
+    final placeholder = Icon(
+      Symbols.broken_image,
+      color: scheme.onSurface,
+      size: 200,
+    );
 
     return Material(
       color: scheme.surface,
@@ -47,11 +52,7 @@ class AudioDetailPage extends StatelessWidget {
                   future: audio.mediumCover,
                   builder: (context, snapshot) {
                     if (snapshot.data == null) {
-                      return Icon(
-                        Symbols.broken_image,
-                        color: scheme.onSurface,
-                        size: 200,
-                      );
+                      return placeholder;
                     }
                     return ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
@@ -59,6 +60,7 @@ class AudioDetailPage extends StatelessWidget {
                         image: snapshot.data!,
                         width: 200,
                         height: 200,
+                        errorBuilder: (_, __, ___) => placeholder,
                       ),
                     );
                   },

@@ -78,7 +78,6 @@ impl SMTCFlutter {
 }
 
 impl SMTCFlutter {
-    #[frb(sync)]
     fn _init_controls(smtc: &SystemMediaTransportControls) -> Result<(), windows::core::Error> {
         // 下一首
         smtc.SetIsNextEnabled(true)?;
@@ -92,7 +91,6 @@ impl SMTCFlutter {
         Ok(())
     }
 
-    #[frb(sync)]
     fn _new() -> Result<Self, windows::core::Error> {
         let _player = MediaPlayer::new()?;
         _player.CommandManager()?.SetIsEnabled(false)?;

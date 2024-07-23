@@ -15,7 +15,7 @@ class SettingsPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.only(bottom: 96.0),
         children: const [
-          AudioLibraryEditField(),
+          AudioLibraryEditor(),
           SizedBox(height: 16.0),
           DefaultLyricSourceControl(),
           SizedBox(height: 16.0),

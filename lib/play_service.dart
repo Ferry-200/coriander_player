@@ -200,7 +200,7 @@ class PlayService with ChangeNotifier {
   void setVolumeDsp(double volume) => _bassPlayer.setVolumeDsp(volume);
 
   void useEmbeddedLyric() {
-    currentLyric.value = null;
+    // currentLyric.value = null;
     _nextLyricLine = 0;
     Lrc.fromAudioPath(nowPlaying!).then((value) {
       if (value != null && value.belongTo == nowPlaying) {
@@ -211,7 +211,7 @@ class PlayService with ChangeNotifier {
   }
 
   void useOnlineLyric() {
-    currentLyric.value = null;
+    // currentLyric.value = null;
     _nextLyricLine = 0;
     getMostMatchedLyric(nowPlaying!).then((value) {
       if (value != null && value.belongTo == nowPlaying) {

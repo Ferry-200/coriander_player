@@ -24,19 +24,13 @@ Future<void> initWindow() async {
   });
 }
 
-Future<bool> judgeWelcome(String supportPath) async {
-  final indexExists = File("$supportPath\\index.json").existsSync();
-  final settingsExists = File("$supportPath\\settings.json").existsSync();
-  return !indexExists || !settingsExists;
-}
-
 Future<void> main() async {
   await RustLib.init();
   final supportPath = (await getApplicationSupportDirectory()).path;
   if (File("$supportPath\\settings.json").existsSync()) {
     await AppSettings.readFromJson();
   }
-  final welcome = await judgeWelcome(supportPath);
+  final welcome = !File("$supportPath\\index.json").existsSync();
   await initWindow();
 
   runApp(Entry(welcome: welcome));

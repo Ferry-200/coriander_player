@@ -6,6 +6,36 @@
 ### 特色
 详见 [官网](https://ferry-200.github.io/coriander_player_website/)
 
+### 支持播放的音乐文件
+- mp3, mp2, mp1
+- ogg
+- wav, wave
+- aif, aiff, aifc
+- asf, wma
+- aac, adts
+- m4a
+- ac3
+- amr, 3ga
+- flac
+- mpc
+- mid
+- wv, wvc
+- opus
+- dsf, dff
+- ape
+
+### 支持内嵌歌词的音乐文件
+- aac
+- aiff
+- flac
+- m4a
+- mp3
+- ogg
+- opus
+- wav（标签必须用 UTF-8 编码）
+
+其他格式的只支持 lrc 文件或者是网络歌词
+
 ### 安装
 1. 下载 [Release](https://github.com/Ferry-200/coriander_player/releases) 里的发行版，直接双击release.zip里的exe运行
 2. 你也可以到 [Action 构建版本（体验版）介绍](https://github.com/Ferry-200/coriander_player/issues/49) 下载体验版 :)
