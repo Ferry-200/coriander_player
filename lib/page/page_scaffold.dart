@@ -37,27 +37,25 @@ class PageScaffold extends StatelessWidget {
           case ScreenType.small:
             {
               final List<Widget> foldedRow1 = [];
-              for (int i = actions.length - 1, count = 0;
+              int count = 0;
+              for (int i = actions.length - 1;
                   i > 0 && count < 2;
-                  --i) {
-                if (count > 0) foldedRow1.add(const SizedBox(width: 8.0));
+                  --i, ++count) {
+                if (count == 1) foldedRow1.add(const SizedBox(width: 8.0));
 
                 foldedRow1.add(actions[i]);
-                count++;
               }
 
-              final List<Widget> foldedColumn = [
-                SizedBox(
-                  height: 40,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: foldedRow1,
-                  ),
-                ),
-              ];
+              final List<Widget> foldedColumn = [];
+              if (foldedRow1.isNotEmpty) {
+                foldedColumn.add(Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: foldedRow1,
+                ));
+              }
 
               if (actions.length >= 4) {
-                for (var i = 1; i < actions.length - 2; ++i) {
+                for (var i = actions.length - 1 - count; i > 0; --i) {
                   foldedColumn.add(actions[i]);
                 }
               }
@@ -74,20 +72,24 @@ class PageScaffold extends StatelessWidget {
                 subtitle == null ? onlyTitle(scheme) : withSubtitle(scheme),
                 const SizedBox(width: 16.0),
                 actions.first,
-                const SizedBox(width: 16.0),
-                MenuAnchor(
-                  style: menuStyle,
-                  menuChildren: foldedColumn,
-                  builder: (context, controller, _) => IconButton.filledTonal(
-                    onPressed: () {
-                      controller.isOpen
-                          ? controller.close()
-                          : controller.open();
-                    },
-                    icon: const Icon(Symbols.more_vert),
-                  ),
-                ),
               ];
+              if (foldedColumn.isNotEmpty) {
+                rowChildren.addAll([
+                  const SizedBox(width: 16.0),
+                  MenuAnchor(
+                    style: menuStyle,
+                    menuChildren: foldedColumn,
+                    builder: (context, controller, _) => IconButton.filledTonal(
+                      onPressed: () {
+                        controller.isOpen
+                            ? controller.close()
+                            : controller.open();
+                      },
+                      icon: const Icon(Symbols.more_vert),
+                    ),
+                  ),
+                ]);
+              }
               break;
             }
           case ScreenType.medium:
