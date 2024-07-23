@@ -23,7 +23,6 @@ Future<String?> getLyricFromPath({required String path}) =>
 
 /// for Flutter
 /// 扫描给定的所有文件夹的音乐文件并把索引保存在 index_path/index.json。
-/// 用在文件夹管理界面
 Stream<IndexActionState> buildIndexFromFolders(
         {required List<String> folders, required String indexPath}) =>
     RustLib.instance.api.crateApiTagReaderBuildIndexFromFolders(

@@ -415,7 +415,6 @@ pub fn get_lyric_from_path(path: String) -> Option<String> {
 
 /// for Flutter  
 /// 扫描给定的所有文件夹的音乐文件并把索引保存在 index_path/index.json。
-/// 用在文件夹管理界面
 pub fn build_index_from_folders(
     folders: Vec<String>,
     index_path: String,
