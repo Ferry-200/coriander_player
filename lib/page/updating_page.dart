@@ -43,19 +43,10 @@ class UpdatingStateView extends StatefulWidget {
 }
 
 class _UpdatingStateViewState extends State<UpdatingStateView> {
-  Widget? currDisplay;
+  late final Stream updateIndexStream;
   StreamSubscription? _subscription;
 
   void whenIndexUpdated() {
-    setState(() {
-      currDisplay = SizedBox(
-        width: 400,
-        child: LinearProgressIndicator(
-          borderRadius: BorderRadius.circular(2.0),
-        ),
-      );
-    });
-
     Future.wait([
       AudioLibrary.initFromIndex(),
       readPlaylists(),
@@ -69,54 +60,38 @@ class _UpdatingStateViewState extends State<UpdatingStateView> {
   @override
   void initState() {
     super.initState();
-    final updateIndexStream = updateIndex(
+    updateIndexStream = updateIndex(
       indexPath: widget.indexPath.path,
     ).asBroadcastStream();
 
     _subscription = updateIndexStream.listen(null, onDone: whenIndexUpdated);
-    currDisplay = UpdatingIndexView(stream: updateIndexStream);
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 150),
-      child: currDisplay,
-    );
-  }
-}
-
-class UpdatingIndexView extends StatelessWidget {
-  const UpdatingIndexView({super.key, required this.stream});
-
-  final Stream stream;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    return StreamBuilder(
-      stream: stream,
-      builder: (context, snapshot) {
-        return Wrap(
-          direction: Axis.vertical,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          spacing: 8.0,
-          children: [
-            SizedBox(
-              width: 400,
-              child: LinearProgressIndicator(
+    return SizedBox(
+      width: 400.0,
+      child: StreamBuilder(
+        stream: updateIndexStream,
+        builder: (context, snapshot) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              LinearProgressIndicator(
                 value: snapshot.data?.progress,
                 borderRadius: BorderRadius.circular(2.0),
               ),
-            ),
-            Text(
-              "${snapshot.data?.message}",
-              style: TextStyle(color: scheme.onSurface),
-            ),
-          ],
-        );
-      },
+              const SizedBox(height: 8.0),
+              Text(
+                "${snapshot.data?.message}",
+                style: TextStyle(color: scheme.onSurface),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }
