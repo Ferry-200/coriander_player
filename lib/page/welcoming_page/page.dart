@@ -1,10 +1,8 @@
-import 'dart:io';
-
+import 'dart:async';
 import 'package:coriander_player/app_settings.dart';
-import 'package:coriander_player/component/folder_tile.dart';
+import 'package:coriander_player/component/build_index_state_view.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/title_bar.dart';
-import 'package:coriander_player/src/rust/api/tag_reader.dart';
 import 'package:coriander_player/src/rust/api/utils.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:flutter/material.dart';
@@ -27,143 +25,125 @@ class WelcomingPage extends StatelessWidget {
         child: _TitleBar(),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "你的音乐都在哪些文件夹呢？",
-              style: TextStyle(color: scheme.onSurface, fontSize: 22),
-            ),
-            const SizedBox(height: 32.0),
-            const _AudioFolderEdit(),
-          ],
+        padding: const EdgeInsets.symmetric(horizontal: 48.0),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "你的音乐放在哪些文件夹呢？",
+                style: TextStyle(
+                  color: scheme.onSurface,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 22,
+                ),
+              ),
+              Text(
+                "软件会扫描这些文件夹（包括所有子文件夹）下的音乐并建立索引。",
+                style: TextStyle(color: scheme.onSurface),
+              ),
+              const SizedBox(height: 16),
+              const FolderSelectorView(),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _AudioFolderEdit extends StatefulWidget {
-  const _AudioFolderEdit();
+class FolderSelectorView extends StatefulWidget {
+  const FolderSelectorView({super.key});
 
   @override
-  State<_AudioFolderEdit> createState() => __AudioFolderEditState();
+  State<FolderSelectorView> createState() => _FolderSelectorViewState();
 }
 
-class __AudioFolderEditState extends State<_AudioFolderEdit> {
-  final List<String> folderPaths = [];
-
-  void _deletePath(int i) {
-    setState(() {
-      folderPaths.removeAt(i);
-    });
-  }
-
-  void _addPath() async {
-    String? selectedDirectory = await pickSingleFolder();
-    if (selectedDirectory == null) return;
-    setState(() {
-      folderPaths.add(selectedDirectory);
-    });
-  }
+class _FolderSelectorViewState extends State<FolderSelectorView> {
+  bool selecting = true;
+  final List<String> folders = [];
+  final applicationSupportDirectory = getApplicationSupportDirectory();
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return SizedBox(
+      width: 400,
+      height: 400,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 150),
+        child: selecting
+            ? folderSelector(scheme)
+            : FutureBuilder(
+                future: applicationSupportDirectory,
+                builder: (context, snapshot) {
+                  if (snapshot.data == null) return const SizedBox.shrink();
+
+                  return BuildIndexStateView(
+                    indexPath: snapshot.data!,
+                    folders: folders,
+                    whenIndexBuilt: () {
+                      Future.wait([
+                        AppSettings.instance.saveSettings(),
+                        AudioLibrary.initFromIndex(),
+                      ]).whenComplete(() {
+                        context.go(app_paths.AUDIOS_PAGE);
+                      });
+                    },
+                  );
+                },
+              ),
+      ),
+    );
+  }
+
+  Widget folderSelector(ColorScheme scheme) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
       children: [
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 300.0),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(
-                folderPaths.length,
-                (i) => FolderTile(
-                  path: folderPaths[i],
-                  onDelete: () => _deletePath(i),
-                ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            FilledButton(
+              onPressed: () async {
+                final path = await pickSingleFolder();
+                if (path == null) return;
+
+                setState(() {
+                  folders.add(path);
+                });
+              },
+              child: const Text("添加文件夹"),
+            ),
+            FilledButton(
+              onPressed: () {
+                setState(() {
+                  selecting = false;
+                });
+              },
+              child: const Text("扫描"),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16.0),
+        Expanded(
+          child: ListView.builder(
+            itemCount: folders.length,
+            itemBuilder: (context, i) => ListTile(
+              title: Text(folders[i]),
+              trailing: IconButton(
+                onPressed: () {
+                  setState(() {
+                    folders.removeAt(i);
+                  });
+                },
+                color: scheme.error,
+                icon: const Icon(Symbols.delete),
               ),
             ),
           ),
         ),
-        const SizedBox(height: 16.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            FilledButton.icon(
-              onPressed: _addPath,
-              icon: const Icon(Symbols.create_new_folder),
-              label: const Text("添加"),
-            ),
-            const SizedBox(width: 8.0),
-            FilledButton.icon(
-              onPressed: () async {
-                String? selectedDirectory = await pickSingleFolder();
-                if (selectedDirectory == null) return;
-                final dirs = Directory(selectedDirectory)
-                    .listSync()
-                    .where(
-                      (element) =>
-                          element.statSync().type ==
-                          FileSystemEntityType.directory,
-                    )
-                    .map((e) => e.path);
-                setState(() {
-                  folderPaths.addAll(dirs);
-                });
-              },
-              icon: const Icon(Symbols.folder),
-              label: const Text("从父文件夹中添加路径"),
-            ),
-            const SizedBox(width: 8.0),
-            _SaveButton(folderPaths: folderPaths),
-          ],
-        )
       ],
-    );
-  }
-}
-
-class _SaveButton extends StatefulWidget {
-  const _SaveButton({required this.folderPaths});
-
-  final List<String> folderPaths;
-
-  @override
-  State<_SaveButton> createState() => __SaveButtonState();
-}
-
-class __SaveButtonState extends State<_SaveButton> {
-  bool isSaving = false;
-
-  void save() async {
-    setState(() {
-      isSaving = true;
-    });
-    final indexPath = (await getApplicationSupportDirectory()).path;
-    await buildIndexFromPaths(paths: widget.folderPaths, indexPath: indexPath);
-    await AppSettings.instance.saveSettings();
-    await AudioLibrary.initFromIndex();
-    setState(() {
-      isSaving = false;
-    });
-
-    final ctx = context;
-    if (ctx.mounted) {
-      ctx.go(app_paths.AUDIOS_PAGE);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FilledButton.icon(
-      onPressed: isSaving ? null : save,
-      icon: isSaving
-          ? const CircularProgressIndicator()
-          : const Icon(Symbols.save),
-      label: const Text("保存"),
     );
   }
 }
@@ -176,33 +156,26 @@ class _TitleBar extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return DragToMoveArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 4.0, 4.0, 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(
-              width: 284.0,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  children: [
-                    Icon(
-                      Symbols.music_note,
-                      color: scheme.onSurface,
-                      size: 24.0,
-                    ),
-                    const SizedBox(width: 8.0),
-                    Text(
-                      "Coriander Player",
-                      style: TextStyle(
-                        color: scheme.onSurface,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
+            Expanded(
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Image.asset("app_icon.ico", width: 24, height: 24),
+                  ),
+                  Text(
+                    "Coriander Player",
+                    style: TextStyle(color: scheme.onSurface, fontSize: 16),
+                  ),
+                ],
               ),
             ),
+            const SizedBox(width: 8.0),
             const WindowControlls(),
           ],
         ),
