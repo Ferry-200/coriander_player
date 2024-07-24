@@ -4,6 +4,7 @@ import 'package:coriander_player/page/page_scaffold.dart';
 import 'package:coriander_player/page/uni_page.dart';
 import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
+import 'package:coriander_player/page/uni_page_components.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
@@ -242,31 +243,50 @@ class PlaylistDetailPage extends StatefulWidget {
 
 class _PlaylistDetailPageState extends State<PlaylistDetailPage> {
   late final contentList = widget.playlist.audios;
+  final multiSelectController = MultiSelectController<Audio>();
+  
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+
     return UniPage<Audio>(
       title: widget.playlist.name,
       subtitle: "${contentList.length} 首乐曲",
       contentList: contentList,
-      contentBuilder: (context, item, i) => AudioTile(
+      contentBuilder: (context, item, i, multiSelectController) => AudioTile(
         audioIndex: i,
         playlist: contentList,
-        action: IconButton(
-          onPressed: () {
-            setState(() {
-              widget.playlist.audios.removeAt(i);
-            });
-          },
-          color: scheme.error,
-          icon: const Icon(Symbols.delete),
-        ),
+        multiSelectController: multiSelectController,
       ),
       enableShufflePlay: true,
       enableSortMethod: true,
       enableSortOrder: true,
       enableContentViewSwitch: true,
       defaultContentView: ContentView.list,
+      multiSelectController: multiSelectController,
+      multiSelectViewActions: [
+        IconButton.filled(
+          onPressed: () {
+            setState(() {
+              for (var item in multiSelectController.selected) {
+                widget.playlist.audios.removeWhere(
+                  (audio) => audio.path == item.path,
+                );
+              }
+            });
+          },
+          style: ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(scheme.error),
+            foregroundColor: WidgetStatePropertyAll(scheme.onError),
+          ),
+          icon: const Icon(Symbols.delete),
+        ),
+        MultiSelectSelectOrClearAll(
+          multiSelectController: multiSelectController,
+          contentList: contentList,
+        ),
+        MultiSelectExit(multiSelectController: multiSelectController),
+      ],
       sortMethods: [
         SortMethodDesc(
           icon: Symbols.title,

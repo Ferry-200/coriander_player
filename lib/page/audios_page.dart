@@ -1,6 +1,7 @@
 import 'package:coriander_player/component/audio_tile.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/page/uni_page.dart';
+import 'package:coriander_player/page/uni_page_components.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -11,14 +12,16 @@ class AudiosPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final contentList = List<Audio>.from(AudioLibrary.instance.audioCollection);
+    final multiSelectController = MultiSelectController<Audio>();
     return UniPage<Audio>(
       title: "音乐",
       subtitle: "${contentList.length} 首乐曲",
       contentList: contentList,
-      contentBuilder: (context, item, i) => AudioTile(
+      contentBuilder: (context, item, i, multiSelectController) => AudioTile(
         audioIndex: i,
         playlist: contentList,
         focus: item == locateTo,
+        multiSelectController: multiSelectController,
       ),
       enableShufflePlay: true,
       enableSortMethod: true,
@@ -26,6 +29,15 @@ class AudiosPage extends StatelessWidget {
       enableContentViewSwitch: true,
       defaultContentView: ContentView.list,
       locateTo: locateTo,
+      multiSelectController: multiSelectController,
+      multiSelectViewActions: [
+        AddAllToPlaylist(multiSelectController: multiSelectController),
+        MultiSelectSelectOrClearAll(
+          multiSelectController: multiSelectController,
+          contentList: contentList,
+        ),
+        MultiSelectExit(multiSelectController: multiSelectController),
+      ],
       sortMethods: [
         SortMethodDesc(
           icon: Symbols.title,

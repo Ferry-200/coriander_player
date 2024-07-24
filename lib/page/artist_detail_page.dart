@@ -3,6 +3,7 @@ import 'package:coriander_player/component/audio_tile.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:coriander_player/page/uni_detail_page.dart';
 import 'package:coriander_player/page/uni_page.dart';
+import 'package:coriander_player/page/uni_page_components.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -15,6 +16,8 @@ class ArtistDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final secondaryContent = List<Audio>.from(artist.works);
+    final multiSelectController = MultiSelectController<Audio>();
+
     return UniDetailPage<Artist, Audio, Album>(
       primaryContent: artist,
       primaryPic: artist.picture,
@@ -22,13 +25,14 @@ class ArtistDetailPage extends StatelessWidget {
       title: artist.name,
       subtitle: "${artist.works.length} 首作品",
       secondaryContent: secondaryContent,
-      secondaryContentBuilder: (context, audio, i) => AudioTile(
+      secondaryContentBuilder: (context, audio, i, multiSelectController) => AudioTile(
         audioIndex: i,
         playlist: secondaryContent,
+        multiSelectController: multiSelectController,
       ),
       tertiaryContentTitle: "专辑",
       tertiaryContent: artist.albumsMap.values.toList(),
-      tertiaryContentBuilder: (context, album, i) => ListTile(
+      tertiaryContentBuilder: (context, album, i, multiSelectController) => ListTile(
         onTap: () => context.push(app_paths.ALBUM_DETAIL_PAGE, extra: album),
         title: Text(album.name),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
@@ -38,6 +42,15 @@ class ArtistDetailPage extends StatelessWidget {
       enableSortOrder: true,
       enableSecondaryContentViewSwitch: true,
       defaultSecondaryContentView: ContentView.list,
+      multiSelectController: multiSelectController,
+      multiSelectViewActions: [
+        AddAllToPlaylist(multiSelectController: multiSelectController),
+        MultiSelectSelectOrClearAll(
+          multiSelectController: multiSelectController,
+          contentList: secondaryContent,
+        ),
+        MultiSelectExit(multiSelectController: multiSelectController),
+      ],
       sortMethods: [
         SortMethodDesc(
           icon: Symbols.title,

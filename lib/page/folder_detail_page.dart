@@ -1,6 +1,7 @@
 import 'package:coriander_player/component/audio_tile.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/page/uni_page.dart';
+import 'package:coriander_player/page/uni_page_components.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -11,19 +12,30 @@ class FolderDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final contentList = List<Audio>.from(folder.audios);
+    final multiSelectController = MultiSelectController<Audio>();
     return UniPage<Audio>(
       title: folder.path,
       subtitle: "${contentList.length} 首乐曲",
       contentList: contentList,
-      contentBuilder: (context, item, i) => AudioTile(
+      contentBuilder: (context, item, i, multiSelectController) => AudioTile(
         audioIndex: i,
         playlist: contentList,
+        multiSelectController: multiSelectController,
       ),
       enableShufflePlay: true,
       enableSortMethod: true,
       enableSortOrder: true,
       enableContentViewSwitch: true,
       defaultContentView: ContentView.list,
+      multiSelectController: multiSelectController,
+      multiSelectViewActions: [
+        AddAllToPlaylist(multiSelectController: multiSelectController),
+        MultiSelectSelectOrClearAll(
+          multiSelectController: multiSelectController,
+          contentList: contentList,
+        ),
+        MultiSelectExit(multiSelectController: multiSelectController),
+      ],
       sortMethods: [
         SortMethodDesc(
           icon: Symbols.title,
