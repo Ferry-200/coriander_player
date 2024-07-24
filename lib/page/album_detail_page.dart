@@ -26,6 +26,7 @@ class AlbumDetailPage extends StatelessWidget {
       subtitle: "${album.works.length} 首作品",
       secondaryContent: secondaryContent,
       secondaryContentBuilder: (context, audio, i, multiSelectController) => AudioTile(
+        leading: Text(audio.track < 10 ? "0${audio.track}" : "${audio.track}"),
         audioIndex: i,
         playlist: secondaryContent,
         multiSelectController: multiSelectController,
