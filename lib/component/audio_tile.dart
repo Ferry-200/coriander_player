@@ -31,142 +31,149 @@ class AudioTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final audio = playlist[audioIndex];
-    final menuController = MenuController();
 
-    return Ink(
-      height: 64.0,
-      decoration: BoxDecoration(
-        color: multiSelectController == null
-            ? Colors.transparent
-            : multiSelectController!.selected.contains(audio)
-                ? scheme.secondaryContainer
-                : Colors.transparent,
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(8.0),
-        onTap: () {
-          if (multiSelectController == null) {
-            try {
-              PlayService.instance.play(audioIndex, playlist);
-            } catch (e) {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text(e.toString())));
-            }
-          } else {
-            if (multiSelectController!.selected.contains(audio)) {
-              multiSelectController!.unselect(audio);
-            } else {
-              multiSelectController!.select(audio);
-            }
-          }
-        },
-        onSecondaryTapDown: (details) {
-          if (multiSelectController?.enableMultiSelectView == true) return;
-
-          menuController.open(position: details.localPosition);
-        },
-        child: MenuAnchor(
-          controller: menuController,
-          menuChildren: [
-            /// artists
-            SubmenuButton(
-              menuChildren: List.generate(
-                audio.splitedArtists.length,
-                (i) => MenuItemButton(
-                  onPressed: () {
-                    final Artist artist = AudioLibrary
-                        .instance.artistCollection[audio.splitedArtists[i]]!;
-                    context.push(
-                      app_paths.ARTIST_DETAIL_PAGE,
-                      extra: artist,
-                    );
-                  },
-                  leadingIcon: const Icon(Symbols.artist),
-                  child: Text(audio.splitedArtists[i]),
-                ),
-              ),
-              child: const Text("艺术家"),
-            ),
-
-            /// album
-            MenuItemButton(
+    return MenuAnchor(
+      consumeOutsideTap: true,
+      menuChildren: [
+        /// artists
+        SubmenuButton(
+          menuChildren: List.generate(
+            audio.splitedArtists.length,
+            (i) => MenuItemButton(
               onPressed: () {
-                final Album album =
-                    AudioLibrary.instance.albumCollection[audio.album]!;
-                context.push(app_paths.ALBUM_DETAIL_PAGE, extra: album);
+                final Artist artist = AudioLibrary
+                    .instance.artistCollection[audio.splitedArtists[i]]!;
+                context.push(
+                  app_paths.ARTIST_DETAIL_PAGE,
+                  extra: artist,
+                );
               },
-              leadingIcon: const Icon(Symbols.album),
-              child: Text(audio.album),
+              leadingIcon: const Icon(Symbols.artist),
+              child: Text(audio.splitedArtists[i]),
             ),
+          ),
+          child: const Text("艺术家"),
+        ),
 
-            /// 下一首播放
-            MenuItemButton(
+        /// album
+        MenuItemButton(
+          onPressed: () {
+            final Album album =
+                AudioLibrary.instance.albumCollection[audio.album]!;
+            context.push(app_paths.ALBUM_DETAIL_PAGE, extra: album);
+          },
+          leadingIcon: const Icon(Symbols.album),
+          child: Text(audio.album),
+        ),
+
+        /// 下一首播放
+        MenuItemButton(
+          onPressed: () {
+            PlayService.instance.addToNext(audio);
+          },
+          leadingIcon: const Icon(Symbols.plus_one),
+          child: const Text("下一首播放"),
+        ),
+
+        /// 多选
+        MenuItemButton(
+          onPressed: () {
+            multiSelectController?.useMultiSelectView(true);
+            multiSelectController?.select(audio);
+          },
+          leadingIcon: const Icon(Symbols.select),
+          child: const Text("多选"),
+        ),
+
+        /// add to playlist
+        SubmenuButton(
+          menuChildren: List.generate(
+            PLAYLISTS.length,
+            (i) => MenuItemButton(
               onPressed: () {
-                PlayService.instance.addToNext(audio);
+                final added = PLAYLISTS[i]
+                    .audios
+                    .any((element) => element.path == audio.path);
+                if (added) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text("歌曲“${audio.title}”已存在"),
+                  ));
+                  return;
+                }
+
+                PLAYLISTS[i].audios.add(audio);
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(
+                    "成功将“${audio.title}”添加到歌单“${PLAYLISTS[i].name}”",
+                  ),
+                ));
               },
-              leadingIcon: const Icon(Symbols.plus_one),
-              child: const Text("下一首播放"),
+              leadingIcon: const Icon(Symbols.queue_music),
+              child: Text(PLAYLISTS[i].name),
             ),
+          ),
+          child: const Text("添加到歌单"),
+        ),
 
-            /// 多选
-            MenuItemButton(
-              onPressed: () {
-                multiSelectController?.useMultiSelectView(true);
-                multiSelectController?.select(audio);
-              },
-              leadingIcon: const Icon(Symbols.select),
-              child: const Text("多选"),
-            ),
+        /// to detail page
+        MenuItemButton(
+          onPressed: () {
+            context.push(app_paths.AUDIO_DETAIL_PAGE, extra: audio);
+          },
+          leadingIcon: const Icon(Symbols.info),
+          child: const Text("详细信息"),
+        ),
+      ],
+      builder: (context, controller, _) {
+        final textColor = focus ? scheme.primary : scheme.onSurface;
+        final placeholder = Icon(
+          Symbols.broken_image,
+          size: 48.0,
+          color: scheme.onSurface,
+        );
 
-            /// add to playlist
-            SubmenuButton(
-              menuChildren: List.generate(
-                PLAYLISTS.length,
-                (i) => MenuItemButton(
-                  onPressed: () {
-                    final added = PLAYLISTS[i]
-                        .audios
-                        .any((element) => element.path == audio.path);
-                    if (added) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text("歌曲“${audio.title}”已存在"),
-                      ));
-                      return;
-                    }
+        return Ink(
+          height: 64.0,
+          decoration: BoxDecoration(
+            color: multiSelectController == null
+                ? Colors.transparent
+                : multiSelectController!.selected.contains(audio)
+                    ? scheme.secondaryContainer
+                    : Colors.transparent,
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: InkWell(
+            focusColor: Colors.transparent,
+            borderRadius: BorderRadius.circular(8.0),
+            onTap: () {
+              if (controller.isOpen) {
+                controller.close();
+                return;
+              }
+              
+              if (multiSelectController == null ||
+                  !multiSelectController!.enableMultiSelectView) {
+                try {
+                  PlayService.instance.play(audioIndex, playlist);
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(e.toString())),
+                  );
+                }
+              } else {
+                if (multiSelectController!.selected.contains(audio)) {
+                  multiSelectController!.unselect(audio);
+                } else {
+                  multiSelectController!.select(audio);
+                }
+              }
+            },
+            onSecondaryTapDown: (details) {
+              if (multiSelectController?.enableMultiSelectView == true) return;
 
-                    PLAYLISTS[i].audios.add(audio);
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(
-                        "成功将“${audio.title}”添加到歌单“${PLAYLISTS[i].name}”",
-                      ),
-                    ));
-                  },
-                  leadingIcon: const Icon(Symbols.queue_music),
-                  child: Text(PLAYLISTS[i].name),
-                ),
-              ),
-              child: const Text("添加到歌单"),
-            ),
-
-            /// to detail page
-            MenuItemButton(
-              onPressed: () {
-                context.push(app_paths.AUDIO_DETAIL_PAGE, extra: audio);
-              },
-              leadingIcon: const Icon(Symbols.info),
-              child: const Text("详细信息"),
-            ),
-          ],
-          builder: (context, controller, _) {
-            final textColor = focus ? scheme.primary : scheme.onSurface;
-            final placeholder = Icon(
-              Symbols.broken_image,
-              size: 48.0,
-              color: scheme.onSurface,
-            );
-
-            return Padding(
+              controller.open(position: details.localPosition);
+            },
+            child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Row(
                 children: [
@@ -224,10 +231,10 @@ class AudioTile extends StatelessWidget {
                   action ?? const SizedBox.shrink(),
                 ],
               ),
-            );
-          },
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
