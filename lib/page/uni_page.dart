@@ -2,8 +2,8 @@ import 'package:coriander_player/page/uni_page_components.dart';
 import 'package:coriander_player/page/page_scaffold.dart';
 import 'package:flutter/material.dart';
 
-typedef ContentBuilder<T> = Widget Function(
-    BuildContext context, T item, int index);
+typedef ContentBuilder<T> = Widget Function(BuildContext context, T item,
+    int index, MultiSelectController<T>? multiSelectController);
 
 typedef SortMethod<T> = void Function(List<T> list, SortOrder order);
 
@@ -30,6 +30,36 @@ const gridDelegate = SliverGridDelegateWithMaxCrossAxisExtent(
   crossAxisSpacing: 8.0,
 );
 
+class MultiSelectController<T> extends ChangeNotifier {
+  final Set<T> selected = {};
+  bool enableMultiSelectView = false;
+
+  void useMultiSelectView(bool multiSelectView) {
+    enableMultiSelectView = multiSelectView;
+    notifyListeners();
+  }
+
+  void select(T item) {
+    selected.add(item);
+    notifyListeners();
+  }
+
+  void unselect(T item) {
+    selected.remove(item);
+    notifyListeners();
+  }
+
+  void clear() {
+    selected.clear();
+    notifyListeners();
+  }
+
+  void selectAll(Iterable<T> items) {
+    selected.addAll(items);
+    notifyListeners();
+  }
+}
+
 /// `AudiosPage`, `ArtistsPage`, `AlbumsPage`, `FoldersPage`, `FolderDetailPage` 页面的主要组件，
 /// 提供随机播放以及更改排序方式、排序顺序、内容视图的支持。
 ///
@@ -39,6 +69,8 @@ const gridDelegate = SliverGridDelegateWithMaxCrossAxisExtent(
 ///
 /// `defaultContentView` 表示默认的内容视图。如果设置为 `ContentView.list`，就以单行列表视图展示内容；
 /// 如果是 `ContentView.table`，就以最大 300 * 64 的子组件以 8 为间距组成的表格展示内容。
+/// 
+/// `multiSelectController` 可以使页面进入多选状态。如果它不为空，则 `multiSelectViewActions` 也不可为空
 class UniPage<T> extends StatefulWidget {
   const UniPage({
     super.key,
@@ -53,6 +85,8 @@ class UniPage<T> extends StatefulWidget {
     required this.defaultContentView,
     this.sortMethods,
     this.locateTo,
+    this.multiSelectController,
+    this.multiSelectViewActions,
   });
 
   final String title;
@@ -70,6 +104,9 @@ class UniPage<T> extends StatefulWidget {
   final List<SortMethodDesc<T>>? sortMethods;
 
   final T? locateTo;
+
+  final MultiSelectController<T>? multiSelectController;
+  final List<Widget>? multiSelectViewActions;
 
   @override
   State<UniPage<T>> createState() => _UniPageState<T>();
@@ -145,10 +182,27 @@ class _UniPageState<T> extends State<UniPage<T>> {
       ));
     }
 
+    return widget.multiSelectController == null
+        ? result(null, actions)
+        : ListenableBuilder(
+            listenable: widget.multiSelectController!,
+            builder: (context, _) => result(
+              widget.multiSelectController!,
+              actions,
+            ),
+          );
+  }
+
+  Widget result(
+      MultiSelectController<T>? multiSelectController, List<Widget> actions) {
     return PageScaffold(
       title: widget.title,
       subtitle: widget.subtitle,
-      actions: actions,
+      actions: multiSelectController == null
+          ? actions
+          : multiSelectController.enableMultiSelectView
+              ? widget.multiSelectViewActions!
+              : actions,
       body: Material(
         type: MaterialType.transparency,
         child: switch (currContentView) {
@@ -160,6 +214,7 @@ class _UniPageState<T> extends State<UniPage<T>> {
                 context,
                 widget.contentList[i],
                 i,
+                multiSelectController,
               ),
             ),
           ContentView.table => GridView.builder(
@@ -171,6 +226,7 @@ class _UniPageState<T> extends State<UniPage<T>> {
                 context,
                 widget.contentList[i],
                 i,
+                multiSelectController,
               ),
             ),
         },

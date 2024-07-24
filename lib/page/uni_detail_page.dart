@@ -5,10 +5,12 @@ import 'package:material_symbols_icons/symbols.dart';
 
 /// `ArtistDetailPage`, `AlbumDetailPage` 页面的主要组件。
 ///
-/// `P`: 第一内容；`S`: 第二内容；`T`: 第三内容
+/// `P`: 第一内容；`S`: 第二内容（主要）；`T`: 第三内容
 ///
 /// 例如：对于 `ArtistDetailPage` 来说，
 /// `P` 是 `Artist` 类，`S` 是 `Audio` 类，`T` 是 `Album` 类
+/// 
+/// `multiSelectController` 可以使页面进入多选状态。如果它不为空，则 `multiSelectViewActions` 也不可为空
 class UniDetailPage<P, S, T> extends StatefulWidget {
   const UniDetailPage({
     super.key,
@@ -28,6 +30,8 @@ class UniDetailPage<P, S, T> extends StatefulWidget {
     required this.enableSecondaryContentViewSwitch,
     required this.defaultSecondaryContentView,
     this.sortMethods,
+    this.multiSelectController,
+    this.multiSelectViewActions,
   });
 
   final P primaryContent;
@@ -51,6 +55,9 @@ class UniDetailPage<P, S, T> extends StatefulWidget {
 
   final ContentView defaultSecondaryContentView;
   final List<SortMethodDesc<S>>? sortMethods;
+
+  final MultiSelectController<S>? multiSelectController;
+  final List<Widget>? multiSelectViewActions;
 
   @override
   State<UniDetailPage<P, S, T>> createState() => _UniDetailPageState<P, S, T>();
@@ -122,6 +129,20 @@ class _UniDetailPageState<P, S, T> extends State<UniDetailPage<P, S, T>> {
       ));
     }
 
+    return widget.multiSelectController == null
+        ? result(null, actions, scheme)
+        : ListenableBuilder(
+            listenable: widget.multiSelectController!,
+            builder: (context, _) => result(
+              widget.multiSelectController!,
+              actions,
+              scheme,
+            ),
+          );
+  }
+
+  Widget result(MultiSelectController<S>? multiSelectController,
+      List<Widget> actions, ColorScheme scheme) {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: scheme.surface,
@@ -167,7 +188,15 @@ class _UniDetailPageState<P, S, T> extends State<UniDetailPage<P, S, T>> {
                         ),
                       ),
                       const SizedBox(height: 8.0),
-                      Wrap(spacing: 8.0, runSpacing: 8.0, children: actions)
+                      Wrap(
+                        spacing: 8.0,
+                        runSpacing: 8.0,
+                        children: multiSelectController == null
+                            ? actions
+                            : multiSelectController.enableMultiSelectView
+                                ? widget.multiSelectViewActions!
+                                : actions,
+                      )
                     ],
                   ),
                 ),
@@ -188,6 +217,7 @@ class _UniDetailPageState<P, S, T> extends State<UniDetailPage<P, S, T>> {
                             context,
                             widget.secondaryContent[i],
                             i,
+                            multiSelectController,
                           ),
                         ),
                       ContentView.table => SliverGrid.builder(
@@ -198,6 +228,7 @@ class _UniDetailPageState<P, S, T> extends State<UniDetailPage<P, S, T>> {
                             context,
                             widget.secondaryContent[i],
                             i,
+                            multiSelectController,
                           ),
                         ),
                     },
@@ -223,6 +254,7 @@ class _UniDetailPageState<P, S, T> extends State<UniDetailPage<P, S, T>> {
                         context,
                         widget.tertiaryContent[i],
                         i,
+                        null,
                       ),
                     ),
                     const SliverPadding(padding: EdgeInsets.only(bottom: 96.0)),

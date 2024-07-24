@@ -1,4 +1,5 @@
 import 'package:coriander_player/library/audio_library.dart';
+import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/page/uni_page.dart';
 import 'package:coriander_player/play_service.dart';
 import 'package:flutter/material.dart';
@@ -145,6 +146,100 @@ class ContentViewSwitch<T> extends StatelessWidget {
         isListView ? ContentView.table : ContentView.list,
       ),
       icon: Icon(isListView ? Symbols.list : Symbols.table),
+    );
+  }
+}
+
+class AddAllToPlaylist extends StatelessWidget {
+  const AddAllToPlaylist({super.key, required this.multiSelectController});
+
+  final MultiSelectController<Audio> multiSelectController;
+
+  @override
+  Widget build(BuildContext context) {
+    return MenuAnchor(
+      menuChildren: List.generate(
+        PLAYLISTS.length,
+        (i) => MenuItemButton(
+          child: Text(PLAYLISTS[i].name),
+          onPressed: () {
+            for (var item in multiSelectController.selected) {
+              if (!PLAYLISTS[i]
+                  .audios
+                  .any((audio) => audio.path == item.path)) {
+                PLAYLISTS[i].audios.add(item);
+              }
+            }
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(
+                "成功将${multiSelectController.selected.length}首添加到歌单“${PLAYLISTS[i].name}”",
+              ),
+            ));
+          },
+        ),
+      ),
+      builder: (context, controller, _) => FilledButton.icon(
+        onPressed: () {
+          if (controller.isOpen) {
+            controller.close();
+          } else {
+            controller.open();
+          }
+        },
+        icon: const Icon(Symbols.add),
+        label: const Text("添加到歌单"),
+        style: const ButtonStyle(
+          fixedSize: WidgetStatePropertyAll(Size.fromHeight(40)),
+        ),
+      ),
+    );
+  }
+}
+
+class MultiSelectSelectOrClearAll<T> extends StatelessWidget {
+  final MultiSelectController<T> multiSelectController;
+  final List<T> contentList;
+
+  const MultiSelectSelectOrClearAll(
+      {super.key,
+      required this.multiSelectController,
+      required this.contentList});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: multiSelectController,
+      builder: (context, _) => IconButton.filledTonal(
+        onPressed: () {
+          if (multiSelectController.selected.isEmpty) {
+            multiSelectController.selectAll(contentList);
+          } else {
+            multiSelectController.clear();
+          }
+        },
+        icon: Icon(
+          multiSelectController.selected.isEmpty
+              ? Symbols.select_all
+              : Symbols.clear_all,
+        ),
+      ),
+    );
+  }
+}
+
+class MultiSelectExit<T> extends StatelessWidget {
+  final MultiSelectController<T> multiSelectController;
+
+  const MultiSelectExit({super.key, required this.multiSelectController});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton.filledTonal(
+      onPressed: () {
+        multiSelectController.useMultiSelectView(false);
+        multiSelectController.clear();
+      },
+      icon: const Icon(Symbols.cancel),
     );
   }
 }

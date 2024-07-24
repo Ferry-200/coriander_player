@@ -1,5 +1,6 @@
 import 'package:coriander_player/extensions.dart';
 import 'package:coriander_player/library/audio_library.dart';
+import 'package:coriander_player/page/uni_page.dart';
 import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
@@ -17,12 +18,14 @@ class AudioTile extends StatelessWidget {
     required this.playlist,
     this.focus = false,
     this.action,
+    this.multiSelectController,
   });
 
   final int audioIndex;
   final List<Audio> playlist;
   final bool focus;
   final Widget? action;
+  final MultiSelectController? multiSelectController;
 
   @override
   Widget build(BuildContext context) {
@@ -30,19 +33,37 @@ class AudioTile extends StatelessWidget {
     final audio = playlist[audioIndex];
     final menuController = MenuController();
 
-    return SizedBox(
+    return Ink(
       height: 64.0,
+      decoration: BoxDecoration(
+        color: multiSelectController == null
+            ? Colors.transparent
+            : multiSelectController!.selected.contains(audio)
+                ? scheme.secondaryContainer
+                : Colors.transparent,
+        borderRadius: BorderRadius.circular(8.0),
+      ),
       child: InkWell(
         borderRadius: BorderRadius.circular(8.0),
         onTap: () {
-          try {
-            PlayService.instance.play(audioIndex, playlist);
-          } catch (e) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(e.toString())));
+          if (multiSelectController == null) {
+            try {
+              PlayService.instance.play(audioIndex, playlist);
+            } catch (e) {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(e.toString())));
+            }
+          } else {
+            if (multiSelectController!.selected.contains(audio)) {
+              multiSelectController!.unselect(audio);
+            } else {
+              multiSelectController!.select(audio);
+            }
           }
         },
         onSecondaryTapDown: (details) {
+          if (multiSelectController?.enableMultiSelectView == true) return;
+
           menuController.open(position: details.localPosition);
         },
         child: MenuAnchor(
@@ -86,6 +107,16 @@ class AudioTile extends StatelessWidget {
               },
               leadingIcon: const Icon(Symbols.plus_one),
               child: const Text("下一首播放"),
+            ),
+
+            /// 多选
+            MenuItemButton(
+              onPressed: () {
+                multiSelectController?.useMultiSelectView(true);
+                multiSelectController?.select(audio);
+              },
+              leadingIcon: const Icon(Symbols.select),
+              child: const Text("多选"),
             ),
 
             /// add to playlist
