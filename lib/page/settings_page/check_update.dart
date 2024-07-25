@@ -16,7 +16,7 @@ class _CheckForUpdateState extends State<CheckForUpdate> {
   bool isChecking = false;
   @override
   Widget build(BuildContext context) {
-    final List<Widget> children = [
+    return Row(children: [
       FilledButton.icon(
         icon: const Icon(Symbols.update),
         label: const Text("检查更新"),
@@ -60,16 +60,16 @@ class _CheckForUpdateState extends State<CheckForUpdate> {
                 });
               },
       ),
-    ];
-    if (isChecking) {
-      children.add(const SizedBox(width: 16.0));
-      children.add(const SizedBox(
-        width: 16.0,
-        height: 16.0,
-        child: CircularProgressIndicator(),
-      ));
-    }
-    return Row(children: children);
+      if (isChecking)
+        const Padding(
+          padding: EdgeInsets.only(left: 16.0),
+          child: SizedBox(
+            width: 16.0,
+            height: 16.0,
+            child: CircularProgressIndicator(),
+          ),
+        ),
+    ]);
   }
 }
 

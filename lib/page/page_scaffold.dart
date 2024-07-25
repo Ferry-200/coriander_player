@@ -72,24 +72,23 @@ class PageScaffold extends StatelessWidget {
                 subtitle == null ? onlyTitle(scheme) : withSubtitle(scheme),
                 const SizedBox(width: 16.0),
                 actions.first,
-              ];
-              if (foldedColumn.isNotEmpty) {
-                rowChildren.addAll([
-                  const SizedBox(width: 16.0),
-                  MenuAnchor(
-                    style: menuStyle,
-                    menuChildren: foldedColumn,
-                    builder: (context, controller, _) => IconButton.filledTonal(
-                      onPressed: () {
-                        controller.isOpen
-                            ? controller.close()
-                            : controller.open();
-                      },
-                      icon: const Icon(Symbols.more_vert),
+                if (foldedColumn.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: MenuAnchor(
+                      style: menuStyle,
+                      menuChildren: foldedColumn,
+                      builder: (_, controller, __) => IconButton.filledTonal(
+                        onPressed: () {
+                          controller.isOpen
+                              ? controller.close()
+                              : controller.open();
+                        },
+                        icon: const Icon(Symbols.more_vert),
+                      ),
                     ),
                   ),
-                ]);
-              }
+              ];
               break;
             }
           case ScreenType.medium:

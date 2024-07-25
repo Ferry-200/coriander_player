@@ -78,14 +78,15 @@ class AudioTile extends StatelessWidget {
         ),
 
         /// 多选
-        MenuItemButton(
-          onPressed: () {
-            multiSelectController?.useMultiSelectView(true);
-            multiSelectController?.select(audio);
-          },
-          leadingIcon: const Icon(Symbols.select),
-          child: const Text("多选"),
-        ),
+        if (multiSelectController != null)
+          MenuItemButton(
+            onPressed: () {
+              multiSelectController!.useMultiSelectView(true);
+              multiSelectController!.select(audio);
+            },
+            leadingIcon: const Icon(Symbols.select),
+            child: const Text("多选"),
+          ),
 
         /// add to playlist
         SubmenuButton(
@@ -134,70 +135,6 @@ class AudioTile extends StatelessWidget {
           color: scheme.onSurface,
         );
 
-        final List<Widget> children = [];
-        if (leading != null) {
-          children.add(leading!);
-          children.add(const SizedBox(width: 16));
-        }
-
-        children.addAll([
-          /// cover
-          FutureBuilder(
-            future: audio.cover,
-            builder: (context, snapshot) {
-              if (snapshot.data == null) {
-                return placeholder;
-              }
-
-              return ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: Image(
-                  image: snapshot.data!,
-                  width: 48.0,
-                  height: 48.0,
-                  errorBuilder: (_, __, ___) => placeholder,
-                ),
-              );
-            },
-          ),
-          const SizedBox(width: 16.0),
-
-          /// title, artist and album
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  audio.title,
-                  style: TextStyle(color: textColor),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(width: 4.0),
-                Text(
-                  "${audio.artist} - ${audio.album}",
-                  style: TextStyle(color: textColor),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8.0),
-          Text(
-            Duration(seconds: audio.duration).toStringHMMSS(),
-            style: TextStyle(
-              color: focus ? scheme.primary : scheme.onSurface,
-            ),
-          ),
-        ]);
-
-        if (action != null) {
-          children.add(const SizedBox(width: 8));
-          children.add(action!);
-        }
-
         return Ink(
           height: 64.0,
           decoration: BoxDecoration(
@@ -241,7 +178,69 @@ class AudioTile extends StatelessWidget {
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Row(children: children),
+              child: Row(children: [
+                if (leading != null)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 16.0),
+                    child: leading!,
+                  ),
+
+                /// cover
+                FutureBuilder(
+                  future: audio.cover,
+                  builder: (context, snapshot) {
+                    if (snapshot.data == null) {
+                      return placeholder;
+                    }
+
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image(
+                        image: snapshot.data!,
+                        width: 48.0,
+                        height: 48.0,
+                        errorBuilder: (_, __, ___) => placeholder,
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(width: 16.0),
+
+                /// title, artist and album
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        audio.title,
+                        style: TextStyle(color: textColor),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(width: 4.0),
+                      Text(
+                        "${audio.artist} - ${audio.album}",
+                        style: TextStyle(color: textColor),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8.0),
+                Text(
+                  Duration(seconds: audio.duration).toStringHMMSS(),
+                  style: TextStyle(
+                    color: focus ? scheme.primary : scheme.onSurface,
+                  ),
+                ),
+                if (action != null)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: action!,
+                  ),
+              ]),
             ),
           ),
         );
