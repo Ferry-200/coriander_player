@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:coriander_player/lyric/lyric.dart';
-import 'package:coriander_player/play_service.dart';
+import 'package:coriander_player/play_service/play_service.dart';
 import 'package:flutter/material.dart';
 
 class HorizontalLyricView extends StatelessWidget {
@@ -19,13 +19,36 @@ class HorizontalLyricView extends StatelessWidget {
         color: scheme.secondaryContainer,
         borderRadius: BorderRadius.circular(16.0),
       ),
-      child: const _LyricHorizontalScrollArea(),
+      child: ListenableBuilder(
+        listenable: PlayService.instance.lyricService,
+        builder: (context, _) => FutureBuilder(
+          future: PlayService.instance.lyricService.currLyricFuture,
+          builder: (context, snapshot) {
+            if (snapshot.data == null) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Enjoy Music",
+                    style: TextStyle(color: scheme.onSecondaryContainer),
+                  ),
+                ),
+              );
+            }
+
+            return _LyricHorizontalScrollArea(snapshot.data!);
+          },
+        ),
+      ),
     );
   }
 }
 
 class _LyricHorizontalScrollArea extends StatefulWidget {
-  const _LyricHorizontalScrollArea();
+  const _LyricHorizontalScrollArea(this.lyric);
+
+  final Lyric lyric;
 
   @override
   State<_LyricHorizontalScrollArea> createState() =>
@@ -37,23 +60,26 @@ class _LyricHorizontalScrollAreaState
   /// 停留300ms后启动，提前300ms滚动到底
   final waitFor = const Duration(milliseconds: 300);
   final scrollController = ScrollController();
-  final playService = PlayService.instance;
+  final lyricService = PlayService.instance.lyricService;
   late StreamSubscription lyricLineStreamSubscription;
 
-  Lyric? lyric;
   var currContent = "Enjoy Music";
 
   @override
   void initState() {
     super.initState();
+    if (widget.lyric.lines.isNotEmpty) {
+      final first = widget.lyric.lines.first;
+      if (first is UnsyncLyricLine) {
+        currContent = first.content;
+      } else if (first is SyncLyricLine) {
+        currContent = first.content;
+      }
+    }
 
-    lyric = playService.currentLyric.value;
-
-    playService.currentLyric.addListener(_updateLyric);
-
-    lyricLineStreamSubscription = playService.lyricLineStream.listen((line) {
-      if (lyric == null || lyric!.lines.isEmpty) return;
-      final currLine = lyric!.lines[line];
+    lyricLineStreamSubscription = lyricService.lyricLineStream.listen((line) {
+      if (widget.lyric.lines.isEmpty) return;
+      final currLine = widget.lyric.lines[line];
 
       setState(() {
         if (currLine is UnsyncLyricLine) {
@@ -66,7 +92,8 @@ class _LyricHorizontalScrollAreaState
       /// 减去启动延时和滚动结束停留时间
       late final Duration lastTime;
       if (currLine is UnsyncLyricLine) {
-        lastTime = lyric!.lines[min(line + 1, lyric!.lines.length - 1)].start -
+        lastTime = widget.lyric
+                .lines[min(line + 1, widget.lyric.lines.length - 1)].start -
             currLine.start -
             waitFor -
             waitFor;
@@ -95,27 +122,6 @@ class _LyricHorizontalScrollAreaState
     });
   }
 
-  /// 重新获取歌词
-  void _updateLyric() {
-    lyric = playService.currentLyric.value;
-    setState(() {
-      if (lyric == null) {
-        currContent = "Enjoy Music";
-      } else {
-        if (lyric!.lines.isNotEmpty) {
-          final first = lyric!.lines.first;
-          if (first is UnsyncLyricLine) {
-            currContent = first.content;
-          } else if (first is SyncLyricLine) {
-            currContent = first.content;
-          }
-        } else {
-          currContent = "Enjoy Music";
-        }
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -140,7 +146,6 @@ class _LyricHorizontalScrollAreaState
   void dispose() {
     super.dispose();
     lyricLineStreamSubscription.cancel();
-    playService.currentLyric.removeListener(_updateLyric);
     scrollController.dispose();
   }
 }

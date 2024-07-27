@@ -1,5 +1,6 @@
 import 'package:coriander_player/extensions.dart';
-import 'package:coriander_player/play_service.dart';
+import 'package:coriander_player/play_service/play_service.dart';
+import 'package:coriander_player/play_service/playback_service.dart';
 import 'package:coriander_player/src/bass/bass_player.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -160,7 +161,7 @@ class NowPlayingControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final playService = Provider.of<PlayService>(context);
+    final playbackService = Provider.of<PlaybackService>(context);
     final scheme = Theme.of(context).colorScheme;
     return SizedBox(
       height: 64.0,
@@ -174,16 +175,16 @@ class NowPlayingControls extends StatelessWidget {
               color: scheme.primary,
               borderRadius: BorderRadius.circular(32.0),
               child: StreamBuilder(
-                stream: playService.playerStateStream,
-                initialData: playService.playerState,
+                stream: playbackService.playerStateStream,
+                initialData: playbackService.playerState,
                 builder: (context, snapshot) {
                   late void Function() onTap;
                   if (snapshot.data! == PlayerState.playing) {
-                    onTap = playService.pause;
+                    onTap = playbackService.pause;
                   } else if (snapshot.data! == PlayerState.completed) {
-                    onTap = playService.playAgain;
+                    onTap = playbackService.playAgain;
                   } else {
-                    onTap = playService.start;
+                    onTap = playbackService.start;
                   }
 
                   return InkWell(
@@ -206,7 +207,7 @@ class NowPlayingControls extends StatelessWidget {
 
           /// 上一曲
           IconButton(
-            onPressed: playService.lastAudio,
+            onPressed: playbackService.lastAudio,
             icon: const Icon(Symbols.skip_previous),
             style: FilledSecondaryIconButtonStyle(context),
           ),
@@ -214,7 +215,7 @@ class NowPlayingControls extends StatelessWidget {
 
           /// 下一曲
           IconButton(
-            onPressed: playService.nextAudio,
+            onPressed: playbackService.nextAudio,
             icon: const Icon(Symbols.skip_next),
             style: FilledSecondaryIconButtonStyle(context),
           ),
@@ -230,16 +231,16 @@ class PositionAndLength extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final playService = Provider.of<PlayService>(context);
-    final nowPlaying = playService.nowPlaying;
-    final length = PlayService.instance.length;
+    final playbackService = Provider.of<PlaybackService>(context);
+    final nowPlaying = playbackService.nowPlaying;
+    final length = playbackService.length;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         /// position
         StreamBuilder(
-          stream: playService.positionStream,
+          stream: playbackService.positionStream,
           builder: (context, snapshot) {
             final pos = snapshot.data ?? 0;
             return Text(
@@ -277,7 +278,7 @@ class NowPlayingProgressIndicatorState
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final playService = Provider.of<PlayService>(context);
+    final playbackService = Provider.of<PlaybackService>(context);
 
     return GestureDetector(
       onHorizontalDragStart: (details) {
@@ -293,13 +294,13 @@ class NowPlayingProgressIndicatorState
         if (progress < 0) progress = 0;
         if (progress > 1) progress = 1;
 
-        final position = progress * PlayService.instance.length;
-        PlayService.instance.seek(position);
+        final position = progress * playbackService.length;
+        playbackService.seek(position);
       },
       child: StreamBuilder(
-        stream: playService.positionStream,
+        stream: playbackService.positionStream,
         builder: (context, snapshot) {
-          final progress = (snapshot.data ?? 0) / playService.length;
+          final progress = (snapshot.data ?? 0) / playbackService.length;
           return ListenableBuilder(
             listenable: dragProgress,
             builder: (context, _) {
@@ -330,8 +331,8 @@ class NowPlayingArtistAlbum extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final playService = Provider.of<PlayService>(context);
-    final nowPlaying = playService.nowPlaying;
+    final playbackService = Provider.of<PlaybackService>(context);
+    final nowPlaying = playbackService.nowPlaying;
 
     return Align(
       alignment: Alignment.centerLeft,
@@ -352,8 +353,8 @@ class NowPlayingTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final playService = Provider.of<PlayService>(context);
-    final nowPlaying = playService.nowPlaying;
+    final playbackService = Provider.of<PlaybackService>(context);
+    final nowPlaying = playbackService.nowPlaying;
 
     return Align(
       alignment: Alignment.centerLeft,
@@ -378,20 +379,20 @@ class NowPlayingCover extends StatefulWidget {
 }
 
 class _NowPlayingCoverState extends State<NowPlayingCover> {
-  final playService = PlayService.instance;
+  final playbackService = PlayService.instance.playbackService;
   Future<ImageProvider<Object>?>? nowPlayingCover;
 
   void updateCover() {
     setState(() {
-      nowPlayingCover = playService.nowPlaying?.largeCover;
+      nowPlayingCover = playbackService.nowPlaying?.largeCover;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    playService.addListener(updateCover);
-    nowPlayingCover = playService.nowPlaying?.largeCover;
+    playbackService.addListener(updateCover);
+    nowPlayingCover = playbackService.nowPlaying?.largeCover;
   }
 
   @override
@@ -428,7 +429,7 @@ class _NowPlayingCoverState extends State<NowPlayingCover> {
 
   @override
   void dispose() {
-    playService.removeListener(updateCover);
+    playbackService.removeListener(updateCover);
     super.dispose();
   }
 }

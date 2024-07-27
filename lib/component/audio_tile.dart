@@ -1,9 +1,9 @@
 import 'package:coriander_player/extensions.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/page/uni_page.dart';
-import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
+import 'package:coriander_player/play_service/play_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
@@ -71,7 +71,7 @@ class AudioTile extends StatelessWidget {
         /// 下一首播放
         MenuItemButton(
           onPressed: () {
-            PlayService.instance.addToNext(audio);
+            PlayService.instance.playbackService.addToNext(audio);
           },
           leadingIcon: const Icon(Symbols.plus_one),
           child: const Text("下一首播放"),
@@ -157,7 +157,7 @@ class AudioTile extends StatelessWidget {
               if (multiSelectController == null ||
                   !multiSelectController!.enableMultiSelectView) {
                 try {
-                  PlayService.instance.play(audioIndex, playlist);
+                  PlayService.instance.playbackService.play(audioIndex, playlist);
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(e.toString())),

@@ -1,4 +1,4 @@
-import 'package:coriander_player/play_service.dart';
+import 'package:coriander_player/play_service/play_service.dart';
 import 'package:flutter/material.dart';
 
 class CurrentPlaylistView extends StatefulWidget {
@@ -9,13 +9,13 @@ class CurrentPlaylistView extends StatefulWidget {
 }
 
 class _CurrentPlaylistViewState extends State<CurrentPlaylistView> {
-  final playService = PlayService.instance;
+  final playbackService = PlayService.instance.playbackService;
   late final ScrollController scrollController;
 
   void _toNowPlaying() {
     if (scrollController.hasClients) {
       scrollController.animateTo(
-        playService.nowPlayingIndex * 56.0,
+        playbackService.playlistIndex * 56.0,
         duration: const Duration(milliseconds: 300),
         curve: Curves.fastOutSlowIn,
       );
@@ -26,9 +26,9 @@ class _CurrentPlaylistViewState extends State<CurrentPlaylistView> {
   void initState() {
     super.initState();
     scrollController = ScrollController(
-      initialScrollOffset: playService.nowPlayingIndex * 56.0,
+      initialScrollOffset: playbackService.playlistIndex * 56.0,
     );
-    playService.addListener(_toNowPlaying);
+    playbackService.addListener(_toNowPlaying);
   }
 
   @override
@@ -52,12 +52,12 @@ class _CurrentPlaylistViewState extends State<CurrentPlaylistView> {
             ),
           ),
           Expanded(
-            child: ListenableBuilder(
-              listenable: PlayService.instance.shuffle,
-              builder: (context, _) {
+            child: ValueListenableBuilder(
+              valueListenable: playbackService.playlist,
+              builder: (context, value, _) {
                 return ListView.builder(
                   controller: scrollController,
-                  itemCount: playService.playlist.length,
+                  itemCount: value.length,
                   itemExtent: 56.0,
                   itemBuilder: (context, index) {
                     return _PlaylistViewItem(index: index);
@@ -74,7 +74,7 @@ class _CurrentPlaylistViewState extends State<CurrentPlaylistView> {
   @override
   void dispose() {
     super.dispose();
-    playService.removeListener(_toNowPlaying);
+    playbackService.removeListener(_toNowPlaying);
     scrollController.dispose();
   }
 }
@@ -86,13 +86,13 @@ class _PlaylistViewItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var playService = PlayService.instance;
-    final item = playService.playlist[index];
+    var playbackService = PlayService.instance.playbackService;
+    final item = playbackService.playlist.value[index];
     final scheme = Theme.of(context).colorScheme;
     return InkWell(
       borderRadius: BorderRadius.circular(8.0),
       onTap: () {
-        playService.playIndexOfPlaylist(index);
+        playbackService.playIndexOfPlaylist(index);
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),

@@ -1,6 +1,6 @@
 import 'package:coriander_player/component/rectangle_progress_indicator.dart';
 import 'package:coriander_player/component/responsive_builder.dart';
-import 'package:coriander_player/play_service.dart';
+import 'package:coriander_player/play_service/play_service.dart';
 import 'package:coriander_player/src/bass/bass_player.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:flutter/material.dart';
@@ -65,14 +65,16 @@ class _NowPlayingForeground extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: ListenableBuilder(
-            listenable: PlayService.instance,
+            listenable: PlayService.instance.playbackService,
             builder: (context, _) {
-              final nowPlaying = PlayService.instance.nowPlaying;
+              final playbackService = PlayService.instance.playbackService;
+              final nowPlaying = playbackService.nowPlaying;
               final placeholder = Icon(
                 Symbols.broken_image,
                 size: 48.0,
                 color: scheme.onSecondaryContainer,
               );
+
               return Row(
                 children: [
                   /// now playing cover
@@ -133,16 +135,16 @@ class _NowPlayingForeground extends StatelessWidget {
 
                   /// start or pause
                   StreamBuilder(
-                    stream: PlayService.instance.playerStateStream,
-                    initialData: PlayService.instance.playerState,
+                    stream: playbackService.playerStateStream,
+                    initialData: playbackService.playerState,
                     builder: (context, snapshot) {
                       late void Function() onPressed;
                       if (snapshot.data! == PlayerState.playing) {
-                        onPressed = PlayService.instance.pause;
+                        onPressed = playbackService.pause;
                       } else if (snapshot.data! == PlayerState.completed) {
-                        onPressed = PlayService.instance.playAgain;
+                        onPressed = playbackService.playAgain;
                       } else {
-                        onPressed = PlayService.instance.start;
+                        onPressed = playbackService.start;
                       }
 
                       return IconButton.filled(

@@ -7,8 +7,9 @@ import 'package:coriander_player/page/now_playing_page/component/lyric_source_vi
 import 'package:coriander_player/page/now_playing_page/component/main_view.dart';
 import 'package:coriander_player/page/now_playing_page/component/title_bar.dart';
 import 'package:coriander_player/page/now_playing_page/component/vertical_lyric_view.dart';
-import 'package:coriander_player/play_service.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
+import 'package:coriander_player/play_service/play_service.dart';
+import 'package:coriander_player/play_service/playback_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
@@ -34,7 +35,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
       ),
       backgroundColor: scheme.secondaryContainer,
       body: ChangeNotifierProvider.value(
-        value: PlayService.instance,
+        value: PlayService.instance.playbackService,
         builder: (context, _) {
           return ResponsiveBuilder2(builder: (context, screenType) {
             switch (screenType) {
@@ -98,7 +99,39 @@ class __NowPlayingBody_SmallState extends State<_NowPlayingBody_Small> {
           PositionAndLength(),
         ],
       _ViewMode.withLyric => [
-          Expanded(child: VerticalLyricView(key: widget.lyricViewKey)),
+          Expanded(
+            child: ListenableBuilder(
+              listenable: PlayService.instance.lyricService,
+              builder: (context, _) => FutureBuilder(
+                future: PlayService.instance.lyricService.currLyricFuture,
+                builder: (context, snapshot) =>
+                    switch (snapshot.connectionState) {
+                  ConnectionState.none =>
+                    const Center(child: Text("Enjoy Music")),
+                  ConnectionState.waiting => const Center(
+                      child: SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  ConnectionState.active => const Center(
+                      child: SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  ConnectionState.done => snapshot.data == null
+                      ? const Center(child: Text("Enjoy Music"))
+                      : VerticalLyricView(
+                          key: widget.lyricViewKey,
+                          lyric: snapshot.data!,
+                        ),
+                },
+              ),
+            ),
+          ),
           const SizedBox(height: 16.0),
           const _CompactAudioInfo(),
         ],
@@ -144,8 +177,8 @@ class _CompactAudioInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final playService = Provider.of<PlayService>(context);
-    final nowPlaying = playService.nowPlaying;
+    final playbackService = Provider.of<PlaybackService>(context);
+    final nowPlaying = playbackService.nowPlaying;
     final scheme = Theme.of(context).colorScheme;
     final placeholder = Icon(
       Symbols.broken_image,
@@ -232,7 +265,35 @@ class __NowPlayingBody_LargeState extends State<_NowPlayingBody_Large> {
   late final lyricView = Expanded(
     child: Align(
       alignment: Alignment.center,
-      child: VerticalLyricView(key: widget.lyricViewKey),
+      child: ListenableBuilder(
+        listenable: PlayService.instance.lyricService,
+        builder: (context, _) => FutureBuilder(
+          future: PlayService.instance.lyricService.currLyricFuture,
+          builder: (context, snapshot) => switch (snapshot.connectionState) {
+            ConnectionState.none => const Center(child: Text("Enjoy Music")),
+            ConnectionState.waiting => const Center(
+                child: SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            ConnectionState.active => const Center(
+                child: SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            ConnectionState.done => snapshot.data == null
+                ? const Center(child: Text("Enjoy Music"))
+                : VerticalLyricView(
+                    key: widget.lyricViewKey,
+                    lyric: snapshot.data!,
+                  ),
+          },
+        ),
+      ),
     ),
   );
 
@@ -327,8 +388,8 @@ class _MoreActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final playService = Provider.of<PlayService>(context);
-    final nowPlaying = playService.nowPlaying;
+    final playbackService = Provider.of<PlaybackService>(context);
+    final nowPlaying = playbackService.nowPlaying;
 
     return nowPlaying == null
         ? Opacity(
@@ -398,9 +459,9 @@ class _TogglePlayMode extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: PlayService.instance.playMode,
+      listenable: PlayService.instance.playbackService.playMode,
       builder: (context, _) {
-        final playMode = PlayService.instance.playMode;
+        final playMode = PlayService.instance.playbackService.playMode;
         late IconData result;
         if (playMode.value == PlayMode.forward) {
           result = Symbols.repeat;
@@ -432,15 +493,17 @@ class _ToggleShuffle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: PlayService.instance.shuffle,
+      listenable: PlayService.instance.playbackService.shuffle,
       builder: (context, _) {
-        final playService = PlayService.instance;
+        final playbackService = PlayService.instance.playbackService;
         return IconButton(
           onPressed: () {
-            playService.toggleShuffle();
+            playbackService.useShuffle(!playbackService.shuffle.value);
           },
           icon: Icon(
-            playService.shuffle.value ? Symbols.shuffle_on : Symbols.shuffle,
+            playbackService.shuffle.value
+                ? Symbols.shuffle_on
+                : Symbols.shuffle,
           ),
         );
       },

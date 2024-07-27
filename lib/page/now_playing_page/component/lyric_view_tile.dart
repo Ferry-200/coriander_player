@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:coriander_player/lyric/lrc.dart';
 import 'package:coriander_player/lyric/lyric.dart';
-import 'package:coriander_player/play_service.dart';
+import 'package:coriander_player/play_service/play_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -81,7 +81,7 @@ class _SyncLineContent extends StatelessWidget {
 
     final List<Widget> contents = [
       StreamBuilder(
-        stream: PlayService.instance.positionStream,
+        stream: PlayService.instance.playbackService.positionStream,
         builder: (context, snapshot) {
           final posInMs = (snapshot.data ?? 0) * 1000;
           return RichText(
@@ -287,7 +287,7 @@ class LyricTransitionTileController extends ChangeNotifier {
   final LrcLine? lrcLine;
   final SyncLyricLine? syncLine;
 
-  final playService = PlayService.instance;
+  final playbackService = PlayService.instance.playbackService;
 
   double progress = 0;
   late final StreamSubscription positionStreamSub;
@@ -297,7 +297,7 @@ class LyricTransitionTileController extends ChangeNotifier {
   late final Ticker factorTicker;
 
   LyricTransitionTileController([this.lrcLine, this.syncLine]) {
-    positionStreamSub = playService.positionStream.listen(_updateProgress);
+    positionStreamSub = playbackService.positionStream.listen(_updateProgress);
     factorTicker = Ticker((elapsed) {
       sizeFactor += k * 1 / 180;
       if (sizeFactor > 1) {

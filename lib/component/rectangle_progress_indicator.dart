@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:coriander_player/play_service.dart';
+import 'package:coriander_player/play_service/play_service.dart';
 import 'package:flutter/material.dart';
 
 class RectangleProgressIndicator extends StatefulWidget {
@@ -28,8 +28,8 @@ class _RectangleProgressIndicatorState
   @override
   void initState() {
     super.initState();
-    subscription = PlayService.instance.positionStream.listen((event) {
-      progress.value = event / PlayService.instance.length;
+    subscription = PlayService.instance.playbackService.positionStream.listen((event) {
+      progress.value = event / PlayService.instance.playbackService.length;
     });
   }
 

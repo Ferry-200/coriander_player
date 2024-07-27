@@ -1,7 +1,7 @@
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/page/uni_page.dart';
-import 'package:coriander_player/play_service.dart';
+import 'package:coriander_player/play_service/play_service.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -12,7 +12,7 @@ class ShufflePlay<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FilledButton.icon(
-      onPressed: () => PlayService.instance.shuffleAndPlay(
+      onPressed: () => PlayService.instance.playbackService.shuffleAndPlay(
         contentList as List<Audio>,
       ),
       icon: const Icon(Symbols.shuffle),

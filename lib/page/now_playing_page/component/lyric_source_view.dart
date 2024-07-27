@@ -4,7 +4,7 @@ import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/lyric/lyric.dart';
 import 'package:coriander_player/lyric/lyric_source.dart';
 import 'package:coriander_player/music_api/search_helper.dart';
-import 'package:coriander_player/play_service.dart';
+import 'package:coriander_player/play_service/play_service.dart';
 import 'package:flutter/material.dart';
 
 class LyricSourceView extends StatefulWidget {
@@ -140,14 +140,17 @@ class LyricSourceTile extends StatelessWidget {
                   return const Text("无歌词");
                 }
                 return StreamBuilder(
-                  stream: PlayService.instance.positionStream,
+                  stream: PlayService.instance.playbackService.positionStream,
                   builder: (context, snapshot) {
-                    final currLineIndex = max(lyric.lines.lastIndexWhere(
-                      (element) {
-                        return element.start.inMilliseconds <
-                            (snapshot.data ?? 0) * 1000;
-                      },
-                    ), 0);
+                    final currLineIndex = max(
+                      lyric.lines.lastIndexWhere(
+                        (element) {
+                          return element.start.inMilliseconds <
+                              (snapshot.data ?? 0) * 1000;
+                        },
+                      ),
+                      0,
+                    );
                     late final String content;
                     final LyricLine currLine = lyric.lines[currLineIndex];
                     if (currLine is UnsyncLyricLine) {
