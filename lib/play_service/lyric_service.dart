@@ -18,14 +18,15 @@ class LyricService extends ChangeNotifier {
   LyricService(this.playService) {
     _positionStreamSubscription =
         playService.playbackService.positionStream.listen((pos) {
-      if (currLyric == null) return;
-      if (_nextLyricLine >= currLyric!.lines.length) return;
+      currLyricFuture.then((value) {
+        if (value == null) return;
+        if (_nextLyricLine >= value.lines.length) return;
 
-      if ((pos * 1000) >
-          currLyric!.lines[_nextLyricLine].start.inMilliseconds) {
-        _nextLyricLine += 1;
-        _lyricLineStreamController.add(_nextLyricLine - 1);
-      }
+        if ((pos * 1000) > value.lines[_nextLyricLine].start.inMilliseconds) {
+          _nextLyricLine += 1;
+          _lyricLineStreamController.add(_nextLyricLine - 1);
+        }
+      });
     });
   }
 
@@ -33,9 +34,6 @@ class LyricService extends ChangeNotifier {
 
   /// 供 widget 使用
   Future<Lyric?> currLyricFuture = Future.value(null);
-
-  /// 供不方便访问 future 的使用
-  Lyric? currLyric;
 
   /// 下一行歌词
   int _nextLyricLine = 0;
@@ -49,15 +47,17 @@ class LyricService extends ChangeNotifier {
 
   /// 重新计算歌词进行到第几行
   void findCurrLyricLine() {
-    if (currLyric == null) return;
+    currLyricFuture.then((value) {
+      if (value == null) return;
 
-    final next = currLyric!.lines.indexWhere(
-      (element) =>
-          element.start.inMilliseconds / 1000 >
-          playService.playbackService.position,
-    );
-    _nextLyricLine = next == -1 ? currLyric!.lines.length : next;
-    _lyricLineStreamController.add(max(_nextLyricLine - 1, 0));
+      final next = value.lines.indexWhere(
+        (element) =>
+            element.start.inMilliseconds / 1000 >
+            playService.playbackService.position,
+      );
+      _nextLyricLine = next == -1 ? value.lines.length : next;
+      _lyricLineStreamController.add(max(_nextLyricLine - 1, 0));
+    });
   }
 
   Future<Lyric?> _getLyricDefault(bool localFirst) async {
@@ -98,7 +98,6 @@ class LyricService extends ChangeNotifier {
     }
 
     currLyricFuture.then((value) {
-      currLyric = value;
       _nextLyricLine = 0;
     });
 
@@ -113,7 +112,6 @@ class LyricService extends ChangeNotifier {
 
     currLyricFuture = Lrc.fromAudioPath(nowPlaying);
     currLyricFuture.then((value) {
-      currLyric = value;
       findCurrLyricLine();
     });
 
@@ -128,7 +126,6 @@ class LyricService extends ChangeNotifier {
 
     currLyricFuture = getMostMatchedLyric(nowPlaying);
     currLyricFuture.then((value) {
-      currLyric = value;
       findCurrLyricLine();
     });
 
