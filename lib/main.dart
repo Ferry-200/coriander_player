@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/entry.dart';
 import 'package:coriander_player/src/rust/frb_generated.dart';
@@ -29,6 +30,9 @@ Future<void> main() async {
   final supportPath = (await getApplicationSupportDirectory()).path;
   if (File("$supportPath\\settings.json").existsSync()) {
     await AppSettings.readFromJson();
+  }
+  if (File("$supportPath\\app_preference.json").existsSync()) {
+    await AppPreference.read();
   }
   final welcome = !File("$supportPath\\index.json").existsSync();
   await initWindow();

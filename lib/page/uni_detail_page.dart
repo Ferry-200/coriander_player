@@ -1,3 +1,4 @@
+import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/page/uni_page.dart';
 import 'package:coriander_player/page/uni_page_components.dart';
 import 'package:flutter/material.dart';
@@ -9,11 +10,12 @@ import 'package:material_symbols_icons/symbols.dart';
 ///
 /// 例如：对于 `ArtistDetailPage` 来说，
 /// `P` 是 `Artist` 类，`S` 是 `Audio` 类，`T` 是 `Album` 类
-/// 
+///
 /// `multiSelectController` 可以使页面进入多选状态。如果它不为空，则 `multiSelectViewActions` 也不可为空
 class UniDetailPage<P, S, T> extends StatefulWidget {
   const UniDetailPage({
     super.key,
+    required this.pref,
     required this.primaryContent,
     required this.primaryPic,
     required this.picShape,
@@ -28,11 +30,12 @@ class UniDetailPage<P, S, T> extends StatefulWidget {
     required this.enableSortMethod,
     required this.enableSortOrder,
     required this.enableSecondaryContentViewSwitch,
-    required this.defaultSecondaryContentView,
     this.sortMethods,
     this.multiSelectController,
     this.multiSelectViewActions,
   });
+
+  final PagePreference pref;
 
   final P primaryContent;
   final Future<ImageProvider?> primaryPic;
@@ -53,7 +56,6 @@ class UniDetailPage<P, S, T> extends StatefulWidget {
   final bool enableSortOrder;
   final bool enableSecondaryContentViewSwitch;
 
-  final ContentView defaultSecondaryContentView;
   final List<SortMethodDesc<S>>? sortMethods;
 
   final MultiSelectController<S>? multiSelectController;
@@ -64,9 +66,11 @@ class UniDetailPage<P, S, T> extends StatefulWidget {
 }
 
 class _UniDetailPageState<P, S, T> extends State<UniDetailPage<P, S, T>> {
-  late SortMethodDesc<S>? currSortMethod = widget.sortMethods?.first;
-  SortOrder currSortOrder = SortOrder.ascending;
-  late ContentView currContentView = widget.defaultSecondaryContentView;
+  late SortMethodDesc<S>? currSortMethod =
+      widget.sortMethods?[widget.pref.sortMethod];
+  late SortOrder currSortOrder = widget.pref.sortOrder;
+  late ContentView currContentView =
+      widget.pref.contentView;
 
   @override
   void initState() {
@@ -83,6 +87,7 @@ class _UniDetailPageState<P, S, T> extends State<UniDetailPage<P, S, T>> {
   void setSortMethod(SortMethodDesc<S> sortMethod) {
     setState(() {
       currSortMethod = sortMethod;
+      widget.pref.sortMethod = widget.sortMethods?.indexOf(sortMethod) ?? 0;
       currSortMethod?.method(widget.secondaryContent, currSortOrder);
     });
   }
@@ -90,6 +95,7 @@ class _UniDetailPageState<P, S, T> extends State<UniDetailPage<P, S, T>> {
   void setSortOrder(SortOrder sortOrder) {
     setState(() {
       currSortOrder = sortOrder;
+      widget.pref.sortOrder = sortOrder;
       currSortMethod?.method(widget.secondaryContent, currSortOrder);
     });
   }
@@ -97,6 +103,7 @@ class _UniDetailPageState<P, S, T> extends State<UniDetailPage<P, S, T>> {
   void setContentView(ContentView contentView) {
     setState(() {
       currContentView = contentView;
+      widget.pref.contentView = contentView;
     });
   }
 

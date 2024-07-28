@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/play_service/play_service.dart';
 import 'package:coriander_player/src/bass/bass_player.dart';
@@ -15,7 +16,14 @@ enum PlayMode {
   loop,
 
   /// 循环播放单曲
-  singleLoop,
+  singleLoop;
+
+  static PlayMode? fromString(String playMode) {
+    for (var value in PlayMode.values) {
+      if (value.name == playMode) return value;
+    }
+    return null;
+  }
 }
 
 /// 只通知 now playing 变更
@@ -49,10 +57,14 @@ class PlaybackService extends ChangeNotifier {
         case SMTCControlEvent.unknown:
       }
     });
+
+    setVolumeDsp(AppPreference.instance.playbackPref.volumeDsp);
+    print(volumeDsp);
   }
 
   final _player = BassPlayer();
   final _smtc = SmtcFlutter();
+  final _pref = AppPreference.instance.playbackPref;
 
   Audio? nowPlaying;
 
@@ -62,8 +74,16 @@ class PlaybackService extends ChangeNotifier {
   final ValueNotifier<List<Audio>> playlist = ValueNotifier([]);
   List<Audio> _playlistBackup = [];
 
-  final playMode = ValueNotifier(PlayMode.forward);
-  final shuffle = ValueNotifier(false);
+  late final _playMode = ValueNotifier(_pref.playMode);
+  ValueNotifier<PlayMode> get playMode => _playMode;
+
+  void setPlayMode(PlayMode playMode) {
+    this.playMode.value = playMode;
+    _pref.playMode = playMode;
+  }
+
+  late final _shuffle = ValueNotifier(false);
+  ValueNotifier<bool> get shuffle => _shuffle;
 
   double get length => _player.length;
 
@@ -74,7 +94,10 @@ class PlaybackService extends ChangeNotifier {
   double get volumeDsp => _player.volumeDsp;
 
   /// 修改解码时的音量（不影响 Windows 系统音量）
-  void setVolumeDsp(double volume) => _player.setVolumeDsp(volume);
+  void setVolumeDsp(double volume) {
+    _player.setVolumeDsp(volume);
+    _pref.volumeDsp = volume;
+  }
 
   Stream<double> get positionStream => _player.positionStream;
 

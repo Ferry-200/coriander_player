@@ -1,3 +1,4 @@
+import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/component/audio_tile.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/page/page_scaffold.dart';
@@ -250,6 +251,7 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage> {
     final scheme = Theme.of(context).colorScheme;
 
     return UniPage<Audio>(
+      pref: AppPreference.instance.playlistDetailPagePref,
       title: widget.playlist.name,
       subtitle: "${contentList.length} 首乐曲",
       contentList: contentList,
@@ -262,7 +264,6 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage> {
       enableSortMethod: true,
       enableSortOrder: true,
       enableContentViewSwitch: true,
-      defaultContentView: ContentView.list,
       multiSelectController: multiSelectController,
       multiSelectViewActions: [
         IconButton.filled(

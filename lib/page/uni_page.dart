@@ -1,3 +1,4 @@
+import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/page/uni_page_components.dart';
 import 'package:coriander_player/page/page_scaffold.dart';
 import 'package:flutter/material.dart';
@@ -19,9 +20,29 @@ class SortMethodDesc<T> {
   });
 }
 
-enum SortOrder { ascending, decending }
+enum SortOrder {
+  ascending,
+  decending;
 
-enum ContentView { list, table }
+  static SortOrder? fromString(String sortOrder) {
+    for (var value in SortOrder.values) {
+      if (value.name == sortOrder) return value;
+    }
+    return null;
+  }
+}
+
+enum ContentView {
+  list,
+  table;
+
+  static ContentView? fromString(String contentView) {
+    for (var value in ContentView.values) {
+      if (value.name == contentView) return value;
+    }
+    return null;
+  }
+}
 
 const gridDelegate = SliverGridDelegateWithMaxCrossAxisExtent(
   maxCrossAxisExtent: 300,
@@ -69,11 +90,12 @@ class MultiSelectController<T> extends ChangeNotifier {
 ///
 /// `defaultContentView` 表示默认的内容视图。如果设置为 `ContentView.list`，就以单行列表视图展示内容；
 /// 如果是 `ContentView.table`，就以最大 300 * 64 的子组件以 8 为间距组成的表格展示内容。
-/// 
+///
 /// `multiSelectController` 可以使页面进入多选状态。如果它不为空，则 `multiSelectViewActions` 也不可为空
 class UniPage<T> extends StatefulWidget {
   const UniPage({
     super.key,
+    required this.pref,
     required this.title,
     this.subtitle,
     required this.contentList,
@@ -82,12 +104,13 @@ class UniPage<T> extends StatefulWidget {
     required this.enableSortMethod,
     required this.enableSortOrder,
     required this.enableContentViewSwitch,
-    required this.defaultContentView,
     this.sortMethods,
     this.locateTo,
     this.multiSelectController,
     this.multiSelectViewActions,
   });
+
+  final PagePreference pref;
 
   final String title;
   final String? subtitle;
@@ -99,7 +122,6 @@ class UniPage<T> extends StatefulWidget {
   final bool enableSortMethod;
   final bool enableSortOrder;
   final bool enableContentViewSwitch;
-  final ContentView defaultContentView;
 
   final List<SortMethodDesc<T>>? sortMethods;
 
@@ -113,9 +135,11 @@ class UniPage<T> extends StatefulWidget {
 }
 
 class _UniPageState<T> extends State<UniPage<T>> {
-  late SortMethodDesc<T>? currSortMethod = widget.sortMethods?.first;
-  SortOrder currSortOrder = SortOrder.ascending;
-  late ContentView currContentView = widget.defaultContentView;
+  late SortMethodDesc<T>? currSortMethod =
+      widget.sortMethods?[widget.pref.sortMethod];
+  late SortOrder currSortOrder = widget.pref.sortOrder;
+  late ContentView currContentView =
+      widget.pref.contentView;
   late ScrollController scrollController;
 
   @override
@@ -138,6 +162,7 @@ class _UniPageState<T> extends State<UniPage<T>> {
   void setSortMethod(SortMethodDesc<T> sortMethod) {
     setState(() {
       currSortMethod = sortMethod;
+      widget.pref.sortMethod = widget.sortMethods?.indexOf(sortMethod) ?? 0;
       currSortMethod?.method(widget.contentList, currSortOrder);
     });
   }
@@ -145,6 +170,7 @@ class _UniPageState<T> extends State<UniPage<T>> {
   void setSortOrder(SortOrder sortOrder) {
     setState(() {
       currSortOrder = sortOrder;
+      widget.pref.sortOrder = sortOrder;
       currSortMethod?.method(widget.contentList, currSortOrder);
     });
   }
@@ -152,6 +178,7 @@ class _UniPageState<T> extends State<UniPage<T>> {
   void setContentView(ContentView contentView) {
     setState(() {
       currContentView = contentView;
+      widget.pref.contentView = contentView;
     });
   }
 

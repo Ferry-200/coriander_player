@@ -28,3 +28,12 @@ const String SETTINGS_PAGE = "/settings";
 const String WELCOMING_PAGE = "/welcoming";
 
 const String UPDATING_DIALOG = "/updating";
+
+/// 可以作为 start page 的 pages
+const List<String> MAIN_PAGES = [
+  AUDIOS_PAGE,
+  ARTISTS_PAGE,
+  ALBUMS_PAGE,
+  FOLDERS_PAGE,
+  PLAYLISTS_PAGE
+];

@@ -1,5 +1,6 @@
 // ignore_for_file: camel_case_types
 
+import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/responsive_builder.dart';
 import 'package:coriander_player/page/now_playing_page/component/current_playlist_view.dart';
@@ -52,13 +53,20 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
   }
 }
 
-enum _ViewMode {
+enum NowPlayingViewMode {
   onlyMain,
   withLyric,
-  withPlaylist,
+  withPlaylist;
+
+  static NowPlayingViewMode? fromString(String nowPlayingViewMode) {
+    for (var value in NowPlayingViewMode.values) {
+      if (value.name == nowPlayingViewMode) return value;
+    }
+    return null;
+  }
 }
 
-_ViewMode _viewMode = _ViewMode.onlyMain;
+NowPlayingViewMode _viewMode = AppPreference.instance.nowPlayingViewMode;
 
 class _NowPlayingBody_Small extends StatefulWidget {
   const _NowPlayingBody_Small(this.lyricViewKey);
@@ -72,24 +80,24 @@ class _NowPlayingBody_Small extends StatefulWidget {
 class __NowPlayingBody_SmallState extends State<_NowPlayingBody_Small> {
   void openPlaylistView() {
     setState(() {
-      _viewMode = _viewMode == _ViewMode.withPlaylist
-          ? _ViewMode.onlyMain
-          : _ViewMode.withPlaylist;
+      _viewMode = _viewMode == NowPlayingViewMode.withPlaylist
+          ? NowPlayingViewMode.onlyMain
+          : NowPlayingViewMode.withPlaylist;
     });
   }
 
   void openLyricView() {
     setState(() {
-      _viewMode = _viewMode == _ViewMode.withLyric
-          ? _ViewMode.onlyMain
-          : _ViewMode.withLyric;
+      _viewMode = _viewMode == NowPlayingViewMode.withLyric
+          ? NowPlayingViewMode.onlyMain
+          : NowPlayingViewMode.withLyric;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final List<Widget> mainWidgets = switch (_viewMode) {
-      _ViewMode.onlyMain => const [
+      NowPlayingViewMode.onlyMain => const [
           Expanded(child: NowPlayingCover()),
           SizedBox(height: 16.0),
           NowPlayingTitle(),
@@ -98,7 +106,7 @@ class __NowPlayingBody_SmallState extends State<_NowPlayingBody_Small> {
           NowPlayingProgressIndicator(),
           PositionAndLength(),
         ],
-      _ViewMode.withLyric => [
+      NowPlayingViewMode.withLyric => [
           Expanded(
             child: ListenableBuilder(
               listenable: PlayService.instance.lyricService,
@@ -135,7 +143,7 @@ class __NowPlayingBody_SmallState extends State<_NowPlayingBody_Small> {
           const SizedBox(height: 16.0),
           const _CompactAudioInfo(),
         ],
-      _ViewMode.withPlaylist => const [
+      NowPlayingViewMode.withPlaylist => const [
           Expanded(child: CurrentPlaylistView()),
           SizedBox(height: 16.0),
           _CompactAudioInfo(),
@@ -299,17 +307,17 @@ class __NowPlayingBody_LargeState extends State<_NowPlayingBody_Large> {
 
   void openPlaylistView() {
     setState(() {
-      _viewMode = _viewMode == _ViewMode.withPlaylist
-          ? _ViewMode.onlyMain
-          : _ViewMode.withPlaylist;
+      _viewMode = _viewMode == NowPlayingViewMode.withPlaylist
+          ? NowPlayingViewMode.onlyMain
+          : NowPlayingViewMode.withPlaylist;
     });
   }
 
   void openLyricView() {
     setState(() {
-      _viewMode = _viewMode == _ViewMode.withLyric
-          ? _ViewMode.onlyMain
-          : _ViewMode.withLyric;
+      _viewMode = _viewMode == NowPlayingViewMode.withLyric
+          ? NowPlayingViewMode.onlyMain
+          : NowPlayingViewMode.withLyric;
     });
   }
 
@@ -339,9 +347,9 @@ class __NowPlayingBody_LargeState extends State<_NowPlayingBody_Large> {
       padding: const EdgeInsets.symmetric(horizontal: 48.0, vertical: 16.0),
       child: Row(
         children: switch (_viewMode) {
-          _ViewMode.onlyMain => [mainView],
-          _ViewMode.withLyric => [mainView, spacer, lyricView],
-          _ViewMode.withPlaylist => [mainView, spacer, playlistView],
+          NowPlayingViewMode.onlyMain => [mainView],
+          NowPlayingViewMode.withLyric => [mainView, spacer, lyricView],
+          NowPlayingViewMode.withPlaylist => [mainView, spacer, playlistView],
         },
       ),
     );
@@ -356,7 +364,7 @@ class _LyricViewBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Opacity(
-      opacity: _viewMode == _ViewMode.withLyric ? 1 : 0.5,
+      opacity: _viewMode == NowPlayingViewMode.withLyric ? 1 : 0.5,
       child: IconButton(
         onPressed: onTap,
         icon: const Icon(Symbols.lyrics),
@@ -373,7 +381,7 @@ class _PlaylistViewBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Opacity(
-      opacity: _viewMode == _ViewMode.withPlaylist ? 1 : 0.5,
+      opacity: _viewMode == NowPlayingViewMode.withPlaylist ? 1 : 0.5,
       child: IconButton(
         onPressed: onTap,
         icon: const Icon(Symbols.queue_music),
@@ -461,7 +469,8 @@ class _TogglePlayMode extends StatelessWidget {
     return ListenableBuilder(
       listenable: PlayService.instance.playbackService.playMode,
       builder: (context, _) {
-        final playMode = PlayService.instance.playbackService.playMode;
+        final playbackService = PlayService.instance.playbackService;
+        final playMode = playbackService.playMode;
         late IconData result;
         if (playMode.value == PlayMode.forward) {
           result = Symbols.repeat;
@@ -473,11 +482,11 @@ class _TogglePlayMode extends StatelessWidget {
         return IconButton(
           onPressed: () {
             if (playMode.value == PlayMode.forward) {
-              playMode.value = PlayMode.loop;
+              playbackService.setPlayMode(PlayMode.loop);
             } else if (playMode.value == PlayMode.loop) {
-              playMode.value = PlayMode.singleLoop;
+              playbackService.setPlayMode(PlayMode.singleLoop);
             } else {
-              playMode.value = PlayMode.forward;
+              playbackService.setPlayMode(PlayMode.forward);
             }
           },
           icon: Icon(result),

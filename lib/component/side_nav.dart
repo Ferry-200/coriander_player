@@ -1,5 +1,6 @@
 // ignore_for_file: camel_case_types
 
+import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/component/responsive_builder.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:flutter/material.dart';
@@ -36,7 +37,12 @@ class SideNav extends StatelessWidget {
 
     void onDestinationSelected(int value) {
       if (value == selected) return;
+
+      final index = app_paths.MAIN_PAGES.indexOf(destinations[value].desPath);
+      if (index != -1) AppPreference.instance.startPage = index;
+
       context.push(destinations[value].desPath);
+      
       var scaffold = Scaffold.of(context);
       if (scaffold.hasDrawer) scaffold.closeDrawer();
     }

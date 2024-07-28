@@ -1,3 +1,4 @@
+import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/component/audio_tile.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/page/uni_page.dart';
@@ -14,6 +15,7 @@ class FolderDetailPage extends StatelessWidget {
     final contentList = List<Audio>.from(folder.audios);
     final multiSelectController = MultiSelectController<Audio>();
     return UniPage<Audio>(
+      pref: AppPreference.instance.folderDetailPagePref,
       title: folder.path,
       subtitle: "${contentList.length} 首乐曲",
       contentList: contentList,
@@ -26,7 +28,6 @@ class FolderDetailPage extends StatelessWidget {
       enableSortMethod: true,
       enableSortOrder: true,
       enableContentViewSwitch: true,
-      defaultContentView: ContentView.list,
       multiSelectController: multiSelectController,
       multiSelectViewActions: [
         AddAllToPlaylist(multiSelectController: multiSelectController),

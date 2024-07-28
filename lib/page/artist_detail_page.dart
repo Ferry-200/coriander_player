@@ -1,3 +1,4 @@
+import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/audio_tile.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
@@ -19,6 +20,7 @@ class ArtistDetailPage extends StatelessWidget {
     final multiSelectController = MultiSelectController<Audio>();
 
     return UniDetailPage<Artist, Audio, Album>(
+      pref: AppPreference.instance.artistDetailPagePref,
       primaryContent: artist,
       primaryPic: artist.picture,
       picShape: PicShape.oval,
@@ -41,7 +43,6 @@ class ArtistDetailPage extends StatelessWidget {
       enableSortMethod: true,
       enableSortOrder: true,
       enableSecondaryContentViewSwitch: true,
-      defaultSecondaryContentView: ContentView.list,
       multiSelectController: multiSelectController,
       multiSelectViewActions: [
         AddAllToPlaylist(multiSelectController: multiSelectController),

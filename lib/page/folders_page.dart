@@ -1,3 +1,4 @@
+import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/page/uni_page.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ class FoldersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final contentList = List<AudioFolder>.from(AudioLibrary.instance.folders);
     return UniPage<AudioFolder>(
+      pref: AppPreference.instance.foldersPagePref,
       title: "文件夹",
       subtitle: "${contentList.length} 个文件夹",
       contentList: contentList,
@@ -21,7 +23,6 @@ class FoldersPage extends StatelessWidget {
       enableSortMethod: true,
       enableSortOrder: true,
       enableContentViewSwitch: true,
-      defaultContentView: ContentView.list,
       sortMethods: [
         SortMethodDesc(
           icon: Symbols.title,

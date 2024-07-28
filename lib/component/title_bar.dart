@@ -1,5 +1,6 @@
 // ignore_for_file: camel_case_types
 
+import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/component/horizontal_lyric_view.dart';
 import 'package:coriander_player/component/responsive_builder.dart';
@@ -248,6 +249,7 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
             await savePlaylists();
             await saveLyricSources();
             await AppSettings.instance.saveSettings();
+            await AppPreference.instance.save();
             await PlayService.instance.close();
             windowManager.close();
           },

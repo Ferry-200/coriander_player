@@ -1,3 +1,4 @@
+import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/component/audio_tile.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/page/uni_page.dart';
@@ -14,6 +15,7 @@ class AudiosPage extends StatelessWidget {
     final contentList = List<Audio>.from(AudioLibrary.instance.audioCollection);
     final multiSelectController = MultiSelectController<Audio>();
     return UniPage<Audio>(
+      pref: AppPreference.instance.audiosPagePref,
       title: "音乐",
       subtitle: "${contentList.length} 首乐曲",
       contentList: contentList,
@@ -27,7 +29,6 @@ class AudiosPage extends StatelessWidget {
       enableSortMethod: true,
       enableSortOrder: true,
       enableContentViewSwitch: true,
-      defaultContentView: ContentView.list,
       locateTo: locateTo,
       multiSelectController: multiSelectController,
       multiSelectViewActions: [

@@ -1,3 +1,4 @@
+import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/component/album_tile.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/page/uni_page.dart';
@@ -11,6 +12,7 @@ class AlbumsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final contentList = AudioLibrary.instance.albumCollection.values.toList();
     return UniPage<Album>(
+      pref: AppPreference.instance.albumsPagePref,
       title: "专辑",
       subtitle: "${contentList.length} 张专辑",
       contentList: contentList,
@@ -19,7 +21,6 @@ class AlbumsPage extends StatelessWidget {
       enableSortMethod: true,
       enableSortOrder: true,
       enableContentViewSwitch: true,
-      defaultContentView: ContentView.table,
       sortMethods: [
         SortMethodDesc(
           icon: Symbols.title,
