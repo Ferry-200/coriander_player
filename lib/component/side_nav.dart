@@ -38,11 +38,11 @@ class SideNav extends StatelessWidget {
     void onDestinationSelected(int value) {
       if (value == selected) return;
 
-      final index = app_paths.MAIN_PAGES.indexOf(destinations[value].desPath);
+      final index = app_paths.START_PAGES.indexOf(destinations[value].desPath);
       if (index != -1) AppPreference.instance.startPage = index;
 
       context.push(destinations[value].desPath);
-      
+
       var scaffold = Scaffold.of(context);
       if (scaffold.hasDrawer) scaffold.closeDrawer();
     }

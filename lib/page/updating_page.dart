@@ -54,7 +54,7 @@ class _UpdatingStateViewState extends State<UpdatingStateView> {
       readLyricSources(),
     ]).whenComplete(() {
       _subscription?.cancel();
-      context.go(app_paths.MAIN_PAGES[AppPreference.instance.startPage]);
+      context.go(app_paths.START_PAGES[AppPreference.instance.startPage]);
     });
   }
 
