@@ -53,7 +53,7 @@ class BassPlayer {
 
   /// audio's length in seconds
   double get length => _fstream == null
-      ? double.maxFinite
+      ? 1.0
       : _bass.BASS_ChannelBytes2Seconds(
           _fstream!, _bass.BASS_ChannelGetLength(_fstream!, BASS_POS_BYTE));
 
