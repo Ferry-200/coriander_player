@@ -100,6 +100,7 @@ class UniPage<T> extends StatefulWidget {
     this.subtitle,
     required this.contentList,
     required this.contentBuilder,
+    this.primaryAction,
     required this.enableShufflePlay,
     required this.enableSortMethod,
     required this.enableSortOrder,
@@ -117,6 +118,8 @@ class UniPage<T> extends StatefulWidget {
 
   final List<T> contentList;
   final ContentBuilder<T> contentBuilder;
+
+  final Widget? primaryAction;
 
   final bool enableShufflePlay;
   final bool enableSortMethod;
@@ -185,6 +188,9 @@ class _UniPageState<T> extends State<UniPage<T>> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> actions = [];
+    if (widget.primaryAction != null) {
+      actions.add(widget.primaryAction!);
+    }
     if (widget.enableShufflePlay) {
       actions.add(ShufflePlay<T>(contentList: widget.contentList));
     }

@@ -9,6 +9,7 @@ import 'package:coriander_player/page/audios_page.dart';
 import 'package:coriander_player/page/folder_detail_page.dart';
 import 'package:coriander_player/page/folders_page.dart';
 import 'package:coriander_player/page/now_playing_page/page.dart';
+import 'package:coriander_player/page/playlist_detail_page.dart';
 import 'package:coriander_player/page/playlists_page.dart';
 import 'package:coriander_player/page/search_page/search_page.dart';
 import 'package:coriander_player/page/search_page/single_result.dart';
