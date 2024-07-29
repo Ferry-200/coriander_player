@@ -57,9 +57,6 @@ class PlaybackService extends ChangeNotifier {
         case SMTCControlEvent.unknown:
       }
     });
-
-    setVolumeDsp(AppPreference.instance.playbackPref.volumeDsp);
-    print(volumeDsp);
   }
 
   final _player = BassPlayer();
@@ -106,6 +103,7 @@ class PlaybackService extends ChangeNotifier {
   /// 1. 更新 [_playlistIndex] 为 [audioIndex]
   /// 2. 更新 [nowPlaying] 为 playlist[_nowPlayingIndex]
   /// 3. _bassPlayer.setSource
+  /// 4. 设置解码音量
   /// 4. 获取歌词 **将 [_nextLyricLine] 置为0**
   /// 5. 播放
   /// 6. 通知并更新主题色
@@ -113,6 +111,7 @@ class PlaybackService extends ChangeNotifier {
     _playlistIndex = audioIndex;
     nowPlaying = playlist[audioIndex];
     _player.setSource(nowPlaying!.path);
+    setVolumeDsp(AppPreference.instance.playbackPref.volumeDsp);
 
     playService.lyricService.updateLyric();
 
