@@ -158,10 +158,19 @@ class AddAllToPlaylist extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MenuAnchor(
+      style: MenuStyle(
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        ),
+      ),
       menuChildren: List.generate(
         PLAYLISTS.length,
         (i) => MenuItemButton(
-          child: Text(PLAYLISTS[i].name),
+          style: const ButtonStyle(
+            padding: WidgetStatePropertyAll(
+              EdgeInsets.symmetric(horizontal: 20),
+            ),
+          ),
           onPressed: () {
             for (var item in multiSelectController.selected) {
               if (!PLAYLISTS[i]
@@ -176,6 +185,7 @@ class AddAllToPlaylist extends StatelessWidget {
               ),
             ));
           },
+          child: Text(PLAYLISTS[i].name),
         ),
       ),
       builder: (context, controller, _) => FilledButton.icon(
