@@ -83,6 +83,7 @@ class __NowPlayingBody_SmallState extends State<_NowPlayingBody_Small> {
       _viewMode = _viewMode == NowPlayingViewMode.withPlaylist
           ? NowPlayingViewMode.onlyMain
           : NowPlayingViewMode.withPlaylist;
+      AppPreference.instance.nowPlayingViewMode = _viewMode;
     });
   }
 
@@ -91,6 +92,7 @@ class __NowPlayingBody_SmallState extends State<_NowPlayingBody_Small> {
       _viewMode = _viewMode == NowPlayingViewMode.withLyric
           ? NowPlayingViewMode.onlyMain
           : NowPlayingViewMode.withLyric;
+      AppPreference.instance.nowPlayingViewMode = _viewMode;
     });
   }
 
@@ -310,6 +312,7 @@ class __NowPlayingBody_LargeState extends State<_NowPlayingBody_Large> {
       _viewMode = _viewMode == NowPlayingViewMode.withPlaylist
           ? NowPlayingViewMode.onlyMain
           : NowPlayingViewMode.withPlaylist;
+      AppPreference.instance.nowPlayingViewMode = _viewMode;
     });
   }
 
@@ -318,6 +321,7 @@ class __NowPlayingBody_LargeState extends State<_NowPlayingBody_Large> {
       _viewMode = _viewMode == NowPlayingViewMode.withLyric
           ? NowPlayingViewMode.onlyMain
           : NowPlayingViewMode.withLyric;
+      AppPreference.instance.nowPlayingViewMode = _viewMode;
     });
   }
 

@@ -92,7 +92,7 @@ class AppPreference {
       "playlistDetailPagePref": playlistDetailPagePref.toMap(),
       "startPage": startPage,
       "playbackPref": playbackPref.toMap(),
-      "nowPlayingViewMode": nowPlayingViewMode.toString(),
+      "nowPlayingViewMode": nowPlayingViewMode.name,
     };
 
     final prefJson = json.encode(prefMap);
