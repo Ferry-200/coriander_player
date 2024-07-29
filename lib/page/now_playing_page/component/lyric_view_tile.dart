@@ -50,6 +50,14 @@ class _SyncLineContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
+    if (syncLine.words.isEmpty) {
+      if (syncLine.length > const Duration(seconds: 5) && isMainLine) {
+        return LyricTransitionTile(syncLine: syncLine);
+      } else {
+        return const SizedBox.shrink();
+      }
+    }
+
     if (!isMainLine) {
       if (syncLine.words.isEmpty) {
         return const SizedBox.shrink();
@@ -69,14 +77,6 @@ class _SyncLineContent extends StatelessWidget {
           children: contents,
         ),
       );
-    }
-
-    if (syncLine.words.isEmpty) {
-      if (syncLine.length > const Duration(seconds: 5) && isMainLine) {
-        return LyricTransitionTile(syncLine: syncLine);
-      } else {
-        return const SizedBox.shrink();
-      }
     }
 
     final List<Widget> contents = [
