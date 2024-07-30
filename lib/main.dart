@@ -12,7 +12,7 @@ Future<void> initWindow() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
   WindowOptions windowOptions = WindowOptions(
-    minimumSize: const Size(496, 756),
+    minimumSize: const Size(507, 756),
     size: AppSettings.instance.windowSize,
     center: true,
     backgroundColor: Colors.transparent,
