@@ -88,6 +88,7 @@ class _SearchPageState extends State<SearchPage> {
             SizedBox(
               width: 400,
               child: TextField(
+                autofocus: true,
                 controller: editingController,
 
                 /// when 'enter' is pressed

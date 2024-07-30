@@ -44,6 +44,7 @@ class _ThemePickerDialogState extends State<ThemePickerDialog> {
                 ),
               ),
               TextField(
+                autofocus: true,
                 controller: rgbHexTextEditingController,
                 onChanged: (value) {
                   setState(() {

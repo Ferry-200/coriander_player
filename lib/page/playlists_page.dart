@@ -157,6 +157,7 @@ class _NewPlaylistDialog extends StatelessWidget {
                 ),
               ),
               TextField(
+                autofocus: true,
                 controller: editingController,
                 onSubmitted: (value) {
                   Navigator.pop(context, value);
@@ -224,6 +225,7 @@ class _EditPlaylistDialog extends StatelessWidget {
                 ),
               ),
               TextField(
+                autofocus: true,
                 controller: editingController,
                 onSubmitted: (value) {
                   Navigator.pop(context, value);
