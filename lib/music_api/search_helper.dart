@@ -236,9 +236,6 @@ Future<Lyric?> getOnlineLyric({
   } else if (neteaseSongId != null) {
     lyric = await _getNeteaseUnsyncLyric(neteaseSongId);
   }
-  if (lyric != null && belongTo != null) {
-    lyric.belongTo = belongTo;
-  }
   return lyric;
 }
 

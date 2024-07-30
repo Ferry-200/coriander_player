@@ -1,7 +1,4 @@
-import 'package:coriander_player/library/audio_library.dart';
-
 abstract class Lyric {
-  late Audio belongTo;
   List<LyricLine> lines;
 
   Lyric(this.lines);

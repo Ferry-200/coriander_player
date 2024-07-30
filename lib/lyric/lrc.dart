@@ -170,9 +170,6 @@ class Lrc extends Lyric {
       return Lrc.fromLrcText(value, LrcSource.local, separator: separator);
     });
 
-    if (lyric != null) {
-      lyric.belongTo = belongTo;
-    }
     return lyric;
   }
 }
