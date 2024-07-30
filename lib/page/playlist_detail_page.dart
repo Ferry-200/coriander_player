@@ -17,7 +17,7 @@ class PlaylistDetailPage extends StatefulWidget {
 }
 
 class _PlaylistDetailPageState extends State<PlaylistDetailPage> {
-  late final contentList = widget.playlist.audios;
+  late final contentList = widget.playlist.audios.values.toList();
   final multiSelectController = MultiSelectController<Audio>();
 
   @override
@@ -45,9 +45,7 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage> {
           onPressed: () {
             setState(() {
               for (var item in multiSelectController.selected) {
-                widget.playlist.audios.removeWhere(
-                  (audio) => audio.path == item.path,
-                );
+                widget.playlist.audios.remove(item.path);
               }
             });
           },

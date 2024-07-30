@@ -94,9 +94,7 @@ class AudioTile extends StatelessWidget {
             PLAYLISTS.length,
             (i) => MenuItemButton(
               onPressed: () {
-                final added = PLAYLISTS[i]
-                    .audios
-                    .any((element) => element.path == audio.path);
+                final added = PLAYLISTS[i].audios.containsKey(audio.path);
                 if (added) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text("歌曲“${audio.title}”已存在"),
@@ -104,7 +102,7 @@ class AudioTile extends StatelessWidget {
                   return;
                 }
 
-                PLAYLISTS[i].audios.add(audio);
+                PLAYLISTS[i].audios[audio.path] = audio;
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(
                     "成功将“${audio.title}”添加到歌单“${PLAYLISTS[i].name}”",
@@ -157,7 +155,8 @@ class AudioTile extends StatelessWidget {
               if (multiSelectController == null ||
                   !multiSelectController!.enableMultiSelectView) {
                 try {
-                  PlayService.instance.playbackService.play(audioIndex, playlist);
+                  PlayService.instance.playbackService
+                      .play(audioIndex, playlist);
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(e.toString())),

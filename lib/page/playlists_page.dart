@@ -21,7 +21,7 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
     );
     if (name == null) return;
     setState(() {
-      PLAYLISTS.add(Playlist(name, []));
+      PLAYLISTS.add(Playlist(name, {}));
     });
   }
 

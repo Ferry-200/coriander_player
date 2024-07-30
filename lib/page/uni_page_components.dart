@@ -175,10 +175,8 @@ class AddAllToPlaylist extends StatelessWidget {
           ),
           onPressed: () {
             for (var item in multiSelectController.selected) {
-              if (!PLAYLISTS[i]
-                  .audios
-                  .any((audio) => audio.path == item.path)) {
-                PLAYLISTS[i].audios.add(item);
+              if (!PLAYLISTS[i].audios.containsKey(item.path)) {
+                PLAYLISTS[i].audios[item.path] = item;
               }
             }
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(

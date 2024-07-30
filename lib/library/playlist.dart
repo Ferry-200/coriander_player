@@ -36,20 +36,27 @@ Future<void> savePlaylists() async {
 
 class Playlist {
   String name;
-  List<Audio> audios;
+
+  /// path, audio
+  Map<String, Audio> audios;
 
   Playlist(this.name, this.audios);
 
-  Map toMap() => {
-        "name": name,
-        "audios": List.generate(audios.length, (i) => audios[i].toMap())
-      };
+  Map toMap() {
+    final List<Map> audioMaps = [];
+    for (var item in audios.values) {
+      audioMaps.add(item.toMap());
+    }
+    return {"name": name, "audios": audioMaps};
+  }
 
   factory Playlist.fromMap(Map map) {
+    final Map<String, Audio> audios = {};
     final List audioMaps = map["audios"];
-    return Playlist(
-      map["name"],
-      List.generate(audioMaps.length, (i) => Audio.fromMap(audioMaps[i])),
-    );
+    for (var item in audioMaps) {
+      final audio = Audio.fromMap(item);
+      audios[audio.path] = audio;
+    }
+    return Playlist(map["name"], audios);
   }
 }
