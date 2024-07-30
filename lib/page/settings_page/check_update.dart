@@ -27,38 +27,53 @@ class _CheckForUpdateState extends State<CheckForUpdate> {
                   isChecking = true;
                 });
 
-                final newest = await AppSettings.github.repositories
-                    .listReleases(
-                      RepositorySlug("Ferry-200", "coriander_player"),
-                    )
-                    .first;
-                final newestVer = int.tryParse(
-                      newest.tagName?.substring(1).replaceAll(".", "") ?? "",
-                    ) ??
-                    0;
-                final currVer = int.tryParse(
-                      AppSettings.version.replaceAll(".", ""),
-                    ) ??
-                    0;
-                if (newestVer > currVer) {
-                  if (context.mounted) {
-                    showDialog(
-                      context: context,
-                      builder: (context) => NewestUpdateView(release: newest),
-                    );
+                try {
+                  final newest = await AppSettings.github.repositories
+                      .listReleases(
+                        RepositorySlug("Ferry-200", "coriander_player"),
+                      )
+                      .first;
+                  final newestVer = int.tryParse(
+                        newest.tagName?.substring(1).replaceAll(".", "") ?? "",
+                      ) ??
+                      0;
+                  final currVer = int.tryParse(
+                        AppSettings.version.replaceAll(".", ""),
+                      ) ??
+                      0;
+                  if (newestVer > currVer) {
+                    if (context.mounted) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => NewestUpdateView(release: newest),
+                      );
+                    }
+                  } else {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("无新版本"),
+                      ));
+                    }
                   }
-                } else {
+                } catch (err) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text("无新版本"),
+                      content: Text("网络异常"),
                     ));
                   }
+                  setState(() {
+                    isChecking = false;
+                  });
                 }
 
                 setState(() {
                   isChecking = false;
                 });
               },
+      ),
+      const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8.0),
+        child: Text("当前版本：${AppSettings.version}"),
       ),
       if (isChecking)
         const Padding(
