@@ -132,6 +132,7 @@ class _FolderSelectorViewState extends State<FolderSelectorView> {
             itemBuilder: (context, i) => ListTile(
               title: Text(folders[i]),
               trailing: IconButton(
+                tooltip: "移除",
                 onPressed: () {
                   setState(() {
                     folders.removeAt(i);

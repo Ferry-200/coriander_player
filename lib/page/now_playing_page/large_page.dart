@@ -79,6 +79,10 @@ class _NowPlayingLargeViewSwitch extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: NOW_PLAYING_VIEW_MODE,
       builder: (context, value, _) => IconButton(
+        tooltip: switch (value) {
+          NowPlayingViewMode.withPlaylist => "歌词",
+          _ => "播放列表",
+        },
         onPressed: () {
           if (value == NowPlayingViewMode.onlyMain ||
               value == NowPlayingViewMode.withLyric) {

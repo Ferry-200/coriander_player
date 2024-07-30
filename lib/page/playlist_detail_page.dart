@@ -41,6 +41,7 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage> {
       multiSelectController: multiSelectController,
       multiSelectViewActions: [
         IconButton.filled(
+          tooltip: "移除选中歌曲",
           onPressed: () {
             setState(() {
               for (var item in multiSelectController.selected) {

@@ -130,6 +130,7 @@ class _AudioLibraryEditorDialogState extends State<AudioLibraryEditorDialog> {
                           itemBuilder: (context, i) => ListTile(
                             title: Text(folders[i], maxLines: 1),
                             trailing: IconButton(
+                              tooltip: "移除",
                               color: scheme.error,
                               onPressed: () {
                                 setState(() {

@@ -148,6 +148,8 @@ class _NowPlayingForeground extends StatelessWidget {
                       }
 
                       return IconButton.filled(
+                        tooltip:
+                            snapshot.data! == PlayerState.playing ? "暂停" : "播放",
                         onPressed: onPressed,
                         icon: Icon(
                           snapshot.data! == PlayerState.playing

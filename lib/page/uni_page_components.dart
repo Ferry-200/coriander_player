@@ -124,6 +124,7 @@ class SortOrderSwitch<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     var isAscending = sortOrder == SortOrder.ascending;
     return IconButton.filledTonal(
+      tooltip: "切换排序顺序；现在：${isAscending ? "升序" : "降序"}",
       onPressed: () => setSortOrder(
         isAscending ? SortOrder.decending : SortOrder.ascending,
       ),
@@ -142,6 +143,7 @@ class ContentViewSwitch<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     var isListView = contentView == ContentView.list;
     return IconButton.filledTonal(
+      tooltip: "切换页面视图；现在：${isListView ? "列表" : "表格"}",
       onPressed: () => setContentView(
         isListView ? ContentView.table : ContentView.list,
       ),
@@ -220,6 +222,7 @@ class MultiSelectSelectOrClearAll<T> extends StatelessWidget {
     return ListenableBuilder(
       listenable: multiSelectController,
       builder: (context, _) => IconButton.filledTonal(
+        tooltip: multiSelectController.selected.isEmpty ? "全选" : "取消全选",
         onPressed: () {
           if (multiSelectController.selected.isEmpty) {
             multiSelectController.selectAll(contentList);
@@ -245,6 +248,7 @@ class MultiSelectExit<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton.filledTonal(
+      tooltip: "退出多选视图",
       onPressed: () {
         multiSelectController.useMultiSelectView(false);
         multiSelectController.clear();

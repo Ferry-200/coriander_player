@@ -164,6 +164,7 @@ class _OpenDrawerBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
+      tooltip: "打开导航栏",
       onPressed: Scaffold.of(context).openDrawer,
       icon: const Icon(Symbols.side_navigation),
     );
@@ -176,6 +177,7 @@ class NavBackBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
+      tooltip: "返回",
       onPressed: () {
         if (context.canPop()) {
           context.pop();
@@ -227,6 +229,7 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
       spacing: 8.0,
       children: [
         IconButton(
+          tooltip: "最小化",
           onPressed: windowManager.minimize,
           icon: const Icon(Symbols.remove),
         ),
@@ -235,6 +238,7 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
           builder: (context, snapshot) {
             final isMaximized = snapshot.data ?? false;
             return IconButton(
+              tooltip: isMaximized ? "还原" : "最大化",
               onPressed: isMaximized
                   ? windowManager.unmaximize
                   : windowManager.maximize,
@@ -245,6 +249,7 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
           },
         ),
         IconButton(
+          tooltip: "退出",
           onPressed: () async {
             await savePlaylists();
             await saveLyricSources();

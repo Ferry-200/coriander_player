@@ -96,6 +96,7 @@ class _SearchPageState extends State<SearchPage> {
                   suffixIcon: Padding(
                     padding: const EdgeInsets.only(right: 12.0),
                     child: IconButton(
+                      tooltip: "搜索",
                       icon: const Icon(Symbols.search),
                       onPressed: toUnionPage,
                     ),
