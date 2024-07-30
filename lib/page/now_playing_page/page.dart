@@ -16,7 +16,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
-import 'package:squiggly_slider/slider.dart';
 import 'package:window_manager/window_manager.dart';
 
 part 'small_page.dart';
@@ -398,15 +397,10 @@ class _NowPlayingSliderState extends State<_NowPlayingSlider> {
               builder: (context, _) => StreamBuilder(
                 stream: playbackService.positionStream,
                 initialData: playbackService.position,
-                builder: (context, positionSnapshot) => SquigglySlider(
+                builder: (context, positionSnapshot) => Slider(
                   thumbColor: scheme.primary,
                   activeColor: scheme.primary,
                   inactiveColor: scheme.outline,
-                  useLineThumb: true,
-                  squiggleAmplitude:
-                      playerStateSnapshot.data == PlayerState.playing ? 6.0 : 0,
-                  squiggleWavelength: 10.0,
-                  squiggleSpeed: 0.08,
                   min: 0.0,
                   max: nowPlayingLength,
                   value: isDragging
@@ -429,6 +423,37 @@ class _NowPlayingSliderState extends State<_NowPlayingSlider> {
                     playbackService.seek(value);
                   },
                 ),
+                // builder: (context, positionSnapshot) => SquigglySlider(
+                //   thumbColor: scheme.primary,
+                //   activeColor: scheme.primary,
+                //   inactiveColor: scheme.outline,
+                //   useLineThumb: true,
+                //   squiggleAmplitude:
+                //       playerStateSnapshot.data == PlayerState.playing ? 6.0 : 0,
+                //   squiggleWavelength: 10.0,
+                //   squiggleSpeed: 0.08,
+                //   min: 0.0,
+                //   max: nowPlayingLength,
+                //   value: isDragging
+                //       ? dragPosition.value
+                //       : positionSnapshot.data! > nowPlayingLength
+                //           ? nowPlayingLength
+                //           : positionSnapshot.data!,
+                //   label: Duration(
+                //     milliseconds: (dragPosition.value * 1000).toInt(),
+                //   ).toStringHMMSS(),
+                //   onChangeStart: (value) {
+                //     isDragging = true;
+                //     dragPosition.value = value;
+                //   },
+                //   onChanged: (value) {
+                //     dragPosition.value = value;
+                //   },
+                //   onChangeEnd: (value) {
+                //     isDragging = false;
+                //     playbackService.seek(value);
+                //   },
+                // ),
               ),
             ),
           ),
