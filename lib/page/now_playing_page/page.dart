@@ -529,49 +529,52 @@ class __NowPlayingInfoState extends State<_NowPlayingInfo> {
     );
 
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            nowPlaying == null ? "Coriander Music" : nowPlaying.title,
-            maxLines: 1,
-            style: TextStyle(
-              color: scheme.onSecondaryContainer,
-              fontWeight: FontWeight.w600,
-              fontSize: 20,
+      child: SizedBox(
+        width: 400.0,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              nowPlaying == null ? "Coriander Music" : nowPlaying.title,
+              maxLines: 1,
+              style: TextStyle(
+                color: scheme.onSecondaryContainer,
+                fontWeight: FontWeight.w600,
+                fontSize: 20,
+              ),
             ),
-          ),
-          Text(
-            nowPlaying == null
-                ? "Enjoy Music"
-                : "${nowPlaying.artist} - ${nowPlaying.album}",
-            maxLines: 1,
-            style: TextStyle(color: scheme.onSecondaryContainer),
-          ),
-          const SizedBox(height: 16),
-          RepaintBoundary(
-            child: nowPlayingCover == null
-                ? placeholder
-                : FutureBuilder(
-                    future: nowPlayingCover,
-                    builder: (context, snapshot) {
-                      if (snapshot.data == null) {
-                        return placeholder;
-                      }
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Image(
-                          image: snapshot.data!,
-                          width: 400.0,
-                          height: 400.0,
-                          errorBuilder: (_, __, ___) => placeholder,
-                        ),
-                      );
-                    },
-                  ),
-          )
-        ],
+            Text(
+              nowPlaying == null
+                  ? "Enjoy Music"
+                  : "${nowPlaying.artist} - ${nowPlaying.album}",
+              maxLines: 1,
+              style: TextStyle(color: scheme.onSecondaryContainer),
+            ),
+            const SizedBox(height: 16),
+            RepaintBoundary(
+              child: nowPlayingCover == null
+                  ? placeholder
+                  : FutureBuilder(
+                      future: nowPlayingCover,
+                      builder: (context, snapshot) {
+                        if (snapshot.data == null) {
+                          return placeholder;
+                        }
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image(
+                            image: snapshot.data!,
+                            width: 400.0,
+                            height: 400.0,
+                            errorBuilder: (_, __, ___) => placeholder,
+                          ),
+                        );
+                      },
+                    ),
+            )
+          ],
+        ),
       ),
     );
   }
