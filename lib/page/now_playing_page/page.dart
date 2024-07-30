@@ -382,6 +382,7 @@ class _NowPlayingSliderState extends State<_NowPlayingSlider> {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final playbackService = context.watch<PlaybackService>();
+    final nowPlayingLength = playbackService.length;
 
     return Column(
       children: [
@@ -407,10 +408,12 @@ class _NowPlayingSliderState extends State<_NowPlayingSlider> {
                   squiggleWavelength: 10.0,
                   squiggleSpeed: 0.08,
                   min: 0.0,
-                  max: playbackService.length,
+                  max: nowPlayingLength,
                   value: isDragging
                       ? dragPosition.value
-                      : positionSnapshot.data ?? playbackService.position,
+                      : positionSnapshot.data! > nowPlayingLength
+                          ? nowPlayingLength
+                          : positionSnapshot.data!,
                   label: Duration(
                     milliseconds: (dragPosition.value * 1000).toInt(),
                   ).toStringHMMSS(),
@@ -439,7 +442,7 @@ class _NowPlayingSliderState extends State<_NowPlayingSlider> {
                 stream: playbackService.positionStream,
                 initialData: playbackService.position,
                 builder: (context, snapshot) {
-                  final pos = snapshot.data ?? playbackService.position;
+                  final pos = snapshot.data!;
                   return Text(
                     Duration(
                       milliseconds: (pos * 1000).toInt(),
@@ -450,7 +453,7 @@ class _NowPlayingSliderState extends State<_NowPlayingSlider> {
               ),
               Text(
                 Duration(
-                  milliseconds: (playbackService.length * 1000).toInt(),
+                  milliseconds: (nowPlayingLength * 1000).toInt(),
                 ).toStringHMMSS(),
                 style: TextStyle(color: scheme.onSecondaryContainer),
               ),
