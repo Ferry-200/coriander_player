@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:coriander_player/lyric/lrc.dart';
 import 'package:coriander_player/lyric/lyric.dart';
+import 'package:coriander_player/page/now_playing_page/component/lyric_source_view.dart';
 import 'package:coriander_player/page/now_playing_page/component/lyric_view_tile.dart';
 import 'package:coriander_player/play_service/play_service.dart';
 import 'package:flutter/material.dart';
@@ -36,13 +37,34 @@ class VerticalLyricView extends StatelessWidget {
           listenable: PlayService.instance.lyricService,
           builder: (context, _) => FutureBuilder(
             future: PlayService.instance.lyricService.currLyricFuture,
-            builder: (context, snapshot) => switch (snapshot.connectionState) {
-              ConnectionState.none => loadingWidget,
-              ConnectionState.waiting => loadingWidget,
-              ConnectionState.active => loadingWidget,
-              ConnectionState.done => snapshot.data == null
-                  ? noLyricWidget
-                  : _VerticalLyricScrollView(lyric: snapshot.data!),
+            builder: (context, snapshot) {
+              final lyricService = PlayService.instance.lyricService;
+
+              final lyricNullable = snapshot.data;
+              final bool? isLocal = lyricNullable == null
+                  ? null
+                  : (lyricNullable is Lrc &&
+                      lyricNullable.source == LrcSource.local);
+
+              return Stack(
+                children: [
+                  switch (snapshot.connectionState) {
+                    ConnectionState.none => loadingWidget,
+                    ConnectionState.waiting => loadingWidget,
+                    ConnectionState.active => loadingWidget,
+                    ConnectionState.done => lyricNullable == null
+                        ? noLyricWidget
+                        : _VerticalLyricScrollView(lyric: lyricNullable),
+                  },
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: SetLyricSourceBtn(
+                      lyricService: lyricService,
+                      isLocal: isLocal,
+                    ),
+                  )
+                ],
+              );
             },
           ),
         ),

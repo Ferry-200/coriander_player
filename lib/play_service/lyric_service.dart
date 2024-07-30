@@ -131,6 +131,17 @@ class LyricService extends ChangeNotifier {
     notifyListeners();
   }
 
+  void useSpecificLyric(Lyric lyric) {
+    currLyricFuture.ignore();
+
+    currLyricFuture = Future.value(lyric);
+    currLyricFuture.then((value) {
+      findCurrLyricLine();
+    });
+
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     _lyricLineStreamController.close();
