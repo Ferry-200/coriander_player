@@ -1,7 +1,7 @@
+import 'package:coriander_player/extensions.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/album_tile.dart';
 import 'package:coriander_player/component/artist_tile.dart';
-import 'package:coriander_player/lyric/lrc.dart';
 import 'package:coriander_player/src/rust/api/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -21,8 +21,7 @@ class AudioDetailPage extends StatelessWidget {
       },
     );
     final album = AudioLibrary.instance.albumCollection[audio.album]!;
-    const space = SizedBox(height: 16.0);
-    final lyric = Lrc.fromAudioPath(audio, separator: "\n");
+    const space = SizedBox(height: 12.0);
 
     final styleTitle = TextStyle(fontSize: 22, color: scheme.onSurface);
     final styleContent = TextStyle(fontSize: 16, color: scheme.onSurface);
@@ -71,28 +70,46 @@ class AudioDetailPage extends StatelessWidget {
             space,
 
             /// artists
-            Text("艺术家", style: styleTitle),
-            space,
-            Wrap(
-              spacing: 8.0,
-              runSpacing: 8.0,
-              children: List.generate(
-                artists.length,
-                (i) {
-                  return SizedBox(
-                    width: 300,
-                    child: ArtistTile(artist: artists[i]),
-                  );
-                },
+            _AudioDetailTile(
+              title: "艺术家",
+              detail: Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                children: List.generate(
+                  artists.length,
+                  (i) {
+                    return SizedBox(
+                      width: 300,
+                      child: ArtistTile(artist: artists[i]),
+                    );
+                  },
+                ),
               ),
             ),
-            space,
 
             /// album
-            Text("专辑", style: styleTitle),
-            space,
-            AlbumTile(album: album),
-            space,
+            _AudioDetailTile(
+              title: "专辑",
+              detail: AlbumTile(album: album),
+            ),
+            _AudioDetailTile(
+              title: "音轨",
+              detail: Text(audio.track.toString()),
+            ),
+            _AudioDetailTile(
+              title: "时长",
+              detail: Text(Duration(
+                milliseconds: (audio.duration * 1000).toInt(),
+              ).toStringHMMSS()),
+            ),
+            _AudioDetailTile(
+              title: "码率",
+              detail: Text("${audio.bitrate} kbps"),
+            ),
+            _AudioDetailTile(
+              title: "采样率",
+              detail: Text("${audio.sampleRate} hz"),
+            ),
 
             /// path
             Wrap(
@@ -113,74 +130,62 @@ class AudioDetailPage extends StatelessWidget {
                 )
               ],
             ),
-            space,
+            const SizedBox(height: 8),
             Text(audio.path, style: styleContent),
             space,
 
             /// modified
-            Text("修改时间", style: styleTitle),
-            space,
-            Text(
-              DateTime.fromMillisecondsSinceEpoch(
-                audio.modified * 1000,
-              ).toString(),
-              style: styleContent,
+            _AudioDetailTile(
+              title: "修改时间",
+              detail: Text(
+                DateTime.fromMillisecondsSinceEpoch(
+                  audio.modified * 1000,
+                ).toString(),
+              ),
             ),
-            space,
 
             /// created
-            Text("创建时间", style: styleTitle),
-            space,
-            Text(
-              DateTime.fromMillisecondsSinceEpoch(
-                audio.created * 1000,
-              ).toString(),
-              style: styleContent,
-            ),
-            space,
-
-            /// lyric
-            FutureBuilder(
-              future: lyric,
-              builder: (context, snapshot) {
-                if (snapshot.data == null) return const SizedBox.shrink();
-
-                return Text(
-                  "歌词（${snapshot.data!.source.name}）",
-                  style: styleTitle,
-                );
-              },
-            ),
-            space,
-            SizedBox(
-              height: 400,
-              child: FutureBuilder(
-                future: lyric,
-                builder: (context, snapshot) {
-                  if (snapshot.data == null) {
-                    return const SizedBox.shrink();
-                  }
-
-                  return ListView.builder(
-                    itemCount: snapshot.data!.lines.length,
-                    itemBuilder: (context, i) {
-                      return ListTile(
-                        title: Text(
-                          snapshot.data!.lines[i].start.toString(),
-                          style: styleContent,
-                        ),
-                        subtitle: Text(
-                          (snapshot.data!.lines[i] as LrcLine).content,
-                          style: styleContent,
-                        ),
-                      );
-                    },
-                  );
-                },
+            _AudioDetailTile(
+              title: "创建时间",
+              detail: Text(
+                DateTime.fromMillisecondsSinceEpoch(
+                  audio.created * 1000,
+                ).toString(),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _AudioDetailTile extends StatelessWidget {
+  const _AudioDetailTile({
+    super.key,
+    required this.title,
+    required this.detail,
+  });
+
+  final String title;
+  final Widget detail;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: TextStyle(fontSize: 22, color: scheme.onSurface)),
+          const SizedBox(height: 4.0),
+          DefaultTextStyle(
+            style: TextStyle(fontSize: 16, color: scheme.onSurface),
+            child: detail,
+          ),
+        ],
       ),
     );
   }
