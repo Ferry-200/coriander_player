@@ -221,7 +221,6 @@ Future<Krc?> _getKugouSyncLyric(String kugouSongHash) async {
 }
 
 Future<Lyric?> getOnlineLyric({
-  Audio? belongTo,
   int? qqSongId,
   String? kugouSongHash,
   String? neteaseSongId,
@@ -248,22 +247,13 @@ Future<Lyric?> getMostMatchedLyric(Audio audio) async {
   final mostMatch = unisearchResult.first;
   switch (mostMatch.source) {
     case ResultSource.qq:
-      lyric = await getOnlineLyric(
-        belongTo: audio,
-        qqSongId: mostMatch.qqSongId,
-      );
+      lyric = await getOnlineLyric(qqSongId: mostMatch.qqSongId);
       break;
     case ResultSource.kugou:
-      lyric = await getOnlineLyric(
-        belongTo: audio,
-        kugouSongHash: mostMatch.kugouSongHash,
-      );
+      lyric = await getOnlineLyric(kugouSongHash: mostMatch.kugouSongHash);
       break;
     case ResultSource.netease:
-      lyric = await getOnlineLyric(
-        belongTo: audio,
-        neteaseSongId: mostMatch.neteaseSongId,
-      );
+      lyric = await getOnlineLyric(neteaseSongId: mostMatch.neteaseSongId);
       break;
   }
 

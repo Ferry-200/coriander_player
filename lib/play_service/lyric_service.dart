@@ -89,7 +89,6 @@ class LyricService extends ChangeNotifier {
         currLyricFuture = Lrc.fromAudioPath(nowPlaying);
       } else {
         currLyricFuture = getOnlineLyric(
-          belongTo: nowPlaying,
           qqSongId: lyricSource.qqSongId,
           kugouSongHash: lyricSource.kugouSongHash,
           neteaseSongId: lyricSource.neteaseSongId,
