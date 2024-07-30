@@ -138,10 +138,12 @@ class _NowPlayingSmallViewSwitchState
       child: SizedBox(
         width: 32,
         child: Material(
+          borderRadius: BorderRadius.circular(16.0),
           type: MaterialType.transparency,
           child: Opacity(
             opacity: visible ? 1.0 : 0.0,
             child: InkWell(
+              borderRadius: BorderRadius.circular(16.0),
               hoverColor: scheme.onSecondaryContainer.withOpacity(0.08),
               highlightColor: scheme.onSecondaryContainer.withOpacity(0.12),
               splashColor: scheme.onSecondaryContainer.withOpacity(0.12),
