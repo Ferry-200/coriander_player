@@ -130,20 +130,29 @@ Future<List<SongSearchResult>> uniSearch(Audio audio) async {
 
   final Map qqAnswer = (await QQ.search(keyWord: query)).data;
   final List qqResultList = qqAnswer["req"]["data"]["body"]["item_song"];
-  for (var itemSong in qqResultList) {
-    result.add(SongSearchResult.fromQQSearchResult(itemSong, audio));
+  for (int i = 0; i < qqResultList.length || i < 5; i++) {
+    result.add(SongSearchResult.fromQQSearchResult(
+      qqResultList[i],
+      audio,
+    ));
   }
 
   final Map kugouAnswer = (await KuGou.searchSong(keyword: query)).data;
   final List kugouResultList = kugouAnswer["data"]["info"];
-  for (var info in kugouResultList) {
-    result.add(SongSearchResult.fromKugouSearchResult(info, audio));
+  for (int j = 0; j < kugouResultList.length || j < 5; j++) {
+    result.add(SongSearchResult.fromKugouSearchResult(
+      kugouResultList[j],
+      audio,
+    ));
   }
 
   final Map neteaseAnswer = (await Netease.search(keyWord: query)).data;
   final List neteaseResultList = neteaseAnswer["result"]["songs"];
-  for (var song in neteaseResultList) {
-    result.add(SongSearchResult.fromNeteaseSearchResult(song, audio));
+  for (int k = 0; k < neteaseResultList.length || k < 5; k++) {
+    result.add(SongSearchResult.fromNeteaseSearchResult(
+      neteaseResultList[k],
+      audio,
+    ));
   }
 
   result.sort((a, b) => b.score.compareTo(a.score));
