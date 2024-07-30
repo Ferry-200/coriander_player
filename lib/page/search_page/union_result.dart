@@ -31,9 +31,15 @@ class UnionSearchResultPage extends StatelessWidget {
           itemCount: min(3, result.audios.length),
           itemBuilder: (context, i) {
             return ListTile(
-              title: Text(result.audios[i].title),
+              title: Text(
+                result.audios[i].title,
+                maxLines: 1,
+              ),
               subtitle: Text(
-                  "${result.audios[i].artist} - ${result.audios[i].album}"),
+                "${result.audios[i].artist} - ${result.audios[i].album}",
+                maxLines: 2,
+              ),
+              isThreeLine: true,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
@@ -76,7 +82,7 @@ class UnionSearchResultPage extends StatelessWidget {
           itemBuilder: (context, i) {
             final artist = result.artists[i];
             return ListTile(
-              title: Text(artist.name),
+              title: Text(artist.name, maxLines: 1),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
@@ -119,7 +125,7 @@ class UnionSearchResultPage extends StatelessWidget {
           itemBuilder: (context, i) {
             final album = result.album[i];
             return ListTile(
-              title: Text(album.name),
+              title: Text(album.name, maxLines: 1),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),

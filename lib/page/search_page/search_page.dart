@@ -7,7 +7,6 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 class UnionSearchResult {
   String query;
 
-  /// key: audio, value: position
   List<Audio> audios = [];
   List<Artist> artists = [];
   List<Album> album = [];

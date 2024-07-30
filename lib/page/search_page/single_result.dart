@@ -31,8 +31,15 @@ class AudioSearchResultPage extends StatelessWidget {
               itemCount: result.length,
               itemBuilder: (context, i) {
                 return ListTile(
-                  title: Text(result[i].title),
-                  subtitle: Text("${result[i].artist} - ${result[i].album}"),
+                  title: Text(
+                    result[i].title,
+                    maxLines: 1,
+                  ),
+                  subtitle: Text(
+                    "${result[i].artist} - ${result[i].album}",
+                    maxLines: 2,
+                  ),
+                  isThreeLine: true,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -78,7 +85,7 @@ class ArtistSearchResultPage extends StatelessWidget {
               itemCount: result.length,
               itemBuilder: (context, i) {
                 return ListTile(
-                  title: Text(result[i].name),
+                  title: Text(result[i].name, maxLines: 1),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -127,7 +134,7 @@ class AlbumSearchResultPage extends StatelessWidget {
               itemCount: result.length,
               itemBuilder: (context, i) {
                 return ListTile(
-                  title: Text(result[i].name),
+                  title: Text(result[i].name, maxLines: 1),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
