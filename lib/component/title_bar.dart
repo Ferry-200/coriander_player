@@ -47,7 +47,7 @@ class _TitleBar_Small extends StatelessWidget {
           children: [
             const _OpenDrawerBtn(),
             const SizedBox(width: 8.0),
-            const _NavBackBtn(),
+            const NavBackBtn(),
             Expanded(
               child: DragToMoveArea(
                 child: Padding(
@@ -78,7 +78,7 @@ class _TitleBar_Medium extends StatelessWidget {
       children: [
         const SizedBox(
           width: 80,
-          child: Center(child: _NavBackBtn()),
+          child: Center(child: NavBackBtn()),
         ),
         Expanded(
           child: DragToMoveArea(
@@ -119,7 +119,7 @@ class _TitleBar_Large extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Row(
         children: [
-          const _NavBackBtn(),
+          const NavBackBtn(),
           const SizedBox(width: 8.0),
           Expanded(
             child: DragToMoveArea(
@@ -170,8 +170,8 @@ class _OpenDrawerBtn extends StatelessWidget {
   }
 }
 
-class _NavBackBtn extends StatelessWidget {
-  const _NavBackBtn();
+class NavBackBtn extends StatelessWidget {
+  const NavBackBtn({super.key});
 
   @override
   Widget build(BuildContext context) {

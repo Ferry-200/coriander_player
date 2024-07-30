@@ -33,6 +33,7 @@ dependencies:
   crypto: ^3.0.3
   xml: ^6.5.0
   collection: ^1.18.0
+  squiggly_slider: ^1.0.5
 
 dev_dependencies:
   flutter_test:

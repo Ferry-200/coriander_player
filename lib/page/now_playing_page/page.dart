@@ -1,57 +1,26 @@
 // ignore_for_file: camel_case_types
 
 import 'package:coriander_player/app_preference.dart';
+import 'package:coriander_player/component/title_bar.dart';
+import 'package:coriander_player/extensions.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/responsive_builder.dart';
 import 'package:coriander_player/page/now_playing_page/component/current_playlist_view.dart';
-import 'package:coriander_player/page/now_playing_page/component/lyric_source_view.dart';
-import 'package:coriander_player/page/now_playing_page/component/main_view.dart';
-import 'package:coriander_player/page/now_playing_page/component/title_bar.dart';
+import 'package:coriander_player/page/now_playing_page/component/filled_icon_button_style.dart';
 import 'package:coriander_player/page/now_playing_page/component/vertical_lyric_view.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:coriander_player/play_service/play_service.dart';
 import 'package:coriander_player/play_service/playback_service.dart';
+import 'package:coriander_player/src/bass/bass_player.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:squiggly_slider/slider.dart';
+import 'package:window_manager/window_manager.dart';
 
-class NowPlayingPage extends StatefulWidget {
-  const NowPlayingPage({super.key});
-
-  @override
-  State<NowPlayingPage> createState() => _NowPlayingPageState();
-}
-
-class _NowPlayingPageState extends State<NowPlayingPage> {
-  final lyricViewKey = GlobalKey();
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
-    return Scaffold(
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(80.0),
-        child: NowPlayingPageTitleBar(),
-      ),
-      backgroundColor: scheme.secondaryContainer,
-      body: ChangeNotifierProvider.value(
-        value: PlayService.instance.playbackService,
-        builder: (context, _) {
-          return ResponsiveBuilder2(builder: (context, screenType) {
-            switch (screenType) {
-              case ScreenType.small:
-                return _NowPlayingBody_Small(lyricViewKey);
-              case ScreenType.medium:
-              case ScreenType.large:
-                return _NowPlayingBody_Large(lyricViewKey);
-            }
-          });
-        },
-      ),
-    );
-  }
-}
+part 'small_page.dart';
+part 'large_page.dart';
 
 enum NowPlayingViewMode {
   onlyMain,
@@ -66,187 +35,412 @@ enum NowPlayingViewMode {
   }
 }
 
-NowPlayingViewMode _viewMode = AppPreference.instance.nowPlayingViewMode;
+final NOW_PLAYING_VIEW_MODE = ValueNotifier(
+  AppPreference.instance.nowPlayingViewMode,
+);
 
-class _NowPlayingBody_Small extends StatefulWidget {
-  const _NowPlayingBody_Small(this.lyricViewKey);
-
-  final GlobalKey lyricViewKey;
+class NowPlayingPage extends StatefulWidget {
+  const NowPlayingPage({super.key});
 
   @override
-  State<_NowPlayingBody_Small> createState() => __NowPlayingBody_SmallState();
+  State<NowPlayingPage> createState() => _NowPlayingPageState();
 }
 
-class __NowPlayingBody_SmallState extends State<_NowPlayingBody_Small> {
-  void openPlaylistView() {
-    setState(() {
-      _viewMode = _viewMode == NowPlayingViewMode.withPlaylist
-          ? NowPlayingViewMode.onlyMain
-          : NowPlayingViewMode.withPlaylist;
-      AppPreference.instance.nowPlayingViewMode = _viewMode;
-    });
-  }
-
-  void openLyricView() {
-    setState(() {
-      _viewMode = _viewMode == NowPlayingViewMode.withLyric
-          ? NowPlayingViewMode.onlyMain
-          : NowPlayingViewMode.withLyric;
-      AppPreference.instance.nowPlayingViewMode = _viewMode;
-    });
-  }
-
+class _NowPlayingPageState extends State<NowPlayingPage> {
   @override
   Widget build(BuildContext context) {
-    final List<Widget> mainWidgets = switch (_viewMode) {
-      NowPlayingViewMode.onlyMain => const [
-          Expanded(child: NowPlayingCover()),
-          SizedBox(height: 16.0),
-          NowPlayingTitle(),
-          NowPlayingArtistAlbum(),
-          SizedBox(height: 16.0),
-          NowPlayingProgressIndicator(),
-          PositionAndLength(),
-        ],
-      NowPlayingViewMode.withLyric => [
-          Expanded(
-            child: ListenableBuilder(
-              listenable: PlayService.instance.lyricService,
-              builder: (context, _) => FutureBuilder(
-                future: PlayService.instance.lyricService.currLyricFuture,
-                builder: (context, snapshot) =>
-                    switch (snapshot.connectionState) {
-                  ConnectionState.none =>
-                    const Center(child: Text("Enjoy Music")),
-                  ConnectionState.waiting => const Center(
-                      child: SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(),
-                      ),
-                    ),
-                  ConnectionState.active => const Center(
-                      child: SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(),
-                      ),
-                    ),
-                  ConnectionState.done => snapshot.data == null
-                      ? const Center(child: Text("Enjoy Music"))
-                      : VerticalLyricView(
-                          key: widget.lyricViewKey,
-                          lyric: snapshot.data!,
-                        ),
-                },
-              ),
-            ),
-          ),
-          const SizedBox(height: 16.0),
-          const _CompactAudioInfo(),
-        ],
-      NowPlayingViewMode.withPlaylist => const [
-          Expanded(child: CurrentPlaylistView()),
-          SizedBox(height: 16.0),
-          _CompactAudioInfo(),
-        ]
-    };
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 48.0, vertical: 16.0),
-      child: Center(
-        child: SizedBox(
-          width: 400,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+    final scheme = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(56.0),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
             children: [
-              ...mainWidgets,
-              const SizedBox(height: 16.0),
-              const NowPlayingControls(),
-              const SizedBox(height: 16.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const _ToggleShuffle(),
-                  const _TogglePlayMode(),
-                  _LyricViewBtn(onTap: openLyricView),
-                  _PlaylistViewBtn(onTap: openPlaylistView),
-                  const _MoreActions(),
-                ],
-              ),
+              NavBackBtn(),
+              Expanded(child: DragToMoveArea(child: SizedBox.expand())),
+              WindowControlls(),
             ],
           ),
         ),
+      ),
+      backgroundColor: scheme.secondaryContainer,
+      body: ChangeNotifierProvider.value(
+        value: PlayService.instance.playbackService,
+        builder: (context, _) {
+          return ResponsiveBuilder2(builder: (context, screenType) {
+            switch (screenType) {
+              case ScreenType.small:
+                return const _NowPlayingPage_Small();
+              case ScreenType.medium:
+              case ScreenType.large:
+                return const _NowPlayingPage_Large();
+            }
+          });
+        },
       ),
     );
   }
 }
 
-class _CompactAudioInfo extends StatelessWidget {
-  const _CompactAudioInfo();
+class _NowPlayingMoreAction extends StatelessWidget {
+  const _NowPlayingMoreAction({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final playbackService = Provider.of<PlaybackService>(context);
+    final playbackService = context.watch<PlaybackService>();
     final nowPlaying = playbackService.nowPlaying;
     final scheme = Theme.of(context).colorScheme;
-    final placeholder = Icon(
-      Symbols.broken_image,
-      size: 48.0,
+
+    if (nowPlaying == null) {
+      return IconButton(
+        onPressed: null,
+        icon: const Icon(Symbols.more_vert),
+        color: scheme.onSecondaryContainer,
+      );
+    }
+
+    return MenuAnchor(
+      menuChildren: [
+        SubmenuButton(
+          menuChildren: List.generate(
+            nowPlaying.splitedArtists.length,
+            (i) => MenuItemButton(
+              onPressed: () {
+                final Artist artist = AudioLibrary
+                    .instance.artistCollection[nowPlaying.splitedArtists[i]]!;
+                context.pushReplacement(
+                  app_paths.ARTIST_DETAIL_PAGE,
+                  extra: artist,
+                );
+              },
+              leadingIcon: const Icon(Symbols.people),
+              child: Text(nowPlaying.splitedArtists[i]),
+            ),
+          ),
+          child: const Text("艺术家"),
+        ),
+        MenuItemButton(
+          onPressed: () {
+            final Album album =
+                AudioLibrary.instance.albumCollection[nowPlaying.album]!;
+            context.pushReplacement(app_paths.ALBUM_DETAIL_PAGE, extra: album);
+          },
+          leadingIcon: const Icon(Symbols.album),
+          child: Text(nowPlaying.album),
+        ),
+        MenuItemButton(
+          onPressed: () {
+            context.pushReplacement(app_paths.AUDIO_DETAIL_PAGE,
+                extra: nowPlaying);
+          },
+          leadingIcon: const Icon(Symbols.info),
+          child: const Text("详细信息"),
+        ),
+      ],
+      builder: (context, controller, _) => IconButton(
+        onPressed: () {
+          if (controller.isOpen) {
+            controller.close();
+          } else {
+            controller.open();
+          }
+        },
+        icon: const Icon(Symbols.more_vert),
+        color: scheme.onSecondaryContainer,
+      ),
+    );
+  }
+}
+
+class _DesktopLyricSwitch extends StatelessWidget {
+  const _DesktopLyricSwitch({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return IconButton(
+      onPressed: () {},
+      icon: const Icon(Symbols.toast),
       color: scheme.onSecondaryContainer,
     );
+  }
+}
+
+class _NowPlayingVolDspSlider extends StatefulWidget {
+  const _NowPlayingVolDspSlider({super.key});
+
+  @override
+  State<_NowPlayingVolDspSlider> createState() =>
+      _NowPlayingVolDspSliderState();
+}
+
+class _NowPlayingVolDspSliderState extends State<_NowPlayingVolDspSlider> {
+  final playbackService = PlayService.instance.playbackService;
+  final dragVolDsp = ValueNotifier(
+    AppPreference.instance.playbackPref.volumeDsp,
+  );
+  bool isDragging = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return MenuAnchor(
+      style: MenuStyle(
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        ),
+      ),
+      menuChildren: [
+        SliderTheme(
+          data: const SliderThemeData(
+            showValueIndicator: ShowValueIndicator.always,
+          ),
+          child: ValueListenableBuilder(
+            valueListenable: dragVolDsp,
+            builder: (context, dragVolDspValue, _) => Slider(
+              thumbColor: scheme.primary,
+              activeColor: scheme.primary,
+              inactiveColor: scheme.outline,
+              min: 0.0,
+              max: 1.0,
+              value: isDragging ? dragVolDspValue : playbackService.volumeDsp,
+              label: "${(dragVolDspValue * 100).toInt()}",
+              onChangeStart: (value) {
+                isDragging = true;
+                dragVolDsp.value = value;
+                playbackService.setVolumeDsp(value);
+              },
+              onChanged: (value) {
+                dragVolDsp.value = value;
+                playbackService.setVolumeDsp(value);
+              },
+              onChangeEnd: (value) {
+                isDragging = false;
+                dragVolDsp.value = value;
+                playbackService.setVolumeDsp(value);
+              },
+            ),
+          ),
+        ),
+      ],
+      builder: (context, controller, _) => IconButton(
+        onPressed: () {
+          if (controller.isOpen) {
+            controller.close();
+          } else {
+            controller.open();
+          }
+        },
+        icon: const Icon(Symbols.volume_up),
+        color: scheme.onSecondaryContainer,
+      ),
+    );
+  }
+}
+
+class _NowPlayingPlayModeSwitch extends StatelessWidget {
+  const _NowPlayingPlayModeSwitch({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final playbackService = PlayService.instance.playbackService;
+
+    return ValueListenableBuilder(
+      valueListenable: playbackService.playMode,
+      builder: (context, playMode, _) {
+        late IconData result;
+        if (playMode == PlayMode.forward) {
+          result = Symbols.repeat;
+        } else if (playMode == PlayMode.loop) {
+          result = Symbols.repeat_on;
+        } else {
+          result = Symbols.repeat_one_on;
+        }
+
+        return IconButton(
+          onPressed: () {
+            if (playMode == PlayMode.forward) {
+              playbackService.setPlayMode(PlayMode.loop);
+            } else if (playMode == PlayMode.loop) {
+              playbackService.setPlayMode(PlayMode.singleLoop);
+            } else {
+              playbackService.setPlayMode(PlayMode.forward);
+            }
+          },
+          icon: Icon(result),
+          color: scheme.onSecondaryContainer,
+        );
+      },
+    );
+  }
+}
+
+class _NowPlayingShuffleSwitch extends StatelessWidget {
+  const _NowPlayingShuffleSwitch({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final playbackService = PlayService.instance.playbackService;
+
+    return ValueListenableBuilder(
+      valueListenable: playbackService.shuffle,
+      builder: (context, shuffle, _) => IconButton(
+        onPressed: () {
+          playbackService.useShuffle(!shuffle);
+        },
+        icon: Icon(shuffle ? Symbols.shuffle_on : Symbols.shuffle),
+        color: scheme.onSecondaryContainer,
+      ),
+    );
+  }
+}
+
+/// previous audio, pause/resume, next audio
+class _NowPlayingMainControls extends StatelessWidget {
+  const _NowPlayingMainControls({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final playbackService = PlayService.instance.playbackService;
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8.0),
-          child: nowPlaying == null
-              ? Icon(
-                  Symbols.broken_image,
-                  size: 48.0,
-                  color: scheme.onSecondaryContainer,
-                )
-              : FutureBuilder(
-                  future: nowPlaying.cover,
-                  builder: (context, snapshot) {
-                    if (snapshot.data == null) {
-                      return placeholder;
-                    }
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image(
-                        image: snapshot.data!,
-                        width: 48.0,
-                        height: 48.0,
-                        errorBuilder: (_, __, ___) => placeholder,
-                      ),
-                    );
+        IconButton(
+          onPressed: playbackService.lastAudio,
+          icon: const Icon(Symbols.skip_previous),
+          style: LargeFilledIconButtonStyle(primary: false, scheme: scheme),
+        ),
+        const SizedBox(width: 16),
+        StreamBuilder(
+          stream: playbackService.playerStateStream,
+          initialData: playbackService.playerState,
+          builder: (context, snapshot) {
+            final playerState = snapshot.data!;
+            late void Function() onTap;
+            if (playerState == PlayerState.playing) {
+              onTap = playbackService.pause;
+            } else if (playerState == PlayerState.completed) {
+              onTap = playbackService.playAgain;
+            } else {
+              onTap = playbackService.start;
+            }
+
+            return IconButton(
+              onPressed: onTap,
+              icon: Icon(
+                playerState == PlayerState.playing
+                    ? Symbols.pause
+                    : Symbols.play_arrow,
+              ),
+              style: LargeFilledIconButtonStyle(primary: true, scheme: scheme),
+            );
+          },
+        ),
+        const SizedBox(width: 16),
+        IconButton(
+          onPressed: playbackService.nextAudio,
+          icon: const Icon(Symbols.skip_next),
+          style: LargeFilledIconButtonStyle(primary: false, scheme: scheme),
+        ),
+      ],
+    );
+  }
+}
+
+/// suiggly slider, position and length
+class _NowPlayingSlider extends StatefulWidget {
+  const _NowPlayingSlider({super.key});
+
+  @override
+  State<_NowPlayingSlider> createState() => _NowPlayingSliderState();
+}
+
+class _NowPlayingSliderState extends State<_NowPlayingSlider> {
+  final dragPosition = ValueNotifier(0.0);
+  bool isDragging = false;
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final playbackService = context.watch<PlaybackService>();
+
+    return Column(
+      children: [
+        SliderTheme(
+          data: const SliderThemeData(
+            showValueIndicator: ShowValueIndicator.always,
+          ),
+          child: StreamBuilder(
+            stream: playbackService.playerStateStream,
+            initialData: playbackService.playerState,
+            builder: (context, playerStateSnapshot) => ListenableBuilder(
+              listenable: dragPosition,
+              builder: (context, _) => StreamBuilder(
+                stream: playbackService.positionStream,
+                initialData: playbackService.position,
+                builder: (context, positionSnapshot) => SquigglySlider(
+                  thumbColor: scheme.primary,
+                  activeColor: scheme.primary,
+                  inactiveColor: scheme.outline,
+                  useLineThumb: true,
+                  squiggleAmplitude:
+                      playerStateSnapshot.data == PlayerState.playing ? 6.0 : 0,
+                  squiggleWavelength: 10.0,
+                  squiggleSpeed: 0.08,
+                  min: 0.0,
+                  max: playbackService.length,
+                  value: isDragging
+                      ? dragPosition.value
+                      : positionSnapshot.data ?? playbackService.position,
+                  label: Duration(
+                    milliseconds: (dragPosition.value * 1000).toInt(),
+                  ).toStringHMMSS(),
+                  onChangeStart: (value) {
+                    isDragging = true;
+                    dragPosition.value = value;
+                  },
+                  onChanged: (value) {
+                    dragPosition.value = value;
+                  },
+                  onChangeEnd: (value) {
+                    isDragging = false;
+                    playbackService.seek(value);
                   },
                 ),
+              ),
+            ),
+          ),
         ),
-        const SizedBox(width: 8.0),
-        Expanded(
-          child: Column(
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                nowPlaying == null ? "Coriander Music" : nowPlaying.title,
-                maxLines: 1,
-                style: TextStyle(
-                  color: scheme.onSecondaryContainer,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 20.0,
-                ),
+              StreamBuilder(
+                stream: playbackService.positionStream,
+                initialData: playbackService.position,
+                builder: (context, snapshot) {
+                  final pos = snapshot.data ?? playbackService.position;
+                  return Text(
+                    Duration(
+                      milliseconds: (pos * 1000).toInt(),
+                    ).toStringHMMSS(),
+                    style: TextStyle(color: scheme.onSecondaryContainer),
+                  );
+                },
               ),
               Text(
-                nowPlaying == null
-                    ? "Enjoy Music"
-                    : "${nowPlaying.artist} - ${nowPlaying.album}",
-                maxLines: 1,
+                Duration(
+                  milliseconds: (playbackService.length * 1000).toInt(),
+                ).toStringHMMSS(),
                 style: TextStyle(color: scheme.onSecondaryContainer),
-              )
+              ),
             ],
           ),
         )
@@ -255,271 +449,95 @@ class _CompactAudioInfo extends StatelessWidget {
   }
 }
 
-class _NowPlayingBody_Large extends StatefulWidget {
-  const _NowPlayingBody_Large(this.lyricViewKey);
-
-  final GlobalKey lyricViewKey;
+/// title, artist, album, cover
+class _NowPlayingInfo extends StatefulWidget {
+  const _NowPlayingInfo({super.key});
 
   @override
-  State<_NowPlayingBody_Large> createState() => __NowPlayingBody_LargeState();
+  State<_NowPlayingInfo> createState() => __NowPlayingInfoState();
 }
 
-class __NowPlayingBody_LargeState extends State<_NowPlayingBody_Large> {
-  final playlistView = const Expanded(
-    child: Align(
-      alignment: Alignment.center,
-      child: CurrentPlaylistView(),
-    ),
-  );
+class __NowPlayingInfoState extends State<_NowPlayingInfo> {
+  final playbackService = PlayService.instance.playbackService;
+  Future<ImageProvider<Object>?>? nowPlayingCover;
 
-  late final lyricView = Expanded(
-    child: Align(
-      alignment: Alignment.center,
-      child: ListenableBuilder(
-        listenable: PlayService.instance.lyricService,
-        builder: (context, _) => FutureBuilder(
-          future: PlayService.instance.lyricService.currLyricFuture,
-          builder: (context, snapshot) => switch (snapshot.connectionState) {
-            ConnectionState.none => const Center(child: Text("Enjoy Music")),
-            ConnectionState.waiting => const Center(
-                child: SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-            ConnectionState.active => const Center(
-                child: SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-            ConnectionState.done => snapshot.data == null
-                ? const Center(child: Text("Enjoy Music"))
-                : VerticalLyricView(
-                    key: widget.lyricViewKey,
-                    lyric: snapshot.data!,
-                  ),
-          },
-        ),
-      ),
-    ),
-  );
-
-  void openPlaylistView() {
+  void updateCover() {
     setState(() {
-      _viewMode = _viewMode == NowPlayingViewMode.withPlaylist
-          ? NowPlayingViewMode.onlyMain
-          : NowPlayingViewMode.withPlaylist;
-      AppPreference.instance.nowPlayingViewMode = _viewMode;
+      nowPlayingCover = playbackService.nowPlaying?.largeCover;
     });
   }
 
-  void openLyricView() {
-    setState(() {
-      _viewMode = _viewMode == NowPlayingViewMode.withLyric
-          ? NowPlayingViewMode.onlyMain
-          : NowPlayingViewMode.withLyric;
-      AppPreference.instance.nowPlayingViewMode = _viewMode;
-    });
-  }
-
-  static const spacer = SizedBox(width: 48.0);
-
   @override
-  Widget build(BuildContext context) {
-    final mainView = Expanded(
-      child: Align(
-        alignment: Alignment.center,
-        child: NowPlayingMainView(
-          pageControlls: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const _ToggleShuffle(),
-              const _TogglePlayMode(),
-              _LyricViewBtn(onTap: openLyricView),
-              _PlaylistViewBtn(onTap: openPlaylistView),
-              const _MoreActions(),
-            ],
-          ),
-        ),
-      ),
-    );
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 48.0, vertical: 16.0),
-      child: Row(
-        children: switch (_viewMode) {
-          NowPlayingViewMode.onlyMain => [mainView],
-          NowPlayingViewMode.withLyric => [mainView, spacer, lyricView],
-          NowPlayingViewMode.withPlaylist => [mainView, spacer, playlistView],
-        },
-      ),
-    );
+  void initState() {
+    super.initState();
+    playbackService.addListener(updateCover);
+    nowPlayingCover = playbackService.nowPlaying?.largeCover;
   }
-}
-
-class _LyricViewBtn extends StatelessWidget {
-  const _LyricViewBtn({required this.onTap});
-
-  final void Function() onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Opacity(
-      opacity: _viewMode == NowPlayingViewMode.withLyric ? 1 : 0.5,
-      child: IconButton(
-        onPressed: onTap,
-        icon: const Icon(Symbols.lyrics),
-      ),
-    );
-  }
-}
-
-class _PlaylistViewBtn extends StatelessWidget {
-  const _PlaylistViewBtn({required this.onTap});
-
-  final void Function() onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Opacity(
-      opacity: _viewMode == NowPlayingViewMode.withPlaylist ? 1 : 0.5,
-      child: IconButton(
-        onPressed: onTap,
-        icon: const Icon(Symbols.queue_music),
-      ),
-    );
-  }
-}
-
-class _MoreActions extends StatelessWidget {
-  const _MoreActions();
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final playbackService = Provider.of<PlaybackService>(context);
     final nowPlaying = playbackService.nowPlaying;
 
-    return nowPlaying == null
-        ? Opacity(
-            opacity: 0.5,
-            child: Icon(Symbols.more_vert, color: scheme.onSecondaryContainer),
-          )
-        : MenuAnchor(
-            menuChildren: [
-              SubmenuButton(
-                menuChildren: List.generate(
-                  nowPlaying.splitedArtists.length,
-                  (i) => MenuItemButton(
-                    onPressed: () {
-                      final Artist artist = AudioLibrary.instance
-                          .artistCollection[nowPlaying.splitedArtists[i]]!;
-                      context.pushReplacement(
-                        app_paths.ARTIST_DETAIL_PAGE,
-                        extra: artist,
+    final placeholder = FittedBox(
+      child: Icon(
+        Symbols.broken_image,
+        size: 400.0,
+        color: scheme.onSecondaryContainer,
+      ),
+    );
+
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            nowPlaying == null ? "Coriander Music" : nowPlaying.title,
+            maxLines: 1,
+            style: TextStyle(
+              color: scheme.onSecondaryContainer,
+              fontWeight: FontWeight.w600,
+              fontSize: 20,
+            ),
+          ),
+          Text(
+            nowPlaying == null
+                ? "Enjoy Music"
+                : "${nowPlaying.artist} - ${nowPlaying.album}",
+            maxLines: 1,
+            style: TextStyle(color: scheme.onSecondaryContainer),
+          ),
+          const SizedBox(height: 16),
+          RepaintBoundary(
+            child: nowPlayingCover == null
+                ? placeholder
+                : FutureBuilder(
+                    future: nowPlayingCover,
+                    builder: (context, snapshot) {
+                      if (snapshot.data == null) {
+                        return placeholder;
+                      }
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: Image(
+                          image: snapshot.data!,
+                          width: 400.0,
+                          height: 400.0,
+                          errorBuilder: (_, __, ___) => placeholder,
+                        ),
                       );
                     },
-                    leadingIcon: const Icon(Symbols.people),
-                    child: Text(nowPlaying.splitedArtists[i]),
                   ),
-                ),
-                child: const Text("艺术家"),
-              ),
-              MenuItemButton(
-                onPressed: () {
-                  final Album album =
-                      AudioLibrary.instance.albumCollection[nowPlaying.album]!;
-                  context.pushReplacement(app_paths.ALBUM_DETAIL_PAGE,
-                      extra: album);
-                },
-                leadingIcon: const Icon(Symbols.album),
-                child: Text(nowPlaying.album),
-              ),
-              MenuItemButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => LyricSourceView(audio: nowPlaying),
-                  );
-                },
-                leadingIcon: const Icon(Symbols.lyrics),
-                child: const Text("指定默认歌词"),
-              ),
-            ],
-            builder: (context, controller, _) {
-              return IconButton(
-                onPressed: () {
-                  if (controller.isOpen) {
-                    controller.close();
-                  } else {
-                    controller.open();
-                  }
-                },
-                icon: const Icon(Symbols.more_vert),
-              );
-            },
-          );
-  }
-}
-
-class _TogglePlayMode extends StatelessWidget {
-  const _TogglePlayMode();
-
-  @override
-  Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: PlayService.instance.playbackService.playMode,
-      builder: (context, _) {
-        final playbackService = PlayService.instance.playbackService;
-        final playMode = playbackService.playMode;
-        late IconData result;
-        if (playMode.value == PlayMode.forward) {
-          result = Symbols.repeat;
-        } else if (playMode.value == PlayMode.loop) {
-          result = Symbols.repeat_on;
-        } else {
-          result = Symbols.repeat_one_on;
-        }
-        return IconButton(
-          onPressed: () {
-            if (playMode.value == PlayMode.forward) {
-              playbackService.setPlayMode(PlayMode.loop);
-            } else if (playMode.value == PlayMode.loop) {
-              playbackService.setPlayMode(PlayMode.singleLoop);
-            } else {
-              playbackService.setPlayMode(PlayMode.forward);
-            }
-          },
-          icon: Icon(result),
-        );
-      },
+          )
+        ],
+      ),
     );
   }
-}
-
-class _ToggleShuffle extends StatelessWidget {
-  const _ToggleShuffle();
 
   @override
-  Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: PlayService.instance.playbackService.shuffle,
-      builder: (context, _) {
-        final playbackService = PlayService.instance.playbackService;
-        return IconButton(
-          onPressed: () {
-            playbackService.useShuffle(!playbackService.shuffle.value);
-          },
-          icon: Icon(
-            playbackService.shuffle.value
-                ? Symbols.shuffle_on
-                : Symbols.shuffle,
-          ),
-        );
-      },
-    );
+  void dispose() {
+    playbackService.removeListener(updateCover);
+    super.dispose();
   }
 }
