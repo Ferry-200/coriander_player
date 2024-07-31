@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:math';
 
+import 'package:coriander_player/lyric/lrc.dart';
 import 'package:coriander_player/lyric/lyric.dart';
 import 'package:coriander_player/play_service/play_service.dart';
 import 'package:flutter/material.dart';
@@ -70,7 +70,7 @@ class _LyricHorizontalScrollAreaState
     super.initState();
     if (widget.lyric.lines.isNotEmpty) {
       final first = widget.lyric.lines.first;
-      if (first is UnsyncLyricLine) {
+      if (first is LrcLine) {
         currContent = first.content;
       } else if (first is SyncLyricLine) {
         currContent = first.content;
@@ -82,7 +82,7 @@ class _LyricHorizontalScrollAreaState
       final currLine = widget.lyric.lines[line];
 
       setState(() {
-        if (currLine is UnsyncLyricLine) {
+        if (currLine is LrcLine) {
           currContent = currLine.content;
         } else if (currLine is SyncLyricLine) {
           currContent = currLine.content;
@@ -91,12 +91,8 @@ class _LyricHorizontalScrollAreaState
 
       /// 减去启动延时和滚动结束停留时间
       late final Duration lastTime;
-      if (currLine is UnsyncLyricLine) {
-        lastTime = widget.lyric
-                .lines[min(line + 1, widget.lyric.lines.length - 1)].start -
-            currLine.start -
-            waitFor -
-            waitFor;
+      if (currLine is LrcLine) {
+        lastTime = currLine.length - waitFor - waitFor;
       } else if (currLine is SyncLyricLine) {
         lastTime = currLine.length - waitFor - waitFor;
       }
