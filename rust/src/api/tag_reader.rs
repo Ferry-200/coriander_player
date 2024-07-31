@@ -7,8 +7,13 @@ use std::{
 
 use lofty::prelude::{Accessor, AudioFile, ItemKey, TaggedFileExt};
 use windows::{
+    core::Interface,
     core::HSTRING,
-    Storage::{FileProperties::ThumbnailMode, StorageFile, Streams::DataReader},
+    Storage::{
+        FileProperties::ThumbnailMode,
+        StorageFile,
+        Streams::{DataReader, IInputStream},
+    },
 };
 
 use crate::frb_generated::StreamSink;
@@ -352,12 +357,19 @@ fn _get_picture_by_windows(path: String) -> Result<Vec<u8>, windows::core::Error
     let thumbnail = file
         .GetThumbnailAsyncOverloadDefaultSizeDefaultOptions(ThumbnailMode::MusicView)?
         .get()?;
+    
+    let size = thumbnail.Size()? as u32;
+    let stream: IInputStream = thumbnail.cast()?;
 
-    let mut buf: Vec<u8> = vec![];
-    let reader = DataReader::CreateDataReader(&thumbnail)?;
-    reader.ReadBytes(&mut buf)?;
+    let mut buffer = vec![0u8; size as usize];
+    let data_reader = DataReader::CreateDataReader(&stream)?;
+    data_reader.LoadAsync(size)?.get()?;
+    data_reader.ReadBytes(&mut buffer)?;
 
-    Ok(buf)
+    data_reader.Close()?;
+    stream.Close()?;
+
+    Ok(buffer)
 }
 
 /// for Flutter  
