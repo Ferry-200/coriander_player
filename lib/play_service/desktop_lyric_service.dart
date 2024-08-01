@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:coriander_player/play_service/play_service.dart';
 import 'package:coriander_player/play_service/playback_service.dart';
-import 'package:coriander_player/theme_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter/foundation.dart';
 
