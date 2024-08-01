@@ -1,9 +1,11 @@
+import 'package:coriander_player/play_service/desktop_lyric_service.dart';
 import 'package:coriander_player/play_service/lyric_service.dart';
 import 'package:coriander_player/play_service/playback_service.dart';
 
 class PlayService {
   late final playbackService = PlaybackService(this);
   late final lyricService = LyricService(this);
+  late final desktopLyricService = DesktopLyricService(this);
 
   PlayService._();
 
@@ -17,5 +19,7 @@ class PlayService {
     await playbackService.closeSmtc();
     playbackService.dispose();
     lyricService.dispose();
+    desktopLyricService.killDesktopLyric();
+    desktopLyricService.dispose();
   }
 }

@@ -8,6 +8,7 @@ import 'package:coriander_player/lyric/lyric.dart';
 import 'package:coriander_player/lyric/lyric_source.dart';
 import 'package:coriander_player/music_api/search_helper.dart';
 import 'package:coriander_player/play_service/play_service.dart';
+import 'package:desktop_lyric/message.dart';
 import 'package:flutter/foundation.dart';
 
 /// 只通知 lyric 变更
@@ -24,7 +25,31 @@ class LyricService extends ChangeNotifier {
 
         if ((pos * 1000) > value.lines[_nextLyricLine].start.inMilliseconds) {
           _nextLyricLine += 1;
-          _lyricLineStreamController.add(_nextLyricLine - 1);
+
+          final currLineIndex = _nextLyricLine - 1;
+          _lyricLineStreamController.add(currLineIndex);
+
+          playService.desktopLyricService.canSendMessage.then((canSend) {
+            if (!canSend) return;
+
+            final currLine = value.lines[currLineIndex];
+            if (currLine is SyncLyricLine) {
+              playService.desktopLyricService.sendMessage(LyricLineMessage(
+                content: currLine.content,
+                length: currLine.length,
+                translation: currLine.translation,
+              ));
+            } else if (currLine is LrcLine) {
+              final splitted = currLine.content.split("┃");
+              final content = splitted.first;
+              final translation = splitted.length > 1 ? splitted[1] : null;
+              playService.desktopLyricService.sendMessage(LyricLineMessage(
+                content: content,
+                length: currLine.length,
+                translation: translation,
+              ));
+            }
+          });
         }
       });
     });

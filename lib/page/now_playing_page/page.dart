@@ -161,11 +161,35 @@ class _DesktopLyricSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return IconButton(
-      tooltip: "桌面歌词",
-      onPressed: () {},
-      icon: const Icon(Symbols.toast),
-      color: scheme.onSecondaryContainer,
+    return ListenableBuilder(
+      listenable: PlayService.instance.desktopLyricService,
+      builder: (context, _) {
+        final desktopLyricService = PlayService.instance.desktopLyricService;
+        return FutureBuilder(
+          future: desktopLyricService.desktopLyric,
+          builder: (context, snapshot) => IconButton(
+            tooltip: "桌面歌词；现在：${snapshot.data == null ? "禁用" : "启用"}",
+            onPressed: () async {
+              if (snapshot.data == null) {
+                await desktopLyricService.startDesktopLyric();
+              } else {
+                desktopLyricService.killDesktopLyric();
+              }
+            },
+            icon: snapshot.connectionState == ConnectionState.done
+                ? Icon(
+                    Symbols.toast,
+                    fill: snapshot.data == null ? 0 : 1,
+                  )
+                : const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(),
+                  ),
+            color: scheme.onSecondaryContainer,
+          ),
+        );
+      },
     );
   }
 }

@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/library/audio_library.dart';
+import 'package:coriander_player/play_service/play_service.dart';
 import 'package:coriander_player/src/rust/api/system_theme.dart';
+import 'package:desktop_lyric/message.dart';
 import 'package:flutter/material.dart';
 
 class ThemeProvider extends ChangeNotifier {
@@ -15,6 +17,9 @@ class ThemeProvider extends ChangeNotifier {
     seedColor: Color(AppSettings.instance.defaultTheme),
     brightness: Brightness.dark,
   );
+
+  ColorScheme get currScheme =>
+      themeMode == ThemeMode.dark ? darkScheme : lightScheme;
 
   ThemeMode themeMode = AppSettings.instance.themeMode;
 
@@ -58,6 +63,14 @@ class ThemeProvider extends ChangeNotifier {
       brightness: Brightness.dark,
     );
     notifyListeners();
+
+    PlayService.instance.desktopLyricService.canSendMessage.then((canSend) {
+      if (!canSend) return;
+
+      PlayService.instance.desktopLyricService.sendMessage(
+        ThemeChangedMessage.fromColorScheme(currScheme),
+      );
+    });
   }
 
   /// 应用从 image 生成的主题。只在 themeMode == this.themeMode 时通知改变。
@@ -81,7 +94,18 @@ class ThemeProvider extends ChangeNotifier {
             darkScheme = value;
             break;
         }
-        if (themeMode == this.themeMode) notifyListeners();
+
+        if (themeMode == this.themeMode) {
+          notifyListeners();
+          PlayService.instance.desktopLyricService.canSendMessage
+              .then((canSend) {
+            if (!canSend) return;
+
+            PlayService.instance.desktopLyricService.sendMessage(
+              ThemeChangedMessage.fromColorScheme(value),
+            );
+          });
+        }
       },
     );
   }
@@ -89,6 +113,20 @@ class ThemeProvider extends ChangeNotifier {
   void applyThemeMode(ThemeMode themeMode) {
     this.themeMode = themeMode;
     notifyListeners();
+    PlayService.instance.desktopLyricService.canSendMessage.then((canSend) {
+      if (!canSend) return;
+
+      PlayService.instance.desktopLyricService.sendMessage(
+        ThemeChangedMessage.fromColorScheme(
+          currScheme,
+        ),
+      );
+      PlayService.instance.desktopLyricService.sendMessage(
+        ThemeModeChangedMessage(
+          isDarkMode: themeMode == ThemeMode.dark,
+        ),
+      );
+    });
   }
 
   void applyThemeFromAudio(Audio audio) {
@@ -99,7 +137,7 @@ class ThemeProvider extends ChangeNotifier {
 
       applyThemeFromImage(image, themeMode);
 
-      final second = switch(themeMode) {
+      final second = switch (themeMode) {
         ThemeMode.system => ThemeMode.dark,
         ThemeMode.light => ThemeMode.dark,
         ThemeMode.dark => ThemeMode.light,
