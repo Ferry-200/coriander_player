@@ -130,7 +130,8 @@ Future<List<SongSearchResult>> uniSearch(Audio audio) async {
 
   final Map qqAnswer = (await QQ.search(keyWord: query)).data;
   final List qqResultList = qqAnswer["req"]["data"]["body"]["item_song"];
-  for (int i = 0; i < qqResultList.length || i < 5; i++) {
+  for (int i = 0; i < qqResultList.length; i++) {
+    if (i >= 5) break;
     result.add(SongSearchResult.fromQQSearchResult(
       qqResultList[i],
       audio,
@@ -139,7 +140,8 @@ Future<List<SongSearchResult>> uniSearch(Audio audio) async {
 
   final Map kugouAnswer = (await KuGou.searchSong(keyword: query)).data;
   final List kugouResultList = kugouAnswer["data"]["info"];
-  for (int j = 0; j < kugouResultList.length || j < 5; j++) {
+  for (int j = 0; j < kugouResultList.length; j++) {
+    if (j >= 5) break;
     result.add(SongSearchResult.fromKugouSearchResult(
       kugouResultList[j],
       audio,
@@ -148,7 +150,8 @@ Future<List<SongSearchResult>> uniSearch(Audio audio) async {
 
   final Map neteaseAnswer = (await Netease.search(keyWord: query)).data;
   final List neteaseResultList = neteaseAnswer["result"]["songs"];
-  for (int k = 0; k < neteaseResultList.length || k < 5; k++) {
+  for (int k = 0; k < neteaseResultList.length; k++) {
+    if (k >= 5) break;
     result.add(SongSearchResult.fromNeteaseSearchResult(
       neteaseResultList[k],
       audio,
