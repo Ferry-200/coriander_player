@@ -1,8 +1,12 @@
 import 'package:desktop_lyric/component/foreground.dart';
 import 'package:desktop_lyric/message.dart';
+import 'package:desktop_lyric/player_states.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
+
+const WHITE_TRANSPARENT = Color.fromARGB(0, 255, 255, 255);
+const BLACK_TRANSPARENT = Color.fromARGB(0, 0, 0, 0);
 
 class DesktopLyricBody extends StatefulWidget {
   const DesktopLyricBody({super.key});
@@ -17,17 +21,20 @@ class _DesktopLyricBodyState extends State<DesktopLyricBody> {
   @override
   Widget build(BuildContext context) {
     final theme = context.watch<ThemeChangedMessage>();
+    final transparent = PlayerStates.instance.themeMode.value == ThemeMode.dark
+        ? BLACK_TRANSPARENT
+        : WHITE_TRANSPARENT;
 
     return TweenAnimationBuilder(
       duration: const Duration(milliseconds: 300),
       tween: isHovering
           ? ColorTween(
-              begin: const Color.fromARGB(0, 255, 255, 255),
+              begin: transparent,
               end: theme.surfaceContainer,
             )
           : ColorTween(
               begin: theme.surfaceContainer,
-              end: const Color.fromARGB(0, 255, 255, 255),
+              end: transparent,
             ),
       builder: (context, value, child) => ClipRRect(
         borderRadius: BorderRadius.circular(8.0),
