@@ -9,18 +9,22 @@ class DesktopLyricForeground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: AnimatedSwitcher(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          AnimatedSwitcher(
             duration: const Duration(milliseconds: 150),
-            child: isHovering ? const ActionRow() : const NowPlayingInfo(),
+            child: isHovering
+                ? const RepaintBoundary(child: ActionRow())
+                : const RepaintBoundary(child: NowPlayingInfo()),
           ),
-        ),
-        const Expanded(child: LyricLineView()),
-      ],
+          const SizedBox(height: 8),
+          const LyricLineView(),
+        ],
+      ),
     );
   }
 }

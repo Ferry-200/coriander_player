@@ -55,7 +55,7 @@ class _LyricLineViewState extends State<LyricLineView> {
         physics: const NeverScrollableScrollPhysics(),
         controller: scrollController,
         scrollDirection: Axis.horizontal,
-        child: const LyricLineDisplayArea(),
+        child: const Center(child: LyricLineDisplayArea()),
       ),
     );
   }
