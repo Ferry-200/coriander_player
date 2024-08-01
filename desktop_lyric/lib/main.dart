@@ -5,9 +5,10 @@ import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-void main() async {
+void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
+  PlayerStates.initWithArgs(args);
 
   WindowOptions windowOptions = const WindowOptions(
     size: Size(800, 128),

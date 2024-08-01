@@ -21,6 +21,28 @@ class PlayerStates {
     LyricLineMessage(content: "无", length: Duration.zero),
   );
 
+  /// args[0]: now playing changed message
+  /// args[1]: theme changed message
+  /// args[2]: theme mode changed message
+  static void initWithArgs(List<String> args) {
+    if (args.length != 3) return;
+
+    _instance = PlayerStates();
+    try {
+      _instance!.nowPlaying.value = NowPlayingChangedMessage.fromMap(
+        json.decode(args[0]),
+      );
+      _instance!.themeChanged.value = ThemeChangedMessage.fromMap(
+        json.decode(args[1]),
+      );
+      _instance!.themeMode.value = ThemeModeChangedMessage.fromMap(
+        json.decode(args[2]),
+      ).isDarkMode
+          ? ThemeMode.dark
+          : ThemeMode.light;
+    } catch (_) {}
+  }
+
   static PlayerStates? _instance;
   static PlayerStates get instance {
     _instance ??= PlayerStates();

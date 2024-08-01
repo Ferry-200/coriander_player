@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:coriander_player/play_service/play_service.dart';
 import 'package:coriander_player/play_service/playback_service.dart';
+import 'package:coriander_player/theme_provider.dart';
+import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter/foundation.dart';
 
@@ -23,7 +25,21 @@ class DesktopLyricService extends ChangeNotifier {
       "desktop_lyric",
       'desktop_lyric.exe',
     );
-    desktopLyric = Process.start(desktopLyricPath, []);
+
+    final nowPlaying = _playbackService.nowPlaying;
+    final currScheme = ThemeProvider.instance.currScheme;
+    final isDarkMode = ThemeProvider.instance.themeMode == ThemeMode.dark;
+    desktopLyric = Process.start(desktopLyricPath, [
+      NowPlayingChangedMessage(
+        title: nowPlaying?.title ?? "无",
+        artist: nowPlaying?.artist ?? "无",
+        album: nowPlaying?.album ?? "无",
+      ).toString(),
+      ThemeChangedMessage.fromColorScheme(currScheme).toString(),
+      ThemeModeChangedMessage(
+        isDarkMode: isDarkMode,
+      ).toString(),
+    ]);
 
     final result = await desktopLyric;
 
