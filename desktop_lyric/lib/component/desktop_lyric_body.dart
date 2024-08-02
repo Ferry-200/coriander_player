@@ -40,21 +40,21 @@ class _DesktopLyricBodyState extends State<DesktopLyricBody> {
         borderRadius: BorderRadius.circular(8.0),
         child: Scaffold(backgroundColor: value, body: child),
       ),
-      child: MouseRegion(
-        onEnter: (_) {
-          setState(() {
-            isHovering = true;
-          });
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onPanStart: (details) {
+          windowManager.startDragging();
         },
-        onExit: (_) {
-          setState(() {
-            isHovering = false;
-          });
-        },
-        child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onPanStart: (details) {
-            windowManager.startDragging();
+        child: MouseRegion(
+          onEnter: (_) {
+            setState(() {
+              isHovering = true;
+            });
+          },
+          onExit: (_) {
+            setState(() {
+              isHovering = false;
+            });
           },
           child: Center(child: DesktopLyricForeground(isHovering: isHovering)),
         ),

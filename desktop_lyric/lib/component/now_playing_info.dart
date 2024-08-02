@@ -1,3 +1,4 @@
+import 'package:desktop_lyric/component/foreground.dart';
 import 'package:desktop_lyric/message.dart';
 import 'package:desktop_lyric/player_states.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +9,13 @@ class NowPlayingInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textDisplayController = context.watch<TextDisplayController>();
     final theme = context.watch<ThemeChangedMessage>();
 
-    final textStyle = TextStyle(color: theme.primary);
+    final textColor = textDisplayController.hasSpecifiedColor
+        ? textDisplayController.specifiedColor
+        : theme.primary;
+    final textStyle = TextStyle(color: textColor);
 
     return ValueListenableBuilder(
       valueListenable: PlayerStates.instance.nowPlaying,
