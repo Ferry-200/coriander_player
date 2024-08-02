@@ -17,29 +17,31 @@ class PlayerStates {
   ValueNotifier<NowPlayingChangedMessage> nowPlaying = ValueNotifier(
     NowPlayingChangedMessage(title: "无", artist: "无", album: "无"),
   );
-  ValueNotifier<LyricLineMessage> lyricLine = ValueNotifier(
-    LyricLineMessage(content: "无", length: Duration.zero),
-  );
+  ValueNotifier<LyricLineMessage> lyricLine = ValueNotifier(LyricLineMessage(
+    content: "无",
+    translation: "无",
+    length: Duration.zero,
+  ));
 
   /// args[0]: now playing changed message
-  /// args[1]: theme changed message
-  /// args[2]: theme mode changed message
+  /// args[1]: theme mode changed message
+  /// args[2]: theme changed message
   static void initWithArgs(List<String> args) {
-    if (args.length != 3) return;
+    if (args.length > 3) return;
 
     _instance = PlayerStates();
     try {
       _instance!.nowPlaying.value = NowPlayingChangedMessage.fromMap(
         json.decode(args[0]),
       );
-      _instance!.themeChanged.value = ThemeChangedMessage.fromMap(
-        json.decode(args[1]),
-      );
       _instance!.themeMode.value = ThemeModeChangedMessage.fromMap(
-        json.decode(args[2]),
+        json.decode(args[1]),
       ).isDarkMode
           ? ThemeMode.dark
           : ThemeMode.light;
+      _instance!.themeChanged.value = ThemeChangedMessage.fromMap(
+        json.decode(args[2]),
+      );
     } catch (_) {}
   }
 

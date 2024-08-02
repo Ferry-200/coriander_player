@@ -35,10 +35,10 @@ class DesktopLyricService extends ChangeNotifier {
         artist: nowPlaying?.artist ?? "无",
         album: nowPlaying?.album ?? "无",
       ).toString(),
-      ThemeChangedMessage.fromColorScheme(currScheme).toString(),
       ThemeModeChangedMessage(
         isDarkMode: isDarkMode,
       ).toString(),
+      ThemeChangedMessage.fromColorScheme(currScheme).toString(),
     ]);
 
     final result = await desktopLyric;
