@@ -1,7 +1,8 @@
 # coriander_player
 ![首页](for_readme/home.png)
 
-一款使用 Material You 配色的本地音乐播放器
+一款使用 Material You 配色的本地音乐播放器。
+该播放器拥有桌面歌词组件。这个桌面歌词组件也可以给别的音乐播放器使用。请见 [desktop_lyric](https://github.com/Ferry-200/desktop_lyric.git)
 
 ### 特色
 详见 [官网](https://ferry-200.github.io/coriander_player_website/)
