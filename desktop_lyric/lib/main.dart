@@ -11,7 +11,7 @@ void main(List<String> args) async {
   PlayerStates.initWithArgs(args);
 
   WindowOptions windowOptions = const WindowOptions(
-    size: Size(800, 128),
+    size: Size(800, 122),
     center: true,
     backgroundColor: Colors.transparent,
     skipTaskbar: true,
