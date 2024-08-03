@@ -35,7 +35,7 @@ enum NowPlayingViewMode {
 }
 
 final NOW_PLAYING_VIEW_MODE = ValueNotifier(
-  AppPreference.instance.nowPlayingViewMode,
+  AppPreference.instance.nowPlayingPagePref.nowPlayingViewMode,
 );
 
 class NowPlayingPage extends StatefulWidget {

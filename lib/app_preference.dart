@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:coriander_player/page/now_playing_page/component/lyric_view_controls.dart';
 import 'package:coriander_player/page/now_playing_page/page.dart';
 import 'package:coriander_player/page/uni_page.dart';
 import 'package:coriander_player/play_service/playback_service.dart';
@@ -24,6 +25,37 @@ class PagePreference {
         SortOrder.fromString(map["sortOrder"]) ?? SortOrder.ascending,
         ContentView.fromString(map["contentView"]) ?? ContentView.list,
       );
+}
+
+class NowPlayingPagePreference {
+  NowPlayingViewMode nowPlayingViewMode;
+  LyricTextAlign lyricTextAlign;
+  double lyricFontSize;
+  double translationFontSize;
+
+  NowPlayingPagePreference(
+    this.nowPlayingViewMode,
+    this.lyricTextAlign,
+    this.lyricFontSize,
+    this.translationFontSize,
+  );
+
+  Map toMap() => {
+        "nowPlayingViewMode": nowPlayingViewMode.name,
+        "lyricTextAlign": lyricTextAlign.name,
+        "lyricFontSize": lyricFontSize,
+        "translationFontSize": translationFontSize,
+      };
+
+  factory NowPlayingPagePreference.fromMap(Map map) {
+    return NowPlayingPagePreference(
+      NowPlayingViewMode.fromString(map["nowPlayingViewMode"]) ??
+          NowPlayingViewMode.withLyric,
+      LyricTextAlign.fromString(map["lyricTextAlign"]) ?? LyricTextAlign.left,
+      map["lyricFontSize"] ?? 22.0,
+      map["translationFontSize"] ?? 18.0,
+    );
+  }
 }
 
 class PlaybackPreference {
@@ -74,7 +106,8 @@ class AppPreference {
 
   var playbackPref = PlaybackPreference(PlayMode.forward, 1.0);
 
-  NowPlayingViewMode nowPlayingViewMode = NowPlayingViewMode.withLyric;
+  var nowPlayingPagePref = NowPlayingPagePreference(
+      NowPlayingViewMode.withLyric, LyricTextAlign.left, 22.0, 18.0);
 
   Future<void> save() async {
     final supportPath = (await getApplicationSupportDirectory()).path;
@@ -92,7 +125,7 @@ class AppPreference {
       "playlistDetailPagePref": playlistDetailPagePref.toMap(),
       "startPage": startPage,
       "playbackPref": playbackPref.toMap(),
-      "nowPlayingViewMode": nowPlayingViewMode.name,
+      "nowPlayingPagePref": nowPlayingPagePref.toMap(),
     };
 
     final prefJson = json.encode(prefMap);
@@ -107,15 +140,13 @@ class AppPreference {
     final prefJson = await File(appPreferencePath).readAsString();
     final Map prefMap = json.decode(prefJson);
 
-    instance.audiosPagePref =
-        PagePreference.fromMap(prefMap["audiosPagePref"]);
+    instance.audiosPagePref = PagePreference.fromMap(prefMap["audiosPagePref"]);
     instance.artistsPagePref =
         PagePreference.fromMap(prefMap["artistsPagePref"]);
     instance.artistDetailPagePref = PagePreference.fromMap(
       prefMap["artistDetailPagePref"],
     );
-    instance.albumsPagePref =
-        PagePreference.fromMap(prefMap["albumsPagePref"]);
+    instance.albumsPagePref = PagePreference.fromMap(prefMap["albumsPagePref"]);
     instance.albumDetailPagePref = PagePreference.fromMap(
       prefMap["albumDetailPagePref"],
     );
@@ -131,12 +162,8 @@ class AppPreference {
       prefMap["playlistDetailPagePref"],
     );
     instance.startPage = prefMap["startPage"];
-    instance.playbackPref =
-        PlaybackPreference.fromMap(prefMap["playbackPref"]);
-    instance.nowPlayingViewMode = NowPlayingViewMode.fromString(
-          prefMap["nowPlayingViewMode"],
-        ) ??
-        NowPlayingViewMode.withLyric;
+    instance.playbackPref = PlaybackPreference.fromMap(prefMap["playbackPref"]);
+    instance.nowPlayingPagePref = NowPlayingPagePreference.fromMap(prefMap["nowPlayingPagePref"]);
   }
 
   static final AppPreference instance = AppPreference();

@@ -87,11 +87,11 @@ class _NowPlayingLargeViewSwitch extends StatelessWidget {
           if (value == NowPlayingViewMode.onlyMain ||
               value == NowPlayingViewMode.withLyric) {
             NOW_PLAYING_VIEW_MODE.value = NowPlayingViewMode.withPlaylist;
-            AppPreference.instance.nowPlayingViewMode =
+            AppPreference.instance.nowPlayingPagePref.nowPlayingViewMode =
                 NowPlayingViewMode.withPlaylist;
           } else {
             NOW_PLAYING_VIEW_MODE.value = NowPlayingViewMode.withLyric;
-            AppPreference.instance.nowPlayingViewMode =
+            AppPreference.instance.nowPlayingPagePref.nowPlayingViewMode =
                 NowPlayingViewMode.withLyric;
           }
         },

@@ -23,7 +23,8 @@ class _NowPlayingPage_SmallState extends State<_NowPlayingPage_Small> {
     NowPlayingViewMode.withPlaylist,
     NowPlayingViewMode.onlyMain,
   ];
-  late var views = switch (AppPreference.instance.nowPlayingViewMode) {
+  late var views =
+      switch (AppPreference.instance.nowPlayingPagePref.nowPlayingViewMode) {
     NowPlayingViewMode.onlyMain => viewOnlyMain,
     NowPlayingViewMode.withLyric => viewWithLyric,
     NowPlayingViewMode.withPlaylist => viewWithPlaylist,
@@ -54,7 +55,7 @@ class _NowPlayingPage_SmallState extends State<_NowPlayingPage_Small> {
       views = desView;
     });
     NOW_PLAYING_VIEW_MODE.value = viewMode;
-    AppPreference.instance.nowPlayingViewMode = viewMode;
+    AppPreference.instance.nowPlayingPagePref.nowPlayingViewMode = viewMode;
   }
 
   @override

@@ -1,14 +1,27 @@
+import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/page/now_playing_page/component/lyric_source_view.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
 
-enum LyricTextAlign { left, center, right }
+enum LyricTextAlign {
+  left,
+  center,
+  right;
+
+  static LyricTextAlign? fromString(String lyricTextAlign) {
+    for (var value in LyricTextAlign.values) {
+      if (value.name == lyricTextAlign) return value;
+    }
+    return null;
+  }
+}
 
 class LyricViewController extends ChangeNotifier {
-  LyricTextAlign lyricTextAlign = LyricTextAlign.left;
-  double lyricFontSize = 22.0;
-  double translationFontSize = 18.0;
+  final nowPlayingPagePref = AppPreference.instance.nowPlayingPagePref;
+  late LyricTextAlign lyricTextAlign = nowPlayingPagePref.lyricTextAlign;
+  late double lyricFontSize = nowPlayingPagePref.lyricFontSize;
+  late double translationFontSize = nowPlayingPagePref.translationFontSize;
 
   /// 在左对齐、居中、右对齐之间循环切换
   void switchLyricTextAlign() {
@@ -17,12 +30,17 @@ class LyricViewController extends ChangeNotifier {
       LyricTextAlign.center => LyricTextAlign.right,
       LyricTextAlign.right => LyricTextAlign.left,
     };
+
+    nowPlayingPagePref.lyricTextAlign = lyricTextAlign;
     notifyListeners();
   }
 
   void increaseFontSize() {
     lyricFontSize += 1;
     translationFontSize += 1;
+
+    nowPlayingPagePref.lyricFontSize = lyricFontSize;
+    nowPlayingPagePref.translationFontSize = translationFontSize;
     notifyListeners();
   }
 
@@ -31,6 +49,9 @@ class LyricViewController extends ChangeNotifier {
 
     lyricFontSize -= 1;
     translationFontSize -= 1;
+
+    nowPlayingPagePref.lyricFontSize = lyricFontSize;
+    nowPlayingPagePref.translationFontSize = translationFontSize;
     notifyListeners();
   }
 }
