@@ -1,4 +1,5 @@
 use std::{
+    collections::HashSet,
     fs::{self},
     io::{self, Write},
     path::{Path, PathBuf},
@@ -295,15 +296,22 @@ impl AudioFolder {
     fn read_from_folder_recursively(
         folder: &Path,
         result: &mut Vec<Self>,
-        scaned: &mut u64,
-        total: &mut u64,
+        scaned_count: &mut u64,
+        total_count: &mut u64,
+        scaned_folders: &mut HashSet<String>,
         sink: &StreamSink<IndexActionState>,
     ) -> Result<(), io::Error> {
+        if scaned_folders.contains(&folder.to_string_lossy().to_string()) {
+            return Ok(());
+        }
+
         if let Ok(dir) = fs::read_dir(folder) {
             sink.add(IndexActionState {
-                progress: *scaned as f64 / *total as f64,
+                progress: *scaned_count as f64 / *total_count as f64,
                 message: String::from("正在扫描 ") + &folder.to_string_lossy(),
             });
+
+            scaned_folders.insert(folder.to_string_lossy().to_string());
             let mut audios: Vec<Audio> = vec![];
             let mut latest: u64 = 0;
 
@@ -311,12 +319,13 @@ impl AudioFolder {
                 let entry = item?;
 
                 if entry.file_type()?.is_dir() {
-                    *total += 1;
+                    *total_count += 1;
                     Self::read_from_folder_recursively(
                         &entry.path(),
                         result,
-                        scaned,
-                        total,
+                        scaned_count,
+                        total_count,
+                        scaned_folders,
                         &sink,
                     )?;
                 } else if let Some(metadata) = Audio::read_from_path(&entry.path()) {
@@ -341,9 +350,9 @@ impl AudioFolder {
                 });
             }
 
-            *scaned += 1;
+            *scaned_count += 1;
             sink.add(IndexActionState {
-                progress: *scaned as f64 / *total as f64,
+                progress: *scaned_count as f64 / *total_count as f64,
                 message: String::new(),
             });
         }
@@ -357,7 +366,7 @@ fn _get_picture_by_windows(path: String) -> Result<Vec<u8>, windows::core::Error
     let thumbnail = file
         .GetThumbnailAsyncOverloadDefaultSizeDefaultOptions(ThumbnailMode::MusicView)?
         .get()?;
-    
+
     let size = thumbnail.Size()? as u32;
     let stream: IInputStream = thumbnail.cast()?;
 
@@ -467,6 +476,7 @@ pub fn build_index_from_folders_recursively(
     let mut audio_folders: Vec<AudioFolder> = vec![];
     let mut scaned: u64 = 0;
     let mut total: u64 = folders.len() as u64;
+    let mut scaned_folders: HashSet<String> = HashSet::new();
 
     for item in &folders {
         AudioFolder::read_from_folder_recursively(
@@ -474,6 +484,7 @@ pub fn build_index_from_folders_recursively(
             &mut audio_folders,
             &mut scaned,
             &mut total,
+            &mut scaned_folders,
             &sink,
         )?;
     }
