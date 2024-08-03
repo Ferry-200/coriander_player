@@ -20,10 +20,13 @@ class SetLyricSourceBtn extends StatelessWidget {
       builder: (context, _) => FutureBuilder(
         future: PlayService.instance.lyricService.currLyricFuture,
         builder: (context, snapshot) {
-          const loadingWidget = SizedBox(
-            height: 20,
-            width: 20,
-            child: CircularProgressIndicator(),
+          const loadingWidget = IconButton(
+            onPressed: null,
+            icon: SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(),
+            ),
           );
           final lyricNullable = snapshot.data;
           final isLocal = lyricNullable == null
