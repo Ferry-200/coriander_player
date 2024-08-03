@@ -76,12 +76,13 @@ class _SyncLineContent extends StatelessWidget {
       }
 
       final List<Text> contents = [
-        buildPrimaryText(syncLine.content, scheme, lyricFontSize),
+        buildPrimaryText(syncLine.content, scheme, alignment, lyricFontSize),
       ];
       if (syncLine.translation != null) {
         contents.add(buildSecondaryText(
           syncLine.translation!,
           scheme,
+          alignment,
           translationFontSize,
         ));
       }
@@ -105,6 +106,11 @@ class _SyncLineContent extends StatelessWidget {
         builder: (context, snapshot) {
           final posInMs = (snapshot.data ?? 0) * 1000;
           return RichText(
+            textAlign: switch (alignment) {
+              LyricTextAlign.left => TextAlign.left,
+              LyricTextAlign.center => TextAlign.center,
+              LyricTextAlign.right => TextAlign.right,
+            },
             text: TextSpan(
               children: List.generate(
                 syncLine.words.length,
@@ -152,6 +158,7 @@ class _SyncLineContent extends StatelessWidget {
       contents.add(buildSecondaryText(
         syncLine.translation!,
         scheme,
+        alignment,
         translationFontSize,
       ));
     }
@@ -168,9 +175,19 @@ class _SyncLineContent extends StatelessWidget {
     );
   }
 
-  Text buildPrimaryText(String text, ColorScheme scheme, double fontSize) {
+  Text buildPrimaryText(
+    String text,
+    ColorScheme scheme,
+    LyricTextAlign align,
+    double fontSize,
+  ) {
     return Text(
       text,
+      textAlign: switch (align) {
+        LyricTextAlign.left => TextAlign.left,
+        LyricTextAlign.center => TextAlign.center,
+        LyricTextAlign.right => TextAlign.right,
+      },
       style: TextStyle(
         color: scheme.onSecondaryContainer,
         fontSize: fontSize,
@@ -179,9 +196,19 @@ class _SyncLineContent extends StatelessWidget {
     );
   }
 
-  Text buildSecondaryText(String text, ColorScheme scheme, double fontSize) {
+  Text buildSecondaryText(
+    String text,
+    ColorScheme scheme,
+    LyricTextAlign align,
+    double fontSize,
+  ) {
     return Text(
       text,
+      textAlign: switch (align) {
+        LyricTextAlign.left => TextAlign.left,
+        LyricTextAlign.center => TextAlign.center,
+        LyricTextAlign.right => TextAlign.right,
+      },
       style: TextStyle(color: scheme.onSecondaryContainer, fontSize: fontSize),
     );
   }
@@ -213,10 +240,15 @@ class _LrcLineContent extends StatelessWidget {
 
     final splited = lrcLine.content.split("┃");
     final List<Text> contents = [
-      buildPrimaryText(splited.first, scheme, lyricFontSize),
+      buildPrimaryText(splited.first, scheme, alignment, lyricFontSize),
     ];
     for (var i = 1; i < splited.length; i++) {
-      contents.add(buildSecondaryText(splited[i], scheme, translationFontSize));
+      contents.add(buildSecondaryText(
+        splited[i],
+        scheme,
+        alignment,
+        translationFontSize,
+      ));
     }
 
     return Padding(
@@ -232,9 +264,19 @@ class _LrcLineContent extends StatelessWidget {
     );
   }
 
-  Text buildPrimaryText(String text, ColorScheme scheme, double fontSize) {
+  Text buildPrimaryText(
+    String text,
+    ColorScheme scheme,
+    LyricTextAlign align,
+    double fontSize,
+  ) {
     return Text(
       text,
+      textAlign: switch (align) {
+        LyricTextAlign.left => TextAlign.left,
+        LyricTextAlign.center => TextAlign.center,
+        LyricTextAlign.right => TextAlign.right,
+      },
       style: TextStyle(
         color: scheme.onSecondaryContainer,
         fontSize: fontSize,
@@ -243,9 +285,19 @@ class _LrcLineContent extends StatelessWidget {
     );
   }
 
-  Text buildSecondaryText(String text, ColorScheme scheme, double fontSize) {
+  Text buildSecondaryText(
+    String text,
+    ColorScheme scheme,
+    LyricTextAlign align,
+    double fontSize,
+  ) {
     return Text(
       text,
+      textAlign: switch (align) {
+        LyricTextAlign.left => TextAlign.left,
+        LyricTextAlign.center => TextAlign.center,
+        LyricTextAlign.right => TextAlign.right,
+      },
       style: TextStyle(color: scheme.onSecondaryContainer, fontSize: fontSize),
     );
   }
