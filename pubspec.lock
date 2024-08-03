@@ -84,9 +84,11 @@ packages:
   desktop_lyric:
     dependency: "direct main"
     description:
-      path: desktop_lyric
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: e87f9be4a6b5ed3fba57dcfd2b57732dd01621df
+      url: "https://github.com/Ferry-200/desktop_lyric.git"
+    source: git
     version: "0.1.0"
   encrypt:
     dependency: "direct main"

@@ -26,7 +26,8 @@ dependencies:
   flutter_markdown: ^0.7.1
   flex_color_picker: ^3.5.0
   desktop_lyric:
-    path: desktop_lyric/
+    git:
+      url: https://github.com/Ferry-200/desktop_lyric.git
 
   # music_api
   encrypt: ^5.0.3
