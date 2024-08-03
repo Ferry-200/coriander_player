@@ -5,26 +5,58 @@ import 'package:coriander_player/lyric/lrc.dart';
 import 'package:coriander_player/lyric/lyric.dart';
 import 'package:coriander_player/lyric/lyric_source.dart';
 import 'package:coriander_player/music_api/search_helper.dart';
-import 'package:coriander_player/play_service/lyric_service.dart';
+import 'package:coriander_player/page/now_playing_page/component/vertical_lyric_view.dart';
 import 'package:coriander_player/play_service/play_service.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 class SetLyricSourceBtn extends StatelessWidget {
-  const SetLyricSourceBtn({
-    super.key,
-    required this.lyricService,
-    required this.isLocal,
-  });
+  const SetLyricSourceBtn({super.key});
 
-  final LyricService lyricService;
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: PlayService.instance.lyricService,
+      builder: (context, _) => FutureBuilder(
+        future: PlayService.instance.lyricService.currLyricFuture,
+        builder: (context, snapshot) {
+          const loadingWidget = SizedBox(
+            height: 20,
+            width: 20,
+            child: CircularProgressIndicator(),
+          );
+          final lyricNullable = snapshot.data;
+          final isLocal = lyricNullable == null
+              ? null
+              : (lyricNullable is Lrc &&
+                  lyricNullable.source == LrcSource.local);
+          return switch (snapshot.connectionState) {
+            ConnectionState.none => loadingWidget,
+            ConnectionState.waiting => loadingWidget,
+            ConnectionState.active => loadingWidget,
+            ConnectionState.done => _SetLyricSourceBtn(isLocal: isLocal),
+          };
+        },
+      ),
+    );
+  }
+}
+
+class _SetLyricSourceBtn extends StatelessWidget {
   final bool? isLocal;
+  const _SetLyricSourceBtn({super.key, this.isLocal});
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-
+    final lyricService = PlayService.instance.lyricService;
     return MenuAnchor(
+      onOpen: () {
+        ALWAYS_SHOW_LYRIC_VIEW_CONTROLS = true;
+      },
+      onClose: () {
+        ALWAYS_SHOW_LYRIC_VIEW_CONTROLS = false;
+      },
       menuChildren: [
         MenuItemButton(
           onPressed: () {

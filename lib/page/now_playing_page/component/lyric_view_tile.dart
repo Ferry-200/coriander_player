@@ -3,9 +3,11 @@ import 'dart:math';
 
 import 'package:coriander_player/lyric/lrc.dart';
 import 'package:coriander_player/lyric/lyric.dart';
+import 'package:coriander_player/page/now_playing_page/component/lyric_view_controls.dart';
 import 'package:coriander_player/play_service/play_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:provider/provider.dart';
 
 class LyricViewTile extends StatelessWidget {
   const LyricViewTile(
@@ -17,8 +19,13 @@ class LyricViewTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lyricViewController = context.watch<LyricViewController>();
     return Align(
-      alignment: Alignment.centerLeft,
+      alignment: switch (lyricViewController.lyricTextAlign) {
+        LyricTextAlign.left => Alignment.centerLeft,
+        LyricTextAlign.center => Alignment.center,
+        LyricTextAlign.right => Alignment.centerRight,
+      },
       child: Opacity(
         opacity: opacity,
         child: InkWell(
@@ -48,8 +55,6 @@ class _SyncLineContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
     if (syncLine.words.isEmpty) {
       if (syncLine.length > const Duration(seconds: 5) && isMainLine) {
         return LyricTransitionTile(syncLine: syncLine);
@@ -58,22 +63,37 @@ class _SyncLineContent extends StatelessWidget {
       }
     }
 
+    final scheme = Theme.of(context).colorScheme;
+    final lyricViewController = context.watch<LyricViewController>();
+
+    final lyricFontSize = lyricViewController.lyricFontSize;
+    final translationFontSize = lyricViewController.translationFontSize;
+    final alignment = lyricViewController.lyricTextAlign;
+
     if (!isMainLine) {
       if (syncLine.words.isEmpty) {
         return const SizedBox.shrink();
       }
 
       final List<Text> contents = [
-        buildPrimaryText(syncLine.content, scheme),
+        buildPrimaryText(syncLine.content, scheme, lyricFontSize),
       ];
       if (syncLine.translation != null) {
-        contents.add(buildSecondaryText(syncLine.translation!, scheme));
+        contents.add(buildSecondaryText(
+          syncLine.translation!,
+          scheme,
+          translationFontSize,
+        ));
       }
 
       return Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: switch (alignment) {
+            LyricTextAlign.left => CrossAxisAlignment.start,
+            LyricTextAlign.center => CrossAxisAlignment.center,
+            LyricTextAlign.right => CrossAxisAlignment.end,
+          },
           children: contents,
         ),
       );
@@ -115,7 +135,7 @@ class _SyncLineContent extends StatelessWidget {
                         syncLine.words[i].content,
                         style: TextStyle(
                           color: scheme.primary,
-                          fontSize: 22.0,
+                          fontSize: lyricFontSize,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -129,32 +149,40 @@ class _SyncLineContent extends StatelessWidget {
       )
     ];
     if (syncLine.translation != null) {
-      contents.add(buildSecondaryText(syncLine.translation!, scheme));
+      contents.add(buildSecondaryText(
+        syncLine.translation!,
+        scheme,
+        translationFontSize,
+      ));
     }
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: switch (alignment) {
+          LyricTextAlign.left => CrossAxisAlignment.start,
+          LyricTextAlign.center => CrossAxisAlignment.center,
+          LyricTextAlign.right => CrossAxisAlignment.end,
+        },
         children: contents,
       ),
     );
   }
 
-  Text buildPrimaryText(String text, ColorScheme scheme) {
+  Text buildPrimaryText(String text, ColorScheme scheme, double fontSize) {
     return Text(
       text,
       style: TextStyle(
         color: scheme.onSecondaryContainer,
-        fontSize: 22.0,
+        fontSize: fontSize,
         fontWeight: FontWeight.w600,
       ),
     );
   }
 
-  Text buildSecondaryText(String text, ColorScheme scheme) {
+  Text buildSecondaryText(String text, ColorScheme scheme, double fontSize) {
     return Text(
       text,
-      style: TextStyle(color: scheme.onSecondaryContainer, fontSize: 18.0),
+      style: TextStyle(color: scheme.onSecondaryContainer, fontSize: fontSize),
     );
   }
 }
@@ -177,39 +205,48 @@ class _LrcLineContent extends StatelessWidget {
     }
 
     final scheme = Theme.of(context).colorScheme;
+    final lyricViewController = context.watch<LyricViewController>();
+
+    final lyricFontSize = lyricViewController.lyricFontSize;
+    final translationFontSize = lyricViewController.translationFontSize;
+    final alignment = lyricViewController.lyricTextAlign;
 
     final splited = lrcLine.content.split("┃");
     final List<Text> contents = [
-      buildPrimaryText(splited.first, scheme),
+      buildPrimaryText(splited.first, scheme, lyricFontSize),
     ];
     for (var i = 1; i < splited.length; i++) {
-      contents.add(buildSecondaryText(splited[i], scheme));
+      contents.add(buildSecondaryText(splited[i], scheme, translationFontSize));
     }
 
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: switch (alignment) {
+          LyricTextAlign.left => CrossAxisAlignment.start,
+          LyricTextAlign.center => CrossAxisAlignment.center,
+          LyricTextAlign.right => CrossAxisAlignment.end,
+        },
         children: contents,
       ),
     );
   }
 
-  Text buildPrimaryText(String text, ColorScheme scheme) {
+  Text buildPrimaryText(String text, ColorScheme scheme, double fontSize) {
     return Text(
       text,
       style: TextStyle(
         color: scheme.onSecondaryContainer,
-        fontSize: 22.0,
+        fontSize: fontSize,
         fontWeight: FontWeight.w600,
       ),
     );
   }
 
-  Text buildSecondaryText(String text, ColorScheme scheme) {
+  Text buildSecondaryText(String text, ColorScheme scheme, double fontSize) {
     return Text(
       text,
-      style: TextStyle(color: scheme.onSecondaryContainer, fontSize: 18.0),
+      style: TextStyle(color: scheme.onSecondaryContainer, fontSize: fontSize),
     );
   }
 }
