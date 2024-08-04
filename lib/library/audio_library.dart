@@ -21,17 +21,17 @@ class AudioLibrary {
   /// must call [initFromIndex]
   static late AudioLibrary instance;
 
-  /// 目前 index 结构：  
+  /// 目前 index 结构：
   /// ```json
   /// {
   ///     "folders": [
   ///         {
   ///             "audios": [
-  ///                 {...}, 
+  ///                 {...},
   ///                 ...
-  ///             ], 
+  ///             ],
   ///             ...
-  ///         }, 
+  ///         },
   ///         ...
   ///     ],
   ///     "version": 110
@@ -56,6 +56,9 @@ class AudioLibrary {
     }
 
     instance = AudioLibrary._(folders);
+
+    instance.artistCollection.clear();
+    instance.albumCollection.clear();
     instance._buildCollections();
   }
 
