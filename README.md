@@ -1,14 +1,15 @@
-# coriander_player
-![首页](for_readme/home.png)
+# Coriander Player：一款使用 Material You 配色的本地音乐播放器。
+![音乐页](软件截图/音乐页.png)
 
-一款使用 Material You 配色的本地音乐播放器。
+## [更多软件截图在下面（点我滚动到下面）](#软件截图)
 
-该播放器拥有桌面歌词组件。这个桌面歌词组件也可以给别的音乐播放器使用。请见 [desktop_lyric](https://github.com/Ferry-200/desktop_lyric.git)
+**该播放器拥有桌面歌词组件。这个桌面歌词组件也可以给别的音乐播放器使用。请见 [desktop_lyric](https://github.com/Ferry-200/desktop_lyric.git)**
 
-### 特色
-详见 [官网](https://ferry-200.github.io/coriander_player_website/)
+## 安装
+1. 下载 [Release](https://github.com/Ferry-200/coriander_player/releases/latest) 里文件安装
+2. **（已过时，现在的体验版已经落后于正式版）** 你也可以到 [Action 构建版本（体验版）介绍](https://github.com/Ferry-200/coriander_player/issues/49) 下载体验版 :)
 
-### 支持播放的音乐文件
+## 支持播放的音乐格式
 - mp3, mp2, mp1
 - ogg
 - wav, wave
@@ -26,7 +27,7 @@
 - dsf, dff
 - ape
 
-### 支持内嵌歌词的音乐文件
+## 支持下列音乐格式的内嵌歌词
 - aac
 - aiff
 - flac
@@ -36,24 +37,27 @@
 - opus
 - wav（标签必须用 UTF-8 编码）
 
-其他格式的只支持 lrc 文件或者是网络歌词
+其他格式的只支持同目录的 lrc 文件或者是网络歌词
 
-### 安装
-1. 下载 [Release](https://github.com/Ferry-200/coriander_player/releases) 里的发行版，直接双击release.zip里的exe运行
-2. 你也可以到 [Action 构建版本（体验版）介绍](https://github.com/Ferry-200/coriander_player/issues/49) 下载体验版 :)
+## 选择默认歌词
+默认情况下，软件会先读取本地歌词。如果没有，则匹配在线歌词。
+你可以在正在播放界面的歌词切换按钮展开的菜单中进入选择默认歌词的页面。
 
-### 提供建议、提交 Bug 或者提 PR
+![音乐页](软件截图/选择默认歌词.png)
+在这个界面中，你可以在本地歌词（如果有）和几个匹配程度高的在线歌词中选择一个作为默认歌词。之后再播放这首音乐时，软件会加载你指定的歌词。
+
+## 提供建议、提交 Bug 或者提 PR
 我正处于学习和适应 Github 工作流的阶段，所以目前不设置太多的要求。你只需要注意以下几点： 
 1. 如果要提交 Bug，请创建一个新的 issue。尽可能说明复现步骤并提供截图。
 2. 如果你提交 PR，由于我正在学习相关知识，可能会在处理 PR 时和你沟通如何操作分支之类的问题。
 
-### 编译
+## 编译
 1. 开发 flutter 需要的环境
 2. 需要编译 Coriander Player（本仓库） 软件本体和 desktop_lyric。[desktop_lyric](https://github.com/Ferry-200/desktop_lyric.git) 也是 Flutter 应用，直接编译即可
 3. 要把得到的 desktop_lyric 产物放在软件目录的 `desktop_lyric/` 目录下
 4. 编译后要把 BASS 库的 64 位的 `bass.dll`, `bassape.dll`, `bassdsd.dll`, `bassflac.dll`, `bassmidi.dll`, `bassopus.dll`, `basswv.dll` 放在软件目录的 `BASS` 文件夹下
 
-### 歌词特性解释
+## 歌词特性解释
 1. lrc歌词的间奏识别   
    在一些lrc歌词中，会使用 **只有时间标签而内容为空** 的一行来表示上一行的结束。如：
    ```
@@ -73,14 +77,23 @@
    ```
    第一行的开始时间是 5905ms，持续 5466ms；第二行则是 23037ms和 5254ms。可见 5905 + 5466 = 11371，与 23037相差超过 5000ms，所以这两行时间可以插入表示间奏的空白行
 
-### 选择默认歌词
-默认情况下，软件会先读取本地歌词。如果没有，则匹配在线歌词。你可以在正在播放界面下方的 “更多” 按钮中选择 “选择默认歌词” 来指定默认歌词。   
-
-![选择默认歌词](for_readme/select_default_lyric.png)
-在这个界面中，你可以在本地歌词（如果有）和几个匹配程度高的在线歌词中选择一个作为默认歌词。之后再播放这首音乐时，软件会加载你指定的歌词。
-
-### 感谢
+## 感谢
 - [music_api](https://github.com/yhsj0919/music_api.git)：实现歌曲的匹配和歌词的获取
 - [Lofty](https://crates.io/crates/lofty)：歌曲标签获取
 - [BASS](https://www.un4seen.com/bass.html)：播放乐曲
 - [flutter_rust_bridge](https://pub.dev/packages/flutter_rust_bridge)
+
+## 软件截图
+![音乐页](软件截图/音乐页.png)
+![艺术家页](软件截图/艺术家页.png)
+![艺术家详情页](软件截图/艺术家详情页.png)
+![专辑详情页](软件截图/专辑详情页.png)
+![主题选择器](软件截图/主题选择器.png)
+![夜间模式](软件截图/夜间模式.png)
+![正在播放：LRC歌词](软件截图/正在播放（LRC歌词）.png)
+![正在播放：逐字歌词](软件截图/正在播放（逐字歌词）.png)
+![正在播放：间奏动画](软件截图/正在播放（间奏动画）.png)
+![正在播放：居中对齐](软件截图/正在播放（居中对齐）.png)
+![桌面歌词](软件截图/桌面歌词.png)
+![桌面歌词：操作栏](软件截图/桌面歌词（操作栏）.png)
+![桌面歌词：夜间模式](软件截图/桌面歌词（夜间模式）.png)
