@@ -29,7 +29,7 @@ class AppSettings {
 
   /// 歌词来源：true，本地优先；false，在线优先
   bool localLyricFirst = true;
-  Size windowSize = const Size(1280, 720);
+  Size windowSize = const Size(1280, 756);
 
   late String artistSplitPattern = artistSeparator.join("|");
 
@@ -91,7 +91,7 @@ class AppSettings {
     if (sizeStr != null) {
       final sizeStrs = (sizeStr as String).split(",");
       _instance.windowSize = Size(double.tryParse(sizeStrs[0]) ?? 1280,
-          double.tryParse(sizeStrs[1]) ?? 720);
+          double.tryParse(sizeStrs[1]) ?? 756);
     }
   }
 
@@ -142,7 +142,7 @@ class AppSettings {
     if (sizeStr != null) {
       final sizeStrs = (sizeStr as String).split(",");
       _instance.windowSize = Size(double.tryParse(sizeStrs[0]) ?? 1280,
-          double.tryParse(sizeStrs[1]) ?? 720);
+          double.tryParse(sizeStrs[1]) ?? 756);
     }
   }
 
