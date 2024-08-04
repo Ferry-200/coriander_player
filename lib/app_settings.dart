@@ -11,10 +11,10 @@ class AppSettings {
   static const String version = "1.0.2";
 
   /// 主题模式：亮 / 暗
-  late ThemeMode themeMode;
+  ThemeMode themeMode = getWindowsThemeMode();
 
   /// 启动时 / 封面主题色不适合当主题时的主题
-  late int defaultTheme;
+  int defaultTheme = getWindowsTheme();
 
   /// 跟随歌曲封面的动态主题
   bool dynamicTheme = true;
@@ -37,15 +37,19 @@ class AppSettings {
 
   static AppSettings get instance => _instance;
 
-  AppSettings._() {
+  static ThemeMode getWindowsThemeMode() {
     final systemTheme = SystemTheme.getSystemTheme();
 
     final isDarkMode = (((5 * systemTheme.fore.$3) +
             (2 * systemTheme.fore.$2) +
             systemTheme.fore.$4) >
         (8 * 128));
-    themeMode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
-    defaultTheme = Color.fromARGB(
+    return isDarkMode ? ThemeMode.dark : ThemeMode.light;
+  }
+
+  static int getWindowsTheme() {
+    final systemTheme = SystemTheme.getSystemTheme();
+    return Color.fromARGB(
       systemTheme.accent.$1,
       systemTheme.accent.$2,
       systemTheme.accent.$3,
@@ -53,13 +57,9 @@ class AppSettings {
     ).value;
   }
 
-  static Future<void> readFromJson() async {
-    final supportPath = (await getApplicationSupportDirectory()).path;
-    final settingsPath = "$supportPath\\settings.json";
+  AppSettings._();
 
-    final settingsStr = File(settingsPath).readAsStringSync();
-    Map settingsMap = json.decode(settingsStr);
-
+  static Future<void> _readFromJson_old(Map settingsMap) async {
     final ust = settingsMap["UseSystemTheme"];
     if (ust != null) {
       _instance.useSystemTheme = ust == 1 ? true : false;
@@ -95,16 +95,68 @@ class AppSettings {
     }
   }
 
+  static Future<void> readFromJson() async {
+    final supportPath = (await getApplicationSupportDirectory()).path;
+    final settingsPath = "$supportPath\\settings.json";
+
+    final settingsStr = File(settingsPath).readAsStringSync();
+    Map settingsMap = json.decode(settingsStr);
+
+    if (settingsMap["Version"] == null) {
+      return _readFromJson_old(settingsMap);
+    }
+
+    final ust = settingsMap["UseSystemTheme"];
+    if (ust != null) {
+      _instance.useSystemTheme = ust;
+    }
+
+    final ustm = settingsMap["UseSystemThemeMode"];
+    if (ustm != null) {
+      _instance.useSystemThemeMode = ustm;
+    }
+
+    if (!_instance.useSystemTheme) {
+      _instance.defaultTheme = settingsMap["DefaultTheme"];
+    }
+    if (!_instance.useSystemThemeMode) {
+      _instance.themeMode = (settingsMap["ThemeMode"] ?? false)
+          ? ThemeMode.dark
+          : ThemeMode.light;
+    }
+
+    final dt = settingsMap["DynamicTheme"];
+    if (dt != null) {
+      _instance.dynamicTheme = dt;
+    }
+
+    _instance.artistSeparator = settingsMap["ArtistSeparator"];
+    _instance.artistSplitPattern = _instance.artistSeparator.join("|");
+
+    final llf = settingsMap["LocalLyricFirst"];
+    if (llf != null) {
+      _instance.localLyricFirst = llf;
+    }
+
+    final sizeStr = settingsMap["WindowSize"];
+    if (sizeStr != null) {
+      final sizeStrs = (sizeStr as String).split(",");
+      _instance.windowSize = Size(double.tryParse(sizeStrs[0]) ?? 1280,
+          double.tryParse(sizeStrs[1]) ?? 720);
+    }
+  }
+
   Future<void> saveSettings() async {
     final currSize = await windowManager.getSize();
     final settingsMap = {
-      "ThemeMode": themeMode == ThemeMode.light ? 0 : 1,
-      "DynamicTheme": dynamicTheme ? 1 : 0,
-      "UseSystemTheme": useSystemTheme ? 1 : 0,
-      "UseSystemThemeMode": useSystemThemeMode ? 1 : 0,
+      "Version": version,
+      "ThemeMode": themeMode == ThemeMode.dark,
+      "DynamicTheme": dynamicTheme,
+      "UseSystemTheme": useSystemTheme,
+      "UseSystemThemeMode": useSystemThemeMode,
       "DefaultTheme": defaultTheme,
       "ArtistSeparator": artistSeparator,
-      "LocalLyricFirst": localLyricFirst ? 1 : 0,
+      "LocalLyricFirst": localLyricFirst,
       "WindowSize":
           "${currSize.width.toStringAsFixed(1)},${currSize.height.toStringAsFixed(1)}"
     };
