@@ -8,7 +8,7 @@ import 'package:window_manager/window_manager.dart';
 
 class AppSettings {
   static final github = GitHub();
-  static const String version = "1.0.2";
+  static const String version = "1.1.0";
 
   /// 主题模式：亮 / 暗
   ThemeMode themeMode = getWindowsThemeMode();
