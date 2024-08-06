@@ -401,8 +401,13 @@ pub fn get_picture_from_path(path: String) -> Option<Vec<u8>> {
 /// 以及相同目录相同文件名的 .lrc 外挂歌词（utf-8 or utf-16）
 pub fn get_lyric_from_path(path: String) -> Option<String> {
     if let Ok(tagged_file) = lofty::read_from_path(&path) {
-        let tag = tagged_file.primary_tag().or(tagged_file.first_tag())?;
-        return Some(tag.get(&ItemKey::Lyrics)?.value().text()?.to_string());
+        if let Some(tag) = tagged_file.primary_tag().or(tagged_file.first_tag()) {
+            if let Some(lyric_tag) = tag.get(&ItemKey::Lyrics) {
+                if let Some(lyric) = lyric_tag.value().text() {
+                    return Some(lyric.to_string());
+                }
+            }
+        }
     }
 
     let mut lrc_file_path = PathBuf::from(path);
@@ -419,7 +424,9 @@ pub fn get_lyric_from_path(path: String) -> Option<String> {
             };
 
             let mut u16_bytes: Vec<u16> = vec![];
-            let chunk_iter = lrc_bytes.chunks_exact(2);
+            let mut chunk_iter = lrc_bytes.chunks_exact(2);
+            chunk_iter.next();
+
             for chunk in chunk_iter {
                 u16_bytes.push(convert_fn([chunk[0], chunk[1]]));
             }
