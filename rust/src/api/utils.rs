@@ -23,11 +23,11 @@ fn _show_in_explorer(path: String) -> Result<bool, windows::core::Error> {
     let select_items = options.ItemsToSelect()?;
     select_items.Append(&file)?;
 
-    Ok(Launcher::LaunchFolderPathWithOptionsAsync(
+    Launcher::LaunchFolderPathWithOptionsAsync(
         &file.GetParentAsync()?.get()?.Path()?,
         &options,
     )?
-    .get()?)
+    .get()
 }
 
 pub fn pick_single_folder() -> Option<String> {
@@ -59,5 +59,5 @@ pub fn launch_in_browser(uri: String) -> bool {
 }
 
 fn _launch_in_browser(uri: String) -> Result<bool, windows::core::Error> {
-    Ok(Launcher::LaunchUriAsync(&Uri::CreateUri(&HSTRING::from(uri))?)?.get()?)
+    Launcher::LaunchUriAsync(&Uri::CreateUri(&HSTRING::from(uri))?)?.get()
 }
