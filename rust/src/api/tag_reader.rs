@@ -76,7 +76,8 @@ struct Audio {
 }
 
 impl Audio {
-    fn new_with_path(path: &Path, by: Option<String>) -> Option<Self> {
+    fn new_with_path(path: impl AsRef<Path>, by: Option<String>) -> Option<Self> {
+        let path = path.as_ref();
         Some(Audio {
             title: path.file_name()?.to_string_lossy().to_string(),
             artist: UNKNOWN_STR.to_string(),
@@ -112,7 +113,8 @@ impl Audio {
     /// Lofty 能获取到信息：read_by_lofty  
     /// 不能的话：read_by_win_music_properties  
     /// 再不能的话：title: filename 代替
-    fn read_from_path(path: &Path) -> Option<Self> {
+    fn read_from_path(path: impl AsRef<Path>) -> Option<Self> {
+        let path = path.as_ref();
         let lofty_support: bool = *SUPPORT_FORMAT.get(&path.extension()?.to_string_lossy())?;
 
         let file_metadata = fs::metadata(path).unwrap();
@@ -134,10 +136,10 @@ impl Audio {
                 return Some(value);
             }
 
-            return match Self::read_by_win_music_properties(path, modified, created) {
+            match Self::read_by_win_music_properties(path, modified, created) {
                 Ok(value) => Some(value),
                 Err(_) => Self::new_with_path(path, None),
-            };
+            }
         } else {
             match Self::read_by_win_music_properties(path, modified, created) {
                 Ok(value) => Some(value),
@@ -147,7 +149,8 @@ impl Audio {
     }
 
     /// 使用 lofty 获取音乐标签。只在文件名不正确、没有标签或包含不支持的编码时返回 None
-    fn read_by_lofty(path: &Path, modified: u64, created: u64) -> Option<Self> {
+    fn read_by_lofty(path: impl AsRef<Path>, modified: u64, created: u64) -> Option<Self> {
+        let path = path.as_ref();
         if let Ok(tagged_file) = lofty::read_from_path(path) {
             let properties = tagged_file.properties();
 
@@ -190,10 +193,11 @@ impl Audio {
 
     /// 使用 Windows Api 获取音乐标签。会因为各种原因返回 Err
     fn read_by_win_music_properties(
-        path: &Path,
+        path: impl AsRef<Path>,
         modified: u64,
         created: u64,
     ) -> Result<Self, windows::core::Error> {
+        let path = path.as_ref();
         let storage_file = StorageFile::GetFileFromPathAsync(&HSTRING::from(path))?.get()?;
         let music_properties = storage_file
             .Properties()?
@@ -253,7 +257,8 @@ impl AudioFolder {
     }
 
     /// 扫描路径为 path 的文件夹
-    fn read_from_folder(path: &Path) -> Result<AudioFolder, io::Error> {
+    fn read_from_folder(path: impl AsRef<Path>) -> Result<AudioFolder, io::Error> {
+        let path = path.as_ref();
         if let Ok(dir) = fs::read_dir(path) {
             let mut audios: Vec<Audio> = vec![];
             let mut latest: u64 = 0;
@@ -263,7 +268,7 @@ impl AudioFolder {
 
                 if entry.file_type()?.is_dir() {
                     continue;
-                } else if let Some(metadata) = Audio::read_from_path(&entry.path()) {
+                } else if let Some(metadata) = Audio::read_from_path(entry.path()) {
                     if metadata.created > latest {
                         latest = metadata.created;
                     }
@@ -294,13 +299,14 @@ impl AudioFolder {
 
     /// 扫描路径为 path 的文件夹及其所有子文件夹。
     fn read_from_folder_recursively(
-        folder: &Path,
+        folder: impl AsRef<Path>,
         result: &mut Vec<Self>,
         scaned_count: &mut u64,
         total_count: &mut u64,
         scaned_folders: &mut HashSet<String>,
         sink: &StreamSink<IndexActionState>,
     ) -> Result<(), io::Error> {
+        let folder = folder.as_ref();
         if scaned_folders.contains(&folder.to_string_lossy().to_string()) {
             return Ok(());
         }
@@ -309,7 +315,7 @@ impl AudioFolder {
             sink.add(IndexActionState {
                 progress: *scaned_count as f64 / *total_count as f64,
                 message: String::from("正在扫描 ") + &folder.to_string_lossy(),
-            });
+            }).unwrap(); // TODO: map_err???
 
             scaned_folders.insert(folder.to_string_lossy().to_string());
             let mut audios: Vec<Audio> = vec![];
@@ -321,14 +327,14 @@ impl AudioFolder {
                 if entry.file_type()?.is_dir() {
                     *total_count += 1;
                     Self::read_from_folder_recursively(
-                        &entry.path(),
+                        entry.path(),
                         result,
                         scaned_count,
                         total_count,
                         scaned_folders,
-                        &sink,
+                        sink,
                     )?;
-                } else if let Some(metadata) = Audio::read_from_path(&entry.path()) {
+                } else if let Some(metadata) = Audio::read_from_path(entry.path()) {
                     if metadata.created > latest {
                         latest = metadata.created;
                     }
@@ -354,7 +360,7 @@ impl AudioFolder {
             sink.add(IndexActionState {
                 progress: *scaned_count as f64 / *total_count as f64,
                 message: String::new(),
-            });
+            }).unwrap();
         }
 
         Ok(())
@@ -453,15 +459,15 @@ pub fn build_index_from_folders(
         sink.add(IndexActionState {
             progress: audio_folders_json.len() as f64 / folders.len() as f64,
             message: String::from("正在扫描 ") + item,
-        });
+        }).unwrap();
         let folder_path = Path::new(item);
         audio_folders_json.push(AudioFolder::read_from_folder(folder_path)?.to_json_value());
         sink.add(IndexActionState {
             progress: audio_folders_json.len() as f64 / folders.len() as f64,
             message: String::new(),
-        });
+        }).unwrap();
     }
-    fs::File::create(index_path)?.write(
+    fs::File::create(index_path)?.write_all(
         serde_json::json!({
             "version": LOWEST_VERSION,
             "folders": audio_folders_json,
@@ -507,7 +513,7 @@ pub fn build_index_from_folders_recursively(
 
     let mut index_path = PathBuf::from(index_path);
     index_path.push("index.json");
-    fs::File::create(index_path)?.write(json_value.to_string().as_bytes())?;
+    fs::File::create(index_path)?.write_all(json_value.to_string().as_bytes())?;
 
     Ok(())
 }
@@ -524,15 +530,15 @@ fn _update_index_below_1_1_0(
         sink.add(IndexActionState {
             progress: audio_folders_json.len() as f64 / folders.len() as f64,
             message: String::from("正在扫描 ") + path,
-        });
+        }).unwrap();
         let folder_path = Path::new(path);
         audio_folders_json.push(AudioFolder::read_from_folder(folder_path)?.to_json_value());
         sink.add(IndexActionState {
             progress: audio_folders_json.len() as f64 / folders.len() as f64,
             message: String::new(),
-        });
+        }).unwrap();
     }
-    fs::File::create(index_path)?.write(
+    fs::File::create(index_path)?.write_all(
         serde_json::json!({
             "version": LOWEST_VERSION,
             "folders": audio_folders_json,
@@ -567,7 +573,7 @@ pub fn update_index(
     let mut index: serde_json::Value = serde_json::from_slice(&index).unwrap();
 
     let version = index["version"].as_u64();
-    if let None = version {
+    if version.is_none() {
         return _update_index_below_1_1_0(&index, &index_path, &sink);
     }
 
@@ -601,7 +607,7 @@ pub fn update_index(
         sink.add(IndexActionState {
             progress: updated as f64 / total as f64,
             message: String::from("正在更新 ") + &folder_path,
-        });
+        }).unwrap();
 
         folder_item["modified"] = serde_json::json!(new_folder_modified);
 
@@ -648,7 +654,7 @@ pub fn update_index(
                 .unwrap_or(Duration::ZERO)
                 .as_secs();
             if entry_created > latest {
-                if let Some(new_audio) = Audio::read_from_path(&entry.path()) {
+                if let Some(new_audio) = Audio::read_from_path(entry.path()) {
                     if entry_created > new_latest {
                         new_latest = entry_created;
                     }
@@ -664,10 +670,10 @@ pub fn update_index(
         sink.add(IndexActionState {
             progress: updated as f64 / total as f64,
             message: String::new(),
-        });
+        }).unwrap();
     }
 
-    fs::File::create(index_path)?.write(index.to_string().as_bytes())?;
+    fs::File::create(index_path)?.write_all(index.to_string().as_bytes())?;
 
     Ok(())
 }

@@ -126,7 +126,7 @@ impl SMTCFlutter {
         music_properties.SetArtist(&artist)?;
         music_properties.SetAlbumTitle(&album)?;
 
-        let file = StorageFile::GetFileFromPathAsync(&HSTRING::from(path))?.get()?;
+        let file = StorageFile::GetFileFromPathAsync(&path)?.get()?;
         let thumbnail = file
             .GetThumbnailAsyncOverloadDefaultSizeDefaultOptions(ThumbnailMode::MusicView)?
             .get()?;
