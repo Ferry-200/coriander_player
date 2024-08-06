@@ -25,6 +25,7 @@ dependencies:
   github: ^9.24.0
   flutter_markdown: ^0.7.1
   flex_color_picker: ^3.5.0
+  filepicker_windows: ^2.1.4
   desktop_lyric:
     git:
       url: https://github.com/Ferry-200/desktop_lyric.git

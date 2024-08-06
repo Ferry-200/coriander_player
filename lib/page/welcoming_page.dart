@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/component/build_index_state_view.dart';
 import 'package:coriander_player/library/audio_library.dart';
-import 'package:coriander_player/src/rust/api/utils.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
+import 'package:filepicker_windows/filepicker_windows.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -105,11 +105,16 @@ class _FolderSelectorViewState extends State<FolderSelectorView> {
           children: [
             FilledButton(
               onPressed: () async {
-                final path = await pickSingleFolder();
-                if (path == null) return;
+                // final path = await pickSingleFolder();
+                // if (path == null) return;
+                final dirPicker = DirectoryPicker();
+                dirPicker.title = "选择文件夹";
+
+                final dir = dirPicker.getDirectory();
+                if (dir == null) return;
 
                 setState(() {
-                  folders.add(path);
+                  folders.add(dir.path);
                 });
               },
               child: const Text("添加文件夹"),

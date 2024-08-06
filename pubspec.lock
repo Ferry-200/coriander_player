@@ -122,6 +122,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.0"
+  filepicker_windows:
+    dependency: "direct main"
+    description:
+      name: filepicker_windows
+      sha256: "278d13044c18c2a634e8bf7efa89db1b50faefbae33a039cf1a2cfc34ff3a723"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.4"
   flex_color_picker:
     dependency: "direct main"
     description:
