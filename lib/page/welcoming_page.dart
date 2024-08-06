@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/component/build_index_state_view.dart';
 import 'package:coriander_player/library/audio_library.dart';
-import 'package:coriander_player/component/title_bar.dart';
 import 'package:coriander_player/src/rust/api/utils.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:flutter/material.dart';
@@ -177,10 +176,80 @@ class _TitleBar extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8.0),
-            const WindowControlls(),
+            const _WindowControlls(),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _WindowControlls extends StatefulWidget {
+  const _WindowControlls({super.key});
+
+  @override
+  State<_WindowControlls> createState() => __WindowControllsState();
+}
+
+class __WindowControllsState extends State<_WindowControlls> with WindowListener {
+  @override
+  void initState() {
+    super.initState();
+    windowManager.addListener(this);
+  }
+
+  @override
+  void dispose() {
+    windowManager.removeListener(this);
+    super.dispose();
+  }
+
+  @override
+  void onWindowMaximize() {
+    setState(() {});
+  }
+
+  @override
+  void onWindowUnmaximize() {
+    setState(() {});
+  }
+
+  @override
+  void onWindowRestore() {
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 8.0,
+      children: [
+        IconButton(
+          tooltip: "最小化",
+          onPressed: windowManager.minimize,
+          icon: const Icon(Symbols.remove),
+        ),
+        FutureBuilder(
+          future: windowManager.isMaximized(),
+          builder: (context, snapshot) {
+            final isMaximized = snapshot.data ?? false;
+            return IconButton(
+              tooltip: isMaximized ? "还原" : "最大化",
+              onPressed: isMaximized
+                  ? windowManager.unmaximize
+                  : windowManager.maximize,
+              icon: Icon(
+                isMaximized ? Symbols.fullscreen_exit : Symbols.fullscreen,
+              ),
+            );
+          },
+        ),
+        IconButton(
+          tooltip: "退出",
+          onPressed: windowManager.close,
+          icon: const Icon(Symbols.close),
+        ),
+      ],
     );
   }
 }
