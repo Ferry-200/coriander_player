@@ -255,7 +255,7 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
             await saveLyricSources();
             await AppSettings.instance.saveSettings();
             await AppPreference.instance.save();
-            await PlayService.instance.close();
+            PlayService.instance.close();
             windowManager.close();
           },
           icon: const Icon(Symbols.close),

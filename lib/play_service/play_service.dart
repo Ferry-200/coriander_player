@@ -15,8 +15,7 @@ class PlayService {
     return _instance!;
   }
 
-  Future<void> close() async {
-    await playbackService.closeSmtc();
+  void close() {
     desktopLyricService.killDesktopLyric();
   }
 }
