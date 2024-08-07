@@ -230,6 +230,7 @@ class _VerticalLyricScrollViewState extends State<_VerticalLyricScrollView> {
       key: LYRIC_VIEW_KEY,
       controller: scrollController,
       slivers: [
+        const SliverFillRemaining(),
         SliverToBoxAdapter(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
