@@ -205,6 +205,8 @@ class BassPlayer {
     );
 
     if (_fstream == 0) {
+      _fstream = null;
+
       switch (_bass.BASS_ErrorGetCode()) {
         case BASS_ERROR_INIT:
           throw const FormatException(
