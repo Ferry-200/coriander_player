@@ -1,0 +1,41 @@
+name: 功能改进
+description: 请求改进现有功能
+title: "[改进] "
+labels: [enhancement]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **请描述你想要进行的改进**
+
+  - type: dropdown
+    id: pull_request
+    attributes:
+      label: 附带PR？
+      description: 是否自行提交Pull Request改进此功能
+      options:
+        - "否"
+        - "是"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 功能描述
+      description: 描述你想要改进的功能
+      placeholder: |
+        描述你想要进行的改进
+        如果附带PR，请说明你要如何改进这个功能
+    validations:
+      required: true
+
+  - type: input
+    id: type
+    attributes:
+      label: 被改进功能的分类（选填）
+      description: 功能属于哪个分类
+      placeholder: 如：UI、桌面歌词、专辑、播放列表等
+    validations:
+      required: false
