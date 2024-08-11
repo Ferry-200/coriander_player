@@ -260,13 +260,14 @@ class Audio {
       });
 
   /// now playing 不需要频繁调用，所以不缓存图片
-  /// 400 * 400
+  /// 400 * 400 > 800 * 800
   Future<ImageProvider?> get largeCover =>
       getPictureFromPath(path: path).then((value) {
         if (value == null) {
           return null;
         }
-        return ResizeImage.resizeIfNeeded(400, 400, MemoryImage(value));
+        // return ResizeImage.resizeIfNeeded(400, 400, MemoryImage(value));
+        return ResizeImage.resizeIfNeeded(800, 800, MemoryImage(value));
       });
 
   @override
