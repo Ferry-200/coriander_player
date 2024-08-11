@@ -55,7 +55,7 @@ body:
     id: expected_behavior
     attributes:
       label: 预期行为
-      description: 描述你期望的行为
+      description: 你认为程序的正常行为是什么
       placeholder: 输入预期行为
     validations:
       required: true
