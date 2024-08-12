@@ -1,0 +1,6 @@
+blank_issues_enabled: true
+
+contact_links:
+  - name: 讨论区
+    url: https://github.com/Ferry-200/coriander_player/discussions
+    about: 如果你有不属于以上三种类型的问题，可以在讨论区提出，或点击下方创建空白issue

@@ -1,0 +1,72 @@
+name: 报告BUG
+description: 报告影响程序正常运行的问题
+title: "[BUG] "
+labels: [bug]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **请填写以下信息来帮助我们快速定位和解决问题。**
+
+  - type: dropdown
+    id: pull_request
+    attributes:
+      label: 附带PR？
+      description: |
+        是否自行提交Pull Request解决此issue
+        如果你不是开发者，请忽略此项
+      options:
+        - "否"
+        - "是"
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      description: 问题出现的版本
+      placeholder: 输入版本
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 问题描述
+      description: 详细描述问题
+      placeholder: 输入问题描述
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 重现步骤
+      description: 请列出重现此问题的步骤
+      placeholder: |
+        1. 步骤 1
+        2. 步骤 2
+        3. 步骤 3
+        ...
+    validations:
+      required: true
+
+  - type: input
+    id: expected_behavior
+    attributes:
+      label: 预期行为
+      description: 你认为程序的正常行为是什么
+      placeholder: 输入预期行为
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: 其他信息
+      description: 添加任何有关此问题的其他上下文
+      placeholder: 输入任何其他信息
+    validations:
+      required: false
