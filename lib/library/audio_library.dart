@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'dart:ui';
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/src/rust/api/tag_reader.dart';
 import 'package:flutter/painting.dart';
@@ -260,13 +261,15 @@ class Audio {
       });
 
   /// now playing 不需要频繁调用，所以不缓存图片
-  /// 400 * 400
+  /// size: 400 * devicePixelRatio（屏幕缩放大小）
   Future<ImageProvider?> get largeCover =>
       getPictureFromPath(path: path).then((value) {
         if (value == null) {
           return null;
         }
-        return ResizeImage.resizeIfNeeded(400, 400, MemoryImage(value));
+        final pixelRatio = PlatformDispatcher.instance.views.first.devicePixelRatio;
+        final size = (400 * pixelRatio).round();
+        return ResizeImage.resizeIfNeeded(size, size, MemoryImage(value));
       });
 
   @override
