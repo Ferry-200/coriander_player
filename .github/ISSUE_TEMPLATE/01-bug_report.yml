@@ -1,5 +1,5 @@
 name: 报告BUG
-description: 报告程序BUG以帮助我们修复
+description: 报告影响程序正常运行的问题
 title: "[BUG] "
 labels: [bug]
 
@@ -13,7 +13,9 @@ body:
     id: pull_request
     attributes:
       label: 附带PR？
-      description: 是否自行提交Pull Request修复此问题
+      description: |
+        是否自行提交Pull Request解决此issue
+        如果你不是开发者，请忽略此项
       options:
         - "否"
         - "是"

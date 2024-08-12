@@ -1,5 +1,5 @@
-name: 功能改进
-description: 请求改进现有功能
+name: 改进建议
+description: 对程序提供进一步改进的建议
 title: "[改进] "
 labels: [enhancement]
 
@@ -13,7 +13,9 @@ body:
     id: pull_request
     attributes:
       label: 附带PR？
-      description: 是否自行提交Pull Request改进此功能
+      description: |
+        是否自行提交Pull Request解决此issue
+        如果你不是开发者，请忽略此项
       options:
         - "否"
         - "是"

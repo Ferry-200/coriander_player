@@ -13,7 +13,9 @@ body:
     id: pull_request
     attributes:
       label: 附带PR？
-      description: 是否自行提交Pull Request实现此功能
+      description: |
+        是否自行提交Pull Request解决此issue
+        如果你不是开发者，请忽略此项
       options:
         - "否"
         - "是"
