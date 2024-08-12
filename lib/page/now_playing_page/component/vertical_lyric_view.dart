@@ -160,49 +160,27 @@ class _VerticalLyricScrollViewState extends State<_VerticalLyricScrollView> {
     });
   }
 
-  /// 当前歌词行100%透明度，上一句和下一句55%，其余10%
+  /// 当前歌词行100%不透明度，其他歌词行18%透明度
   /// 把[currentLyricTileKey]绑在当前歌词行上
   List<LyricViewTile> _generateLyricTiles(int mainLine) {
     return List.generate(
       widget.lyric.lines.length,
       (i) {
-        if (mainLine >= 2 && i <= mainLine - 2) {
-          return LyricViewTile(
-            line: widget.lyric.lines[i],
-            opacity: 0.10,
-            onTap: () => _seekToLyricLine(i),
-          );
-        }
-        if (mainLine >= 1 && i == mainLine - 1) {
-          return LyricViewTile(
-            line: widget.lyric.lines[i],
-            opacity: 0.55,
-            onTap: () => _seekToLyricLine(i),
-          );
-        }
-        if (mainLine < widget.lyric.lines.length - 1 && i == mainLine + 1) {
-          return LyricViewTile(
-            line: widget.lyric.lines[i],
-            opacity: 0.55,
-            onTap: () => _seekToLyricLine(i),
-          );
-        }
-        if (mainLine < widget.lyric.lines.length - 2 && i >= mainLine + 2) {
-          return LyricViewTile(
-            line: widget.lyric.lines[i],
-            opacity: 0.10,
-            onTap: () => _seekToLyricLine(i),
-          );
+        double opacity = 1.0;
+        if ((mainLine >= 1 && i <= mainLine - 1) ||
+            (mainLine < widget.lyric.lines.length - 1 && i >= mainLine + 1)) {
+          opacity = 0.18;
         }
         return LyricViewTile(
-          key: currentLyricTileKey,
+          key: i == mainLine ? currentLyricTileKey : null,
           line: widget.lyric.lines[i],
-          opacity: 1.0,
+          opacity: opacity,
           onTap: () => _seekToLyricLine(i),
         );
       },
     );
   }
+
 
   void _updateNextLyricLine(int lyricLine) {
     lyricTiles = _generateLyricTiles(lyricLine);
