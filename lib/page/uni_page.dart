@@ -141,8 +141,7 @@ class _UniPageState<T> extends State<UniPage<T>> {
   late SortMethodDesc<T>? currSortMethod =
       widget.sortMethods?[widget.pref.sortMethod];
   late SortOrder currSortOrder = widget.pref.sortOrder;
-  late ContentView currContentView =
-      widget.pref.contentView;
+  late ContentView currContentView = widget.pref.contentView;
   late ScrollController scrollController;
 
   @override
@@ -243,6 +242,7 @@ class _UniPageState<T> extends State<UniPage<T>> {
               controller: scrollController,
               padding: const EdgeInsets.only(bottom: 96.0),
               itemCount: widget.contentList.length,
+              itemExtent: 64,
               itemBuilder: (context, i) => widget.contentBuilder(
                 context,
                 widget.contentList[i],

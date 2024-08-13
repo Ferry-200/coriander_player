@@ -69,8 +69,7 @@ class _UniDetailPageState<P, S, T> extends State<UniDetailPage<P, S, T>> {
   late SortMethodDesc<S>? currSortMethod =
       widget.sortMethods?[widget.pref.sortMethod];
   late SortOrder currSortOrder = widget.pref.sortOrder;
-  late ContentView currContentView =
-      widget.pref.contentView;
+  late ContentView currContentView = widget.pref.contentView;
 
   @override
   void initState() {
@@ -217,7 +216,8 @@ class _UniDetailPageState<P, S, T> extends State<UniDetailPage<P, S, T>> {
                   slivers: [
                     // secondary content
                     switch (currContentView) {
-                      ContentView.list => SliverList.builder(
+                      ContentView.list => SliverFixedExtentList.builder(
+                          itemExtent: 64,
                           itemCount: widget.secondaryContent.length,
                           itemBuilder: (context, i) =>
                               widget.secondaryContentBuilder(
