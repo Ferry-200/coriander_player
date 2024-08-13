@@ -243,7 +243,13 @@ class Audio {
           return null;
         }
 
-        _cover = ResizeImage.resizeIfNeeded(48, 48, MemoryImage(value));
+        // _cover = ResizeImage.resizeIfNeeded(48, 48, MemoryImage(value));
+        _cover = ResizeImage(
+          MemoryImage(value),
+          width: 48,
+          height: 48,
+          policy: ResizeImagePolicy.fit,
+        );
         return _cover;
       });
     }
@@ -257,7 +263,12 @@ class Audio {
         if (value == null) {
           return null;
         }
-        return ResizeImage.resizeIfNeeded(200, 200, MemoryImage(value));
+        return ResizeImage(
+          MemoryImage(value),
+          width: 200,
+          height: 200,
+          policy: ResizeImagePolicy.fit,
+        );
       });
 
   /// now playing 不需要频繁调用，所以不缓存图片
@@ -267,9 +278,15 @@ class Audio {
         if (value == null) {
           return null;
         }
-        final pixelRatio = PlatformDispatcher.instance.views.first.devicePixelRatio;
+        final pixelRatio =
+            PlatformDispatcher.instance.views.first.devicePixelRatio;
         final size = (400 * pixelRatio).round();
-        return ResizeImage.resizeIfNeeded(size, size, MemoryImage(value));
+        return ResizeImage(
+          MemoryImage(value),
+          width: size,
+          height: size,
+          policy: ResizeImagePolicy.fit,
+        );
       });
 
   @override

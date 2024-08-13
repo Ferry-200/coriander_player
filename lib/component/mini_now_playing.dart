@@ -86,18 +86,13 @@ class _NowPlayingForeground extends StatelessWidget {
                               return placeholder;
                             }
 
-                            return DecoratedBox(
-                              decoration: BoxDecoration(
-                                boxShadow: kElevationToShadow[4],
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: Image(
-                                  image: snapshot.data!,
-                                  width: 48.0,
-                                  height: 48.0,
-                                  errorBuilder: (_, __, ___) => placeholder,
-                                ),
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: Image(
+                                image: snapshot.data!,
+                                width: 48.0,
+                                height: 48.0,
+                                errorBuilder: (_, __, ___) => placeholder,
                               ),
                             );
                           },
