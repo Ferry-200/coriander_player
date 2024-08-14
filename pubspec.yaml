@@ -33,14 +33,6 @@ dependencies:
     git:
       url: https://github.com/Ferry-200/music_api_dart.git
 
-  # music_api
-  encrypt: ^5.0.3
-  meta: ^1.10.0
-  pointycastle: ^3.7.4
-  crypto: ^3.0.3
-  xml: ^6.5.0
-  collection: ^1.18.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
