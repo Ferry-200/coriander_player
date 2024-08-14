@@ -6,9 +6,7 @@ import 'package:coriander_player/lyric/krc.dart';
 import 'package:coriander_player/lyric/lrc.dart';
 import 'package:coriander_player/lyric/lyric.dart';
 import 'package:coriander_player/lyric/qrc.dart';
-import 'package:coriander_player/music_api/api/kugou/kugou.dart';
-import 'package:coriander_player/music_api/api/netease/netease.dart';
-import 'package:coriander_player/music_api/api/qq/qq.dart';
+import 'package:music_api/music_api.dart';
 
 enum ResultSource { qq, kugou, netease }
 

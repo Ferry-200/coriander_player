@@ -29,6 +29,9 @@ dependencies:
   desktop_lyric:
     git:
       url: https://github.com/Ferry-200/desktop_lyric.git
+  music_api:
+    git:
+      url: https://github.com/Ferry-200/music_api_dart.git
 
   # music_api
   encrypt: ^5.0.3
