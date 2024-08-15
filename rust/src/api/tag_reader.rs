@@ -206,19 +206,34 @@ impl Audio {
 
         let duration: Duration = music_properties.Duration()?.into();
 
+        let mut title = music_properties
+            .Title()
+            .or(storage_file.Name())?
+            .to_string();
+        if title.is_empty() {
+            title = storage_file.Name()?.to_string();
+        }
+
+        let mut artist = music_properties
+            .Artist()
+            .unwrap_or(HSTRING::from(UNKNOWN_STR))
+            .to_string();
+        if artist.is_empty() {
+            artist = UNKNOWN_STR.to_string();
+        }
+
+        let mut album = music_properties
+            .Album()
+            .unwrap_or(HSTRING::from(UNKNOWN_STR))
+            .to_string();
+        if album.is_empty() {
+            album = UNKNOWN_STR.to_string();
+        }
+
         Ok(Audio {
-            title: music_properties
-                .Title()
-                .or(storage_file.Name())?
-                .to_string(),
-            artist: music_properties
-                .Artist()
-                .unwrap_or(HSTRING::from(UNKNOWN_STR))
-                .to_string(),
-            album: music_properties
-                .Album()
-                .unwrap_or(HSTRING::from(UNKNOWN_STR))
-                .to_string(),
+            title,
+            artist,
+            album,
             track: Some(music_properties.TrackNumber()?),
             duration: duration.as_secs(),
             bitrate: Some(music_properties.Bitrate()? / 1000),
@@ -315,7 +330,8 @@ impl AudioFolder {
             sink.add(IndexActionState {
                 progress: *scaned_count as f64 / *total_count as f64,
                 message: String::from("正在扫描 ") + &folder.to_string_lossy(),
-            }).unwrap(); // TODO: map_err???
+            })
+            .unwrap(); // TODO: map_err???
 
             scaned_folders.insert(folder.to_string_lossy().to_string());
             let mut audios: Vec<Audio> = vec![];
@@ -360,7 +376,8 @@ impl AudioFolder {
             sink.add(IndexActionState {
                 progress: *scaned_count as f64 / *total_count as f64,
                 message: String::new(),
-            }).unwrap();
+            })
+            .unwrap();
         }
 
         Ok(())
@@ -459,13 +476,15 @@ pub fn build_index_from_folders(
         sink.add(IndexActionState {
             progress: audio_folders_json.len() as f64 / folders.len() as f64,
             message: String::from("正在扫描 ") + item,
-        }).unwrap();
+        })
+        .unwrap();
         let folder_path = Path::new(item);
         audio_folders_json.push(AudioFolder::read_from_folder(folder_path)?.to_json_value());
         sink.add(IndexActionState {
             progress: audio_folders_json.len() as f64 / folders.len() as f64,
             message: String::new(),
-        }).unwrap();
+        })
+        .unwrap();
     }
     fs::File::create(index_path)?.write_all(
         serde_json::json!({
@@ -530,13 +549,15 @@ fn _update_index_below_1_1_0(
         sink.add(IndexActionState {
             progress: audio_folders_json.len() as f64 / folders.len() as f64,
             message: String::from("正在扫描 ") + path,
-        }).unwrap();
+        })
+        .unwrap();
         let folder_path = Path::new(path);
         audio_folders_json.push(AudioFolder::read_from_folder(folder_path)?.to_json_value());
         sink.add(IndexActionState {
             progress: audio_folders_json.len() as f64 / folders.len() as f64,
             message: String::new(),
-        }).unwrap();
+        })
+        .unwrap();
     }
     fs::File::create(index_path)?.write_all(
         serde_json::json!({
@@ -607,7 +628,8 @@ pub fn update_index(
         sink.add(IndexActionState {
             progress: updated as f64 / total as f64,
             message: String::from("正在更新 ") + &folder_path,
-        }).unwrap();
+        })
+        .unwrap();
 
         folder_item["modified"] = serde_json::json!(new_folder_modified);
 
@@ -670,7 +692,8 @@ pub fn update_index(
         sink.add(IndexActionState {
             progress: updated as f64 / total as f64,
             message: String::new(),
-        }).unwrap();
+        })
+        .unwrap();
     }
 
     fs::File::create(index_path)?.write_all(index.to_string().as_bytes())?;
