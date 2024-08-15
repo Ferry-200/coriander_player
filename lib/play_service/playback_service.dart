@@ -151,10 +151,18 @@ class PlaybackService extends ChangeNotifier {
 
   /// 播放playlist[audioIndex]并设置播放列表为playlist
   void play(int audioIndex, List<Audio> playlist) {
-    _loadAndPlay(audioIndex, playlist);
-
-    this.playlist.value = List.from(playlist);
-    _playlistBackup = List.from(playlist);
+    if (shuffle.value) {
+      this.playlist.value = List.from(playlist);
+      final willPlay = this.playlist.value.removeAt(audioIndex);
+      this.playlist.value.shuffle();
+      this.playlist.value.insert(0, willPlay);
+      _playlistBackup = List.from(this.playlist.value);
+      _loadAndPlay(0, this.playlist.value);
+    } else {
+      _loadAndPlay(audioIndex, playlist);
+      this.playlist.value = List.from(playlist);
+      _playlistBackup = List.from(playlist);
+    }
   }
 
   void shuffleAndPlay(List<Audio> audios) {
