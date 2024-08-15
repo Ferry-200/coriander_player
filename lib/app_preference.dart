@@ -88,7 +88,7 @@ class AppPreference {
       PagePreference(0, SortOrder.ascending, ContentView.table);
 
   var albumDetailPagePref =
-      PagePreference(0, SortOrder.ascending, ContentView.list);
+      PagePreference(2, SortOrder.ascending, ContentView.list);
 
   var foldersPagePref =
       PagePreference(0, SortOrder.ascending, ContentView.list);
