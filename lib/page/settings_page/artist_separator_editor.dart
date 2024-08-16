@@ -38,6 +38,30 @@ class __ArtistSeparatorEditDialogState
   final appSettings = AppSettings.instance;
   late List<String> separators = List.from(appSettings.artistSeparator);
   Map<String, Widget> children = {};
+  final currEditController = TextEditingController();
+  bool editing = false;
+
+  void _addArtistSeparator() {
+    if (currEditController.text.isEmpty) return;
+    setState(
+      () {
+        children.remove("");
+        children[currEditController.text] = ListTile(
+          title: Text(currEditController.text),
+          trailing: IconButton(
+            onPressed: () {
+              separators.remove(currEditController.text);
+              setState(() {
+                children.remove(currEditController.text);
+              });
+            },
+            icon: const Icon(Symbols.remove),
+          ),
+        );
+        editing = false;
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -94,25 +118,19 @@ class __ArtistSeparatorEditDialogState
                   TextButton(
                     onPressed: () {
                       setState(() {
+                        editing = true;
                         children[""] = ListTile(
                           title: TextField(
+                            controller: currEditController,
                             autofocus: true,
+                            decoration: InputDecoration(
+                              suffixIcon: IconButton(
+                                onPressed: _addArtistSeparator,
+                                icon: const Icon(Symbols.done),
+                              ),
+                            ),
                             onSubmitted: (value) {
-                              setState(() {
-                                children.remove("");
-                                children[value] = ListTile(
-                                  title: Text(value),
-                                  trailing: IconButton(
-                                    onPressed: () {
-                                      separators.remove(value);
-                                      setState(() {
-                                        children.remove(value);
-                                      });
-                                    },
-                                    icon: const Icon(Symbols.remove),
-                                  ),
-                                );
-                              });
+                              _addArtistSeparator();
                             },
                           ),
                         );
@@ -127,16 +145,19 @@ class __ArtistSeparatorEditDialogState
                   ),
                   const SizedBox(width: 8.0),
                   TextButton(
-                    onPressed: () async {
-                      appSettings.artistSeparator = children.keys.toList();
-                      appSettings.artistSplitPattern =
-                          appSettings.artistSeparator.join("|");
-                      await appSettings.saveSettings();
-                      await AudioLibrary.initFromIndex();
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                      }
-                    },
+                    onPressed: editing
+                        ? null
+                        : () async {
+                            appSettings.artistSeparator =
+                                children.keys.toList();
+                            appSettings.artistSplitPattern =
+                                appSettings.artistSeparator.join("|");
+                            await appSettings.saveSettings();
+                            await AudioLibrary.initFromIndex();
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
+                          },
                     child: const Text("确定"),
                   ),
                 ],
