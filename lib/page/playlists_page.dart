@@ -152,7 +152,7 @@ class _NewPlaylistDialog extends StatelessWidget {
                   style: TextStyle(
                     color: scheme.onSurface,
                     fontSize: 18.0,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -220,7 +220,7 @@ class _EditPlaylistDialog extends StatelessWidget {
                   style: TextStyle(
                     color: scheme.onSurface,
                     fontSize: 18.0,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),

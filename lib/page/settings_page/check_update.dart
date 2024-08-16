@@ -117,7 +117,7 @@ class NewestUpdateView extends StatelessWidget {
                     style: TextStyle(
                       color: scheme.onSurface,
                       fontSize: 18.0,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(width: 16.0),

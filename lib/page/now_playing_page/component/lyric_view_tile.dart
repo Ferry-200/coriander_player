@@ -142,7 +142,7 @@ class _SyncLineContent extends StatelessWidget {
                         style: TextStyle(
                           color: scheme.primary,
                           fontSize: lyricFontSize,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
@@ -191,7 +191,7 @@ class _SyncLineContent extends StatelessWidget {
       style: TextStyle(
         color: scheme.onSecondaryContainer,
         fontSize: fontSize,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.bold,
       ),
     );
   }
@@ -280,7 +280,7 @@ class _LrcLineContent extends StatelessWidget {
       style: TextStyle(
         color: scheme.onSecondaryContainer,
         fontSize: fontSize,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.bold,
       ),
     );
   }

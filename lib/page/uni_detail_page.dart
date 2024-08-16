@@ -182,7 +182,7 @@ class _UniDetailPageState<P, S, T> extends State<UniDetailPage<P, S, T>> {
                           style: TextStyle(
                             fontSize: 22.0,
                             color: scheme.onSurface,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
@@ -249,7 +249,7 @@ class _UniDetailPageState<P, S, T> extends State<UniDetailPage<P, S, T>> {
                           style: TextStyle(
                             color: scheme.onSurface,
                             fontSize: 18.0,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),

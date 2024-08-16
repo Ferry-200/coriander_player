@@ -117,7 +117,7 @@ class _AudioLibraryEditorDialogState extends State<AudioLibraryEditorDialog> {
                   style: TextStyle(
                     color: scheme.onSurface,
                     fontSize: 18.0,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),

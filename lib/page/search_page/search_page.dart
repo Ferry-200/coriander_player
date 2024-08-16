@@ -80,7 +80,7 @@ class _SearchPageState extends State<SearchPage> {
               style: TextStyle(
                 color: scheme.onSurface,
                 fontSize: 22,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.bold,
               ),
             ),
             const Padding(padding: EdgeInsets.only(bottom: 32.0)),

@@ -33,7 +33,7 @@ class WelcomingPage extends StatelessWidget {
                 "你的音乐放在哪些文件夹呢？",
                 style: TextStyle(
                   color: scheme.onSurface,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.bold,
                   fontSize: 22,
                 ),
               ),

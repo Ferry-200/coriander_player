@@ -47,7 +47,7 @@ class _CurrentPlaylistViewState extends State<CurrentPlaylistView> {
               style: TextStyle(
                 color: scheme.onSecondaryContainer,
                 fontSize: 22,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),

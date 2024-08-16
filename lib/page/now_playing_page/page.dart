@@ -564,7 +564,7 @@ class __NowPlayingInfoState extends State<_NowPlayingInfo> {
               maxLines: 1,
               style: TextStyle(
                 color: scheme.onSecondaryContainer,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.bold,
                 fontSize: 20,
               ),
             ),
