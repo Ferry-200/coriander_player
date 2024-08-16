@@ -3,7 +3,7 @@ import 'package:coriander_player/lyric/lyric.dart';
 class Qrc extends Lyric {
   Qrc(super.lines);
 
-  static Qrc fromQrcText(String qrc) {
+  static Qrc fromQrcText(String qrc, [String? transRawStr]) {
     final List<QrcLine> lines = [];
     final splited = qrc.split("\n");
     for (final item in splited) {
@@ -12,6 +12,30 @@ class Qrc extends Lyric {
       if (qrcLine == null) continue;
 
       lines.add(qrcLine);
+    }
+
+    if (transRawStr != null) {
+      int lineIt = 0;
+      final splitedTrans = transRawStr.split("\n");
+      for (var transLine in splitedTrans) {
+        if (lineIt > lines.length - 1) {
+          break;
+        }
+
+        final timeStr = transLine.substring(
+          transLine.indexOf("[") + 1,
+          transLine.indexOf("]"),
+        );
+        // 如果是翻译行就加到歌词去
+        if (int.tryParse(timeStr.split(":").first) != null) {
+          final t =
+              transLine.replaceAll(RegExp(r"\[\d{2}:\d{2}\.\d{2,}\]"), "");
+          if (t.isNotEmpty) {
+            lines[lineIt].translation = t;
+            lineIt += 1;
+          }
+        }
+      }
     }
 
     // 添加空白
@@ -43,9 +67,9 @@ class Qrc extends Lyric {
 }
 
 class QrcLine extends SyncLyricLine {
-  QrcLine(super.start, super.length, super.words);
+  QrcLine(super.start, super.length, super.words, [super.translation]);
 
-  static QrcLine? fromLine(String line) {
+  static QrcLine? fromLine(String line, [String? translation]) {
     final splitedLine = line.split("]");
     final from = splitedLine[0].indexOf("[") + 1;
     final splitedTime = splitedLine[0].substring(from).split(",");
@@ -65,11 +89,11 @@ class QrcLine extends SyncLyricLine {
       final qrcWord = QrcWord.fromWord(item);
 
       if (qrcWord == null) continue;
-      
+
       words.add(qrcWord);
     }
 
-    return QrcLine(start, length, words);
+    return QrcLine(start, length, words, translation);
   }
 }
 
@@ -78,8 +102,8 @@ class QrcWord extends SyncLyricWord {
 
   static QrcWord? fromWord(String word) {
     final splitedWord = word.split("(");
-    if(splitedWord.length != 2) return null;
-    
+    if (splitedWord.length != 2) return null;
+
     final splitedTime = splitedWord[1].split(",");
 
     if (splitedTime.length != 2) return null;
