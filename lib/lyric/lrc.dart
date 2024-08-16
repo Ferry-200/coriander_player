@@ -157,6 +157,36 @@ class Lrc extends Lyric {
     return result._combineLrcLine(separator);
   }
 
+  /// 必须保证 trans 的数量和顺序与 lrc 分割得的一致
+  static Lrc fromLrcTextAndTrans(String lrc, List<String> trans, LrcSource source) {
+    var lrcLines = lrc.split("\n");
+
+    var lines = <LrcLine>[];
+    for (int i = 0; i < lrcLines.length; i++) {
+      var lyricLine = LrcLine.fromLine(lrcLines[i]);
+      if (lyricLine == null) {
+        continue;
+      }
+      lines.add(lyricLine);
+    }
+
+    int it = 0;
+    for (var transLine in trans) {
+      if (it == lines.length - 1) break;
+      lines[it].content += "┃$transLine";
+      it += 1;
+    }
+
+    for (var i = 0; i < lines.length - 1; i++) {
+      lines[i].length = lines[i + 1].start - lines[i].start;
+    }
+    if (lines.isNotEmpty) {
+      lines.last.length = Duration.zero;
+    }
+
+    return Lrc(lines, source);
+  }
+
   /// 只支持读取 ID3V2, VorbisComment, Mp4Ilst 存储的内嵌歌词
   /// 以及相同目录相同文件名的 .lrc 外挂歌词（utf-8 or utf-16）
   static Future<Lrc?> fromAudioPath(

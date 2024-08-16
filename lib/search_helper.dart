@@ -163,37 +163,14 @@ Future<List<SongSearchResult>> uniSearch(Audio audio) async {
 Future<Lrc?> _getNeteaseUnsyncLyric(String neteaseSongId) async {
   try {
     final answer = await Netease.lyric(id: neteaseSongId);
-    final lrcText = answer.data;
+    final lrcText = answer.data["lrc"]["lyric"];
     if (lrcText is String) {
-      return Lrc.fromLrcText(lrcText, LrcSource.web);
-    }
-  } catch (err) {
-    // print(err);
-  }
-
-  return null;
-}
-
-Future<Lrc?> _getQQUnsyncLyric(int qqSongId) async {
-  try {
-    final answer = await QQ.songLyric(songId: qqSongId);
-    final lrcText = answer.data["lyric"];
-    if (lrcText is String) {
-      return Lrc.fromLrcText(lrcText, LrcSource.web);
-    }
-  } catch (err) {
-    // print(err);
-  }
-
-  return null;
-}
-
-Future<Lrc?> _getKugouUnsyncLyric(String kugouSongHash) async {
-  try {
-    final answer = await KuGou.lrc(hash: kugouSongHash);
-    final lrcText = answer.data["data"]["lrc"];
-    if (lrcText is String) {
-      return Lrc.fromLrcText(lrcText, LrcSource.web);
+      final lrcTrans = answer.data["tlyric"]["lyric"];
+      return Lrc.fromLrcText(
+        lrcText + lrcTrans,
+        LrcSource.web,
+        separator: "┃",
+      );
     }
   } catch (err) {
     // print(err);
@@ -207,6 +184,10 @@ Future<Qrc?> _getQQSyncLyric(int qqSongId) async {
     final answer = await QQ.songLyric3(songId: qqSongId);
     final qrcText = answer.data["lyric"];
     if (qrcText is String) {
+      final qrcTransRawStr = answer.data["trans"];
+      if (qrcTransRawStr is String) {
+        return Qrc.fromQrcText(qrcText, qrcTransRawStr);
+      }
       return Qrc.fromQrcText(qrcText);
     }
   } catch (err) {
@@ -237,11 +218,9 @@ Future<Lyric?> getOnlineLyric({
 }) async {
   Lyric? lyric;
   if (qqSongId != null) {
-    lyric = (await _getQQSyncLyric(qqSongId)) ??
-        (await _getQQUnsyncLyric(qqSongId));
+    lyric = (await _getQQSyncLyric(qqSongId));
   } else if (kugouSongHash != null) {
-    lyric = (await _getKugouSyncLyric(kugouSongHash)) ??
-        (await _getKugouUnsyncLyric(kugouSongHash));
+    lyric = (await _getKugouSyncLyric(kugouSongHash));
   } else if (neteaseSongId != null) {
     lyric = await _getNeteaseUnsyncLyric(neteaseSongId);
   }

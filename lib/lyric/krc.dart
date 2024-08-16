@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:coriander_player/lyric/lyric.dart';
 
 class Krc extends Lyric {
@@ -5,13 +7,46 @@ class Krc extends Lyric {
 
   static Krc fromKrcText(String krc) {
     final List<KrcLine> lines = [];
+    String? languageFrame;
+
     final splited = krc.split("\n");
     for (final item in splited) {
+      if (languageFrame == null) {
+        final tag = item.substring(
+          item.indexOf("[") + 1,
+          item.indexOf("]"),
+        );
+        var splitedTag = tag.split(":");
+        final tagName = splitedTag.firstOrNull;
+        if (tagName?.contains("language") == true) {
+          languageFrame = splitedTag[1];
+        }
+      }
+
       final krcLine = KrcLine.fromLine(item);
 
       if (krcLine == null) continue;
 
       lines.add(krcLine);
+    }
+
+    if (languageFrame != null) {
+      final Map languageMap = json.decode(utf8.decode(base64.decode(languageFrame)));
+      List trans = [];
+      for (var item in languageMap["content"]) {
+        if (item["type"] == 1) {
+          final List transContent = item["lyricContent"];
+          for (List transLine in transContent) {
+            trans.add(transLine.first);
+          }
+        }
+      }
+      int linesIt = 0, transIt = 0;
+      while ((linesIt < lines.length) || (transIt < trans.length)) {
+        lines[linesIt].translation = trans[transIt];
+        linesIt += 1;
+        transIt += 1;
+      }
     }
 
     // 添加空白
@@ -43,9 +78,9 @@ class Krc extends Lyric {
 }
 
 class KrcLine extends SyncLyricLine {
-  KrcLine(super.start, super.length, super.words);
+  KrcLine(super.start, super.length, super.words, [super.translation]);
 
-  static KrcLine? fromLine(String line) {
+  static KrcLine? fromLine(String line, [String? translation]) {
     final splitedLine = line.split("]");
     final from = splitedLine[0].indexOf("[") + 1;
     final splitedTime = splitedLine[0].substring(from).split(",");
@@ -69,7 +104,7 @@ class KrcLine extends SyncLyricLine {
       words.add(qrcWord);
     }
 
-    return KrcLine(start, length, words);
+    return KrcLine(start, length, words, translation);
   }
 }
 
