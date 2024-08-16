@@ -49,6 +49,8 @@ class AlbumTile extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 8.0),
                 child: Text(
                   album.name,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
                   style: TextStyle(color: scheme.onSurface),
                 ),
               ),
