@@ -156,7 +156,7 @@ class PlaybackService extends ChangeNotifier {
       final willPlay = this.playlist.value.removeAt(audioIndex);
       this.playlist.value.shuffle();
       this.playlist.value.insert(0, willPlay);
-      _playlistBackup = List.from(this.playlist.value);
+      _playlistBackup = List.from(playlist);
       _loadAndPlay(0, this.playlist.value);
     } else {
       _loadAndPlay(audioIndex, playlist);
@@ -189,7 +189,9 @@ class PlaybackService extends ChangeNotifier {
 
     if (flag) {
       playlist.value.shuffle();
-      _playlistIndex = playlist.value.indexOf(nowPlaying!);
+      playlist.value.remove(nowPlaying!);
+      playlist.value.insert(0, nowPlaying!);
+      _playlistIndex = 0;
       shuffle.value = true;
     } else {
       playlist.value = List.from(_playlistBackup);

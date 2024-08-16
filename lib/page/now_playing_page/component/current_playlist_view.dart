@@ -52,12 +52,12 @@ class _CurrentPlaylistViewState extends State<CurrentPlaylistView> {
             ),
           ),
           Expanded(
-            child: ValueListenableBuilder(
-              valueListenable: playbackService.playlist,
-              builder: (context, value, _) {
+            child: ListenableBuilder(
+              listenable: playbackService.shuffle,
+              builder: (context, _) {
                 return ListView.builder(
                   controller: scrollController,
-                  itemCount: value.length,
+                  itemCount: playbackService.playlist.value.length,
                   itemExtent: 56.0,
                   itemBuilder: (context, index) {
                     return _PlaylistViewItem(index: index);
