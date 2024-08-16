@@ -111,7 +111,7 @@ class _SetLyricSourceDialog extends StatelessWidget {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ConstrainedBox(
-        constraints: const BoxConstraints(minWidth: 384),
+        constraints: const BoxConstraints(minWidth: 384, maxWidth: 600),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -278,17 +278,21 @@ class _LyricSourceTileState extends State<_LyricSourceTile> {
           ), 0);
 
           final LyricLine currLine = lyric.lines[currLineIndex];
-          late final String content;
-          if (currLine is UnsyncLyricLine) {
-            content = currLine.content;
+          if (currLine is LrcLine) {
+            return Text(
+              "当前：${currLine.content}",
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            );
           } else {
-            content = (currLine as SyncLyricLine).content;
+            final syncLine = currLine as SyncLyricLine;
+
+            return Text(
+              "当前：${syncLine.content}${syncLine.translation != null ? "┃${syncLine.translation}" : ""}",
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            );
           }
-          return Text(
-            "当前：$content",
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          );
         },
       ),
     );
