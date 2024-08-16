@@ -214,7 +214,7 @@ class AudioTile extends StatelessWidget {
                     children: [
                       Text(
                         audio.title,
-                        style: TextStyle(color: textColor),
+                        style: TextStyle(color: textColor, fontSize: 16),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
