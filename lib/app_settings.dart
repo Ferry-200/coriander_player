@@ -31,6 +31,9 @@ class AppSettings {
   bool localLyricFirst = true;
   Size windowSize = const Size(1280, 756);
 
+  String? fontFamily;
+  String? fontPath;
+
   late String artistSplitPattern = artistSeparator.join("|");
 
   static final AppSettings _instance = AppSettings._();
@@ -130,8 +133,12 @@ class AppSettings {
       _instance.dynamicTheme = dt;
     }
 
-    _instance.artistSeparator = settingsMap["ArtistSeparator"];
-    _instance.artistSplitPattern = _instance.artistSeparator.join("|");
+    final _as = settingsMap["ArtistSeparator"];
+    if (_as != null) {
+      _instance.artistSeparator = _as;
+      _instance.artistSplitPattern = _instance.artistSeparator.join("|");
+    }
+    
 
     final llf = settingsMap["LocalLyricFirst"];
     if (llf != null) {
@@ -143,6 +150,13 @@ class AppSettings {
       final sizeStrs = (sizeStr as String).split(",");
       _instance.windowSize = Size(double.tryParse(sizeStrs[0]) ?? 1280,
           double.tryParse(sizeStrs[1]) ?? 756);
+    }
+
+    final ff = settingsMap["FontFamily"];
+    final fp = settingsMap["FontPath"];
+    if (ff != null) {
+      _instance.fontFamily = ff;
+      _instance.fontPath = fp;
     }
   }
 
@@ -158,7 +172,9 @@ class AppSettings {
       "ArtistSeparator": artistSeparator,
       "LocalLyricFirst": localLyricFirst,
       "WindowSize":
-          "${currSize.width.toStringAsFixed(1)},${currSize.height.toStringAsFixed(1)}"
+          "${currSize.width.toStringAsFixed(1)},${currSize.height.toStringAsFixed(1)}",
+      "FontFamily": fontFamily,
+      "FontPath": fontPath,
     };
 
     final settingsStr = json.encode(settingsMap);
