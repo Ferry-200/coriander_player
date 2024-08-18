@@ -181,10 +181,7 @@ class _AudioDetailTile extends StatelessWidget {
         children: [
           Text(title, style: TextStyle(fontSize: 22, color: scheme.onSurface)),
           const SizedBox(height: 4.0),
-          DefaultTextStyle(
-            style: TextStyle(fontSize: 16, color: scheme.onSurface),
-            child: detail,
-          ),
+          detail,
         ],
       ),
     );

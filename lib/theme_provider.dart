@@ -18,6 +18,8 @@ class ThemeProvider extends ChangeNotifier {
     brightness: Brightness.dark,
   );
 
+  String? fontFamily = AppSettings.instance.fontFamily;
+
   ColorScheme get currScheme =>
       themeMode == ThemeMode.dark ? darkScheme : lightScheme;
 
@@ -144,6 +146,11 @@ class ThemeProvider extends ChangeNotifier {
       };
       applyThemeFromImage(image, second);
     });
+  }
+
+  void changeFontFamily(String? fontFamily) {
+    this.fontFamily = fontFamily;
+    notifyListeners();
   }
 
   @override

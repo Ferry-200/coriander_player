@@ -24,3 +24,5 @@ windows = { version = "0.57.0", features = [
     "Win32_UI_WindowsAndMessaging",
     "UI_ViewManagement",
 ] }
+anyhow = "1.0.86"
+ttf-parser = "0.24.1"

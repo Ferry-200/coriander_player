@@ -6,3 +6,4 @@ pub mod tag_reader;
 pub mod smtc_flutter;
 pub mod utils;
 pub mod system_theme;
+pub mod installed_font;

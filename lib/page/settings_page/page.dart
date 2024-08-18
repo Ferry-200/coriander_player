@@ -30,6 +30,8 @@ class SettingsPage extends StatelessWidget {
           SizedBox(height: 16.0),
           ThemeModeControl(),
           SizedBox(height: 16.0),
+          SelectFontCombobox(),
+          SizedBox(height: 16.0),
           ArtistSeparatorEditor(),
           SizedBox(height: 16.0),
           CheckForUpdate(),

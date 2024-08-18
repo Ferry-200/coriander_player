@@ -62,6 +62,34 @@ class Entry extends StatelessWidget {
   Entry({super.key, required this.welcome});
   final bool welcome;
 
+  ThemeData fromSchemeAndFontFamily({
+    required ColorScheme colorScheme,
+    String? fontFamily,
+  }) {
+    final bool isDark = colorScheme.brightness == Brightness.dark;
+
+    // For surfaces that use primary color in light themes and surface color in dark
+    final Color primarySurfaceColor =
+        isDark ? colorScheme.surface : colorScheme.primary;
+    final Color onPrimarySurfaceColor =
+        isDark ? colorScheme.onSurface : colorScheme.onPrimary;
+
+    return ThemeData(
+      fontFamily: fontFamily,
+      colorScheme: colorScheme,
+      brightness: colorScheme.brightness,
+      primaryColor: primarySurfaceColor,
+      canvasColor: colorScheme.surface,
+      scaffoldBackgroundColor: colorScheme.surface,
+      cardColor: colorScheme.surface,
+      dividerColor: colorScheme.onSurface.withOpacity(0.12),
+      dialogBackgroundColor: colorScheme.surface,
+      indicatorColor: onPrimarySurfaceColor,
+      applyElevationOverlayColor: isDark,
+      useMaterial3: true,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
@@ -70,8 +98,14 @@ class Entry extends StatelessWidget {
         final theme = Provider.of<ThemeProvider>(context);
         return MaterialApp.router(
           debugShowCheckedModeBanner: false,
-          theme: ThemeData.from(colorScheme: theme.lightScheme),
-          darkTheme: ThemeData.from(colorScheme: theme.darkScheme),
+          theme: fromSchemeAndFontFamily(
+            fontFamily: theme.fontFamily,
+            colorScheme: theme.lightScheme,
+          ),
+          darkTheme: fromSchemeAndFontFamily(
+            fontFamily: theme.fontFamily,
+            colorScheme: theme.darkScheme,
+          ),
           themeMode: theme.themeMode,
           localizationsDelegates: GlobalMaterialLocalizations.delegates,
           supportedLocales: supportedLocales,

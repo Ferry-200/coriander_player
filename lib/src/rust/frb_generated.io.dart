@@ -3,6 +3,7 @@
 
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
+import 'api/installed_font.dart';
 import 'api/smtc_flutter.dart';
 import 'api/system_theme.dart';
 import 'api/tag_reader.dart';
@@ -71,13 +72,22 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   IndexActionState dco_decode_index_action_state(dynamic raw);
 
   @protected
+  InstalledFont dco_decode_installed_font(dynamic raw);
+
+  @protected
   List<String> dco_decode_list_String(dynamic raw);
+
+  @protected
+  List<InstalledFont> dco_decode_list_installed_font(dynamic raw);
 
   @protected
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
 
   @protected
   String? dco_decode_opt_String(dynamic raw);
+
+  @protected
+  List<InstalledFont>? dco_decode_opt_list_installed_font(dynamic raw);
 
   @protected
   Uint8List? dco_decode_opt_list_prim_u_8_strict(dynamic raw);
@@ -149,13 +159,24 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   IndexActionState sse_decode_index_action_state(SseDeserializer deserializer);
 
   @protected
+  InstalledFont sse_decode_installed_font(SseDeserializer deserializer);
+
+  @protected
   List<String> sse_decode_list_String(SseDeserializer deserializer);
+
+  @protected
+  List<InstalledFont> sse_decode_list_installed_font(
+      SseDeserializer deserializer);
 
   @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
   String? sse_decode_opt_String(SseDeserializer deserializer);
+
+  @protected
+  List<InstalledFont>? sse_decode_opt_list_installed_font(
+      SseDeserializer deserializer);
 
   @protected
   Uint8List? sse_decode_opt_list_prim_u_8_strict(SseDeserializer deserializer);
@@ -230,7 +251,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       IndexActionState self, SseSerializer serializer);
 
   @protected
+  void sse_encode_installed_font(InstalledFont self, SseSerializer serializer);
+
+  @protected
   void sse_encode_list_String(List<String> self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_list_installed_font(
+      List<InstalledFont> self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_prim_u_8_strict(
@@ -238,6 +266,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_opt_String(String? self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_opt_list_installed_font(
+      List<InstalledFont>? self, SseSerializer serializer);
 
   @protected
   void sse_encode_opt_list_prim_u_8_strict(

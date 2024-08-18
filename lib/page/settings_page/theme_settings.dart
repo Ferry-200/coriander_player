@@ -1,9 +1,13 @@
+import 'dart:io';
+import 'package:coriander_player/src/rust/api/installed_font.dart';
+import 'package:flutter/services.dart';
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/component/settings_tile.dart';
 import 'package:coriander_player/page/settings_page/theme_picker_dialog.dart';
 import 'package:coriander_player/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:provider/provider.dart';
 
 class ThemeSelector extends StatelessWidget {
   const ThemeSelector({super.key});
@@ -148,6 +152,68 @@ class _UseSystemThemeModeSwitchState extends State<UseSystemThemeModeSwitch> {
             settings.useSystemThemeMode = !settings.useSystemThemeMode;
           });
           await settings.saveSettings();
+        },
+      ),
+    );
+  }
+}
+
+class SelectFontCombobox extends StatelessWidget {
+  const SelectFontCombobox({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SettingsTile(
+      description: "自定义字体",
+      action: FutureBuilder(
+        future: getInstalledFonts(),
+        builder: (context, snapshot) {
+          final theme = Provider.of<ThemeProvider>(context);
+          return switch (snapshot.connectionState) {
+            ConnectionState.done => snapshot.data == null
+                ? const Center(child: Text("不可用"))
+                : DropdownMenu(
+                    menuHeight: 400,
+                    hintText: theme.fontFamily ?? "默认",
+                    dropdownMenuEntries: snapshot.data!
+                        .map((font) => DropdownMenuEntry(
+                              value: font,
+                              label: font.fullName,
+                            ))
+                        .toList(),
+                    onSelected: (font) async {
+                      if (font == null) return;
+
+                      try {
+                        final fontLoader = FontLoader(font.fullName);
+                        fontLoader.addFont(
+                          File(font.path).readAsBytes().then((value) {
+                            return ByteData.sublistView(value);
+                          }),
+                        );
+                        await fontLoader.load();
+                        ThemeProvider.instance.changeFontFamily(font.fullName);
+
+                        final settings = AppSettings.instance;
+                        settings.fontFamily = font.fullName;
+                        settings.fontPath = font.path;
+                        await settings.saveSettings();
+                      } catch (err) {
+                        ThemeProvider.instance.changeFontFamily(null);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(err.toString())),
+                          );
+                        }
+                      }
+                    },
+                  ),
+            _ => const SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(),
+              ),
+          };
         },
       ),
     );

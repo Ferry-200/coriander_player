@@ -640,10 +640,12 @@ checksum = "7a66a03ae7c801facd77a29370b4faec201768915ac14a721ba36f20bc9c209b"
 name = "rust_lib"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "flutter_rust_bridge",
  "lofty",
  "phf",
  "serde_json",
+ "ttf-parser",
  "windows",
 ]
 
@@ -735,6 +737,12 @@ dependencies = [
  "num_cpus",
  "pin-project-lite",
 ]
+
+[[package]]
+name = "ttf-parser"
+version = "0.24.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5be21190ff5d38e8b4a2d3b6a3ae57f612cc39c96e83cedeaf7abc338a8bac4a"
 
 [[package]]
 name = "typenum"
