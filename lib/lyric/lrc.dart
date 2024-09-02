@@ -27,14 +27,14 @@ class LrcLine extends UnsyncLyricLine {
       return null;
     }
 
-    if(!(line.contains("[") && line.contains("]"))){
+    final left = line.indexOf("[");
+    final right = line.indexOf("]");
+
+    if (left == -1 || right == -1) {
       return null;
     }
 
-    var lrcTimeString = line.substring(
-      line.indexOf("[") + 1,
-      line.indexOf("]"),
-    );
+    var lrcTimeString = line.substring(left + 1, right);
 
     // replace [mm:ss.msms...] with ""
     var content = line
@@ -145,7 +145,7 @@ class Lrc extends Lyric {
       lines.add(lyricLine);
     }
 
-    if(lines.isEmpty){
+    if (lines.isEmpty) {
       return null;
     }
 
