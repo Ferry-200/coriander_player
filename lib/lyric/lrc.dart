@@ -27,10 +27,14 @@ class LrcLine extends UnsyncLyricLine {
       return null;
     }
 
-    var lrcTimeString = line.substring(
-      line.indexOf("[") + 1,
-      line.indexOf("]"),
-    );
+    final left = line.indexOf("[");
+    final right = line.indexOf("]");
+
+    if (left == -1 || right == -1) {
+      return null;
+    }
+
+    var lrcTimeString = line.substring(left + 1, right);
 
     // replace [mm:ss.msms...] with ""
     var content = line
@@ -129,7 +133,7 @@ class Lrc extends Lyric {
   }
 
   /// 如果separator为null，不合并歌词；否则，合并相同时间戳的歌词
-  static Lrc fromLrcText(String lrc, LrcSource source, {String? separator}) {
+  static Lrc? fromLrcText(String lrc, LrcSource source, {String? separator}) {
     var lrcLines = lrc.split("\n");
 
     var lines = <LrcLine>[];
@@ -139,6 +143,10 @@ class Lrc extends Lyric {
         continue;
       }
       lines.add(lyricLine);
+    }
+
+    if (lines.isEmpty) {
+      return null;
     }
 
     for (var i = 0; i < lines.length - 1; i++) {
