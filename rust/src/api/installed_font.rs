@@ -23,34 +23,46 @@ fn _get_installed_fonts() -> Result<Vec<InstalledFont>, anyhow::Error> {
     let system_installed_fonts_path = Path::new("C:\\Windows\\Fonts");
     if let Ok(system_installed_fonts) = read_dir(system_installed_fonts_path) {
         for entry_result in system_installed_fonts {
-            if let Ok(entry) = entry_result {
-                if let Some(extension) = entry.path().extension() {
-                    if let Some(extension) = extension.to_str() {
-                        match extension.to_lowercase().as_str() {
-                            "ttf" | "ttc" | "otf" => {
-                                if let Ok(font) = fs::read(entry.path()) {
-                                    if let Ok(face) = ttf_parser::Face::parse(&font, 0) {
-                                        for name in face.names() {
-                                            if name.name_id == ttf_parser::name_id::FULL_NAME {
-                                                if let Some(full_name) = name.to_string() {
-                                                    installed_fonts.push(InstalledFont {
-                                                        path: entry
-                                                            .path()
-                                                            .to_string_lossy()
-                                                            .to_string(),
-                                                        full_name,
-                                                    });
-                                                }
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            _ => {}
+            let entry = match entry_result {
+                Ok(value) => value,
+                Err(_) => continue,
+            };
+            let path = entry.path();
+            let extension = match path.extension() {
+                Some(value) => match value.to_str() {
+                    Some(value) => value,
+                    None => continue,
+                },
+                None => todo!(),
+            };
+            match extension.to_lowercase().as_str() {
+                "ttf" | "ttc" | "otf" => {
+                    let font = match fs::read(path) {
+                        Ok(value) => value,
+                        Err(_) => continue,
+                    };
+                    let face = match ttf_parser::Face::parse(&font, 0) {
+                        Ok(value) => value,
+                        Err(_) => continue,
+                    };
+                    for name in face.names() {
+                        if name.name_id == ttf_parser::name_id::FULL_NAME {
+                            let full_name = match name.to_string() {
+                                Some(value) => value,
+                                None => continue,
+                            };
+                            installed_fonts.push(InstalledFont {
+                                path: entry
+                                    .path()
+                                    .to_string_lossy()
+                                    .to_string(),
+                                full_name,
+                            });
+                            break;
                         }
                     }
                 }
+                _ => continue
             }
         }
     }
@@ -59,34 +71,46 @@ fn _get_installed_fonts() -> Result<Vec<InstalledFont>, anyhow::Error> {
         PathBuf::from(env::var("USERPROFILE")?).join("AppData\\Local\\Microsoft\\Windows\\Fonts");
     if let Ok(user_installed_fonts) = read_dir(user_installed_fonts_path) {
         for entry_result in user_installed_fonts {
-            if let Ok(entry) = entry_result {
-                if let Some(extension) = entry.path().extension() {
-                    if let Some(extension) = extension.to_str() {
-                        match extension.to_lowercase().as_str() {
-                            "ttf" | "ttc" | "otf" => {
-                                if let Ok(font) = fs::read(entry.path()) {
-                                    if let Ok(face) = ttf_parser::Face::parse(&font, 0) {
-                                        for name in face.names() {
-                                            if name.name_id == ttf_parser::name_id::FULL_NAME {
-                                                if let Some(full_name) = name.to_string() {
-                                                    installed_fonts.push(InstalledFont {
-                                                        path: entry
-                                                            .path()
-                                                            .to_string_lossy()
-                                                            .to_string(),
-                                                        full_name,
-                                                    });
-                                                }
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            _ => {}
+            let entry = match entry_result {
+                Ok(value) => value,
+                Err(_) => continue,
+            };
+            let path = entry.path();
+            let extension = match path.extension() {
+                Some(value) => match value.to_str() {
+                    Some(value) => value,
+                    None => continue,
+                },
+                None => todo!(),
+            };
+            match extension.to_lowercase().as_str() {
+                "ttf" | "ttc" | "otf" => {
+                    let font = match fs::read(path) {
+                        Ok(value) => value,
+                        Err(_) => continue,
+                    };
+                    let face = match ttf_parser::Face::parse(&font, 0) {
+                        Ok(value) => value,
+                        Err(_) => continue,
+                    };
+                    for name in face.names() {
+                        if name.name_id == ttf_parser::name_id::FULL_NAME {
+                            let full_name = match name.to_string() {
+                                Some(value) => value,
+                                None => continue,
+                            };
+                            installed_fonts.push(InstalledFont {
+                                path: entry
+                                    .path()
+                                    .to_string_lossy()
+                                    .to_string(),
+                                full_name,
+                            });
+                            break;
                         }
                     }
                 }
+                _ => continue
             }
         }
     }
