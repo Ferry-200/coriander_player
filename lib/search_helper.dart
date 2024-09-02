@@ -126,16 +126,6 @@ Future<List<SongSearchResult>> uniSearch(Audio audio) async {
   final query = audio.title;
   List<SongSearchResult> result = [];
 
-  final Map qqAnswer = (await QQ.search(keyWord: query)).data;
-  final List qqResultList = qqAnswer["req"]["data"]["body"]["item_song"];
-  for (int i = 0; i < qqResultList.length; i++) {
-    if (i >= 5) break;
-    result.add(SongSearchResult.fromQQSearchResult(
-      qqResultList[i],
-      audio,
-    ));
-  }
-
   final Map kugouAnswer = (await KuGou.searchSong(keyword: query)).data;
   final List kugouResultList = kugouAnswer["data"]["info"];
   for (int j = 0; j < kugouResultList.length; j++) {
@@ -152,6 +142,16 @@ Future<List<SongSearchResult>> uniSearch(Audio audio) async {
     if (k >= 5) break;
     result.add(SongSearchResult.fromNeteaseSearchResult(
       neteaseResultList[k],
+      audio,
+    ));
+  }
+
+  final Map qqAnswer = (await QQ.search(keyWord: query)).data;
+  final List qqResultList = qqAnswer["req"]["data"]["body"]["item_song"];
+  for (int i = 0; i < qqResultList.length; i++) {
+    if (i >= 5) break;
+    result.add(SongSearchResult.fromQQSearchResult(
+      qqResultList[i],
       audio,
     ));
   }
