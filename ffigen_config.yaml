@@ -1,0 +1,14 @@
+# config for generating bass.dart
+output: 'lib/src/bass/bass.dart'
+headers:
+  entry-points:
+    - 'BASS/bass.h'
+name: 'Bass'
+
+# config for generating bass_wasapi.dart
+# ffigen:
+#   output: 'lib/src/bass/bass_wasapi.dart'
+#   headers:
+#     entry-points:
+#       - 'BASS/basswasapi.h'
+#   name: 'BassWasapi'
