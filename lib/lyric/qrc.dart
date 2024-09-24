@@ -115,6 +115,6 @@ class QrcWord extends SyncLyricWord {
       milliseconds: int.tryParse(splitedTime[1]) ?? 0,
     );
 
-    return QrcWord(start, length, splitedWord[0]);
+    return QrcWord(start, length, splitedWord[0].trim());
   }
 }
