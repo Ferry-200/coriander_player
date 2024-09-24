@@ -64,6 +64,15 @@ class PlaybackService extends ChangeNotifier {
   final _smtc = SmtcFlutter();
   final _pref = AppPreference.instance.playbackPref;
 
+  late final _wasapiExclusive = ValueNotifier(_player.wasapiExclusive);
+  ValueNotifier<bool> get wasapiExclusive => _wasapiExclusive;
+
+  /// 独占模式
+  void useExclusiveMode(bool exclusive) {
+    _player.useExclusiveMode(exclusive);
+    _wasapiExclusive.value = exclusive;
+  }
+
   Audio? nowPlaying;
 
   int? _playlistIndex;
