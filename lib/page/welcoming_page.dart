@@ -82,13 +82,14 @@ class _FolderSelectorViewState extends State<FolderSelectorView> {
                   return BuildIndexStateView(
                     indexPath: snapshot.data!,
                     folders: folders,
-                    whenIndexBuilt: () {
-                      Future.wait([
+                    whenIndexBuilt: () async {
+                      await Future.wait([
                         AppSettings.instance.saveSettings(),
                         AudioLibrary.initFromIndex(),
-                      ]).whenComplete(() {
+                      ]);
+                      if (context.mounted) {
                         context.go(app_paths.AUDIOS_PAGE);
-                      });
+                      }
                     },
                   );
                 },

@@ -47,15 +47,17 @@ class _UpdatingStateViewState extends State<UpdatingStateView> {
   late final Stream updateIndexStream;
   StreamSubscription? _subscription;
 
-  void whenIndexUpdated() {
-    Future.wait([
+  void whenIndexUpdated() async {
+    await Future.wait([
       AudioLibrary.initFromIndex(),
       readPlaylists(),
       readLyricSources(),
-    ]).whenComplete(() {
-      _subscription?.cancel();
-      context.go(app_paths.START_PAGES[AppPreference.instance.startPage]);
-    });
+    ]);
+    _subscription?.cancel();
+    final ctx = context;
+    if (ctx.mounted) {
+      ctx.go(app_paths.START_PAGES[AppPreference.instance.startPage]);
+    }
   }
 
   @override

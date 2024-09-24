@@ -151,14 +151,15 @@ class _AudioLibraryEditorDialogState extends State<AudioLibraryEditorDialog> {
                             return BuildIndexStateView(
                               indexPath: snapshot.data!,
                               folders: folders,
-                              whenIndexBuilt: () {
-                                Future.wait([
+                              whenIndexBuilt: () async {
+                                await Future.wait([
                                   AudioLibrary.initFromIndex(),
                                   readPlaylists(),
                                   readLyricSources(),
-                                ]).whenComplete(() {
+                                ]);
+                                if (context.mounted) {
                                   Navigator.pop(context);
-                                });
+                                }
                               },
                             );
                           },
