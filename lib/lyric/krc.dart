@@ -127,6 +127,6 @@ class KrcWord extends SyncLyricWord {
       milliseconds: int.tryParse(splitedTime[1]) ?? 0,
     );
 
-    return KrcWord(start, length, splitedWord[1].trim());
+    return KrcWord(start, length, splitedWord[1]);
   }
 }
