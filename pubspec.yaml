@@ -29,7 +29,7 @@ dependencies:
   desktop_lyric:
     git:
       url: https://github.com/Ferry-200/desktop_lyric.git
-      ref: 69b0805aab1a49b86a93e016b16b9a20ed4059a0
+      ref: 7ff7082d99638234afee71a0036d74068842945a
   music_api:
     git:
       url: https://github.com/Ferry-200/music_api_dart.git
