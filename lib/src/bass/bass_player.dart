@@ -206,10 +206,12 @@ class BassPlayer {
       _bassInit();
     }
     wasapiExclusive = exclusive;
-    setSource(_fPath!);
-    setVolumeDsp(AppPreference.instance.playbackPref.volumeDsp);
-    seek(lastPos);
-    start();
+    if (_fstream != null && _fPath != null) {
+      setSource(_fPath!);
+      setVolumeDsp(AppPreference.instance.playbackPref.volumeDsp);
+      seek(lastPos);
+      start();
+    }
   }
 
   /// if setSource has been called once,
