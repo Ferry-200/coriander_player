@@ -6,7 +6,6 @@ import 'package:coriander_player/play_service/play_service.dart';
 import 'package:coriander_player/src/bass/bass_player.dart';
 import 'package:coriander_player/src/rust/api/smtc_flutter.dart';
 import 'package:coriander_player/theme_provider.dart';
-import 'package:desktop_lyric/message.dart';
 import 'package:flutter/foundation.dart';
 
 enum PlayMode {
@@ -140,16 +139,9 @@ class PlaybackService extends ChangeNotifier {
     playService.desktopLyricService.canSendMessage.then((canSend) {
       if (!canSend) return;
 
-      playService.desktopLyricService.sendMessage(
-        PlayerActionMessage(action: PlayerAction.START),
-      );
-      playService.desktopLyricService.sendMessage(
-        NowPlayingChangedMessage(
-          title: nowPlaying!.title,
-          artist: nowPlaying!.artist,
-          album: nowPlaying!.album,
-        ),
-      );
+      playService.desktopLyricService
+          .sendPlayerStateMessage(playerState == PlayerState.playing);
+      playService.desktopLyricService.sendNowPlayingMessage(nowPlaying!);
     });
   }
 
@@ -270,9 +262,7 @@ class PlaybackService extends ChangeNotifier {
     playService.desktopLyricService.canSendMessage.then((canSend) {
       if (!canSend) return;
 
-      playService.desktopLyricService.sendMessage(
-        PlayerActionMessage(action: PlayerAction.PAUSE),
-      );
+      playService.desktopLyricService.sendPlayerStateMessage(false);
     });
   }
 
@@ -283,9 +273,7 @@ class PlaybackService extends ChangeNotifier {
     playService.desktopLyricService.canSendMessage.then((canSend) {
       if (!canSend) return;
 
-      playService.desktopLyricService.sendMessage(
-        PlayerActionMessage(action: PlayerAction.START),
-      );
+      playService.desktopLyricService.sendPlayerStateMessage(true);
     });
   }
 

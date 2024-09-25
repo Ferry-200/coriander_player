@@ -4,7 +4,6 @@ import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/play_service/play_service.dart';
 import 'package:coriander_player/src/rust/api/system_theme.dart';
-import 'package:desktop_lyric/message.dart';
 import 'package:flutter/material.dart';
 
 class ThemeProvider extends ChangeNotifier {
@@ -69,9 +68,7 @@ class ThemeProvider extends ChangeNotifier {
     PlayService.instance.desktopLyricService.canSendMessage.then((canSend) {
       if (!canSend) return;
 
-      PlayService.instance.desktopLyricService.sendMessage(
-        ThemeChangedMessage.fromColorScheme(currScheme),
-      );
+      PlayService.instance.desktopLyricService.sendThemeMessage(currScheme);
     });
   }
 
@@ -103,9 +100,8 @@ class ThemeProvider extends ChangeNotifier {
               .then((canSend) {
             if (!canSend) return;
 
-            PlayService.instance.desktopLyricService.sendMessage(
-              ThemeChangedMessage.fromColorScheme(value),
-            );
+            PlayService.instance.desktopLyricService
+                .sendThemeMessage(currScheme);
           });
         }
       },
@@ -118,15 +114,9 @@ class ThemeProvider extends ChangeNotifier {
     PlayService.instance.desktopLyricService.canSendMessage.then((canSend) {
       if (!canSend) return;
 
-      PlayService.instance.desktopLyricService.sendMessage(
-        ThemeChangedMessage.fromColorScheme(
-          currScheme,
-        ),
-      );
-      PlayService.instance.desktopLyricService.sendMessage(
-        ThemeModeChangedMessage(
-          isDarkMode: themeMode == ThemeMode.dark,
-        ),
+      PlayService.instance.desktopLyricService.sendThemeMessage(currScheme);
+      PlayService.instance.desktopLyricService.sendThemeModeMessage(
+        themeMode == ThemeMode.dark,
       );
     });
   }

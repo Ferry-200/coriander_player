@@ -183,16 +183,14 @@ class _DesktopLyricSwitch extends StatelessWidget {
           future: desktopLyricService.desktopLyric,
           builder: (context, snapshot) => IconButton(
             tooltip: "桌面歌词；现在：${snapshot.data == null ? "禁用" : "启用"}",
-            onPressed: () async {
-              if (snapshot.data == null) {
-                await desktopLyricService.startDesktopLyric();
-              } else {
-                desktopLyricService.killDesktopLyric();
-              }
-            },
+            onPressed: snapshot.data == null
+                ? desktopLyricService.startDesktopLyric
+                : desktopLyricService.isLocked
+                    ? desktopLyricService.sendUnlockMessage
+                    : desktopLyricService.killDesktopLyric,
             icon: snapshot.connectionState == ConnectionState.done
                 ? Icon(
-                    Symbols.toast,
+                    desktopLyricService.isLocked ? Symbols.lock : Symbols.toast,
                     fill: snapshot.data == null ? 0 : 1,
                   )
                 : const SizedBox(

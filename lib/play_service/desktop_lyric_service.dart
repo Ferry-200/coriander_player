@@ -1,13 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:coriander_player/library/audio_library.dart';
+import 'package:coriander_player/lyric/lrc.dart';
+import 'package:coriander_player/lyric/lyric.dart';
 import 'package:coriander_player/play_service/play_service.dart';
 import 'package:coriander_player/play_service/playback_service.dart';
+import 'package:coriander_player/src/bass/bass_player.dart';
 import 'package:coriander_player/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
 
-import 'package:desktop_lyric/message.dart';
+import 'package:desktop_lyric/message.dart' as dl;
 
 class DesktopLyricService extends ChangeNotifier {
   final PlayService playService;
@@ -17,6 +21,8 @@ class DesktopLyricService extends ChangeNotifier {
 
   Future<Process?> desktopLyric = Future.value(null);
   StreamSubscription? _desktopLyricSubscription;
+
+  bool isLocked = false;
 
   Future<void> startDesktopLyric() async {
     final desktopLyricPath = path.join(
@@ -29,47 +35,61 @@ class DesktopLyricService extends ChangeNotifier {
     final currScheme = ThemeProvider.instance.currScheme;
     final isDarkMode = ThemeProvider.instance.themeMode == ThemeMode.dark;
     desktopLyric = Process.start(desktopLyricPath, [
-      NowPlayingChangedMessage(
-        title: nowPlaying?.title ?? "无",
-        artist: nowPlaying?.artist ?? "无",
-        album: nowPlaying?.album ?? "无",
-      ).toString(),
-      ThemeModeChangedMessage(
-        isDarkMode: isDarkMode,
-      ).toString(),
-      ThemeChangedMessage.fromColorScheme(currScheme).toString(),
+      json.encode(dl.InitArgsMessage(
+        _playbackService.playerState == PlayerState.playing,
+        nowPlaying?.title ?? "无",
+        nowPlaying?.artist ?? "无",
+        nowPlaying?.album ?? "无",
+        isDarkMode,
+        currScheme.primary.value,
+        currScheme.surfaceContainer.value,
+        currScheme.onSurface.value,
+      ).toJson())
     ]);
 
-    final result = await desktopLyric;
+    final process = await desktopLyric;
 
-    final transformedStream = result?.stdout.transform(utf8.decoder);
-    _desktopLyricSubscription = transformedStream?.listen(
+    process?.stderr.transform(utf8.decoder).listen((event) {
+      print(event);
+    });
+
+    _desktopLyricSubscription = process?.stdout.transform(utf8.decoder).listen(
       (event) {
         try {
           final Map messageMap = json.decode(event);
+          print(messageMap);
           final String messageType = messageMap["type"];
-          if (messageType == "PlayerActionMessage") {
-            switch (PlayerActionMessage.fromMap(messageMap).action) {
-              case null:
-                break;
-              case PlayerAction.PAUSE:
+          final messageContent = messageMap["message"] as Map<String, dynamic>;
+          if (messageType ==
+              dl.DesktopLyricMessageType.ControlEventMessage.name) {
+            final controlEvent =
+                dl.ControlEventMessage.fromJson(messageContent);
+            switch (controlEvent.event) {
+              case dl.ControlEvent.pause:
                 _playbackService.pause();
                 break;
-              case PlayerAction.START:
+              case dl.ControlEvent.start:
                 _playbackService.start();
                 break;
-              case PlayerAction.PREVIOUS_AUDIO:
+              case dl.ControlEvent.previousAudio:
                 _playbackService.lastAudio();
                 break;
-              case PlayerAction.NEXT_AUDIO:
+              case dl.ControlEvent.nextAudio:
                 _playbackService.nextAudio();
                 break;
-              case PlayerAction.CLOSE_DESKTOP_LYRIC:
+              case dl.ControlEvent.lock:
+                isLocked = true;
+                notifyListeners();
+                break;
+              case dl.ControlEvent.close:
                 killDesktopLyric();
                 break;
             }
           }
-        } catch (_) {}
+        } catch (err, stack) {
+          print(err);
+          print(stack);
+        }
       },
     );
 
@@ -80,9 +100,9 @@ class DesktopLyricService extends ChangeNotifier {
         (value) => value != null,
       );
 
-  void sendMessage(DesktopLyricMessage message) {
+  void sendMessage(dl.DesktopLyricMessageType type, dl.Message message) {
     desktopLyric.then((value) {
-      value?.stdin.write(message);
+      value?.stdin.write(type.buildMessageJson(message));
     });
   }
 
@@ -96,5 +116,67 @@ class DesktopLyricService extends ChangeNotifier {
 
       notifyListeners();
     });
+  }
+
+  void sendUnlockMessage() {
+    sendMessage(
+      dl.DesktopLyricMessageType.UnlockMessage,
+      const dl.UnlockMessage(),
+    );
+    isLocked = false;
+    notifyListeners();
+  }
+
+  void sendThemeModeMessage(bool darkMode) {
+    sendMessage(
+      dl.DesktopLyricMessageType.ThemeModeChangedMessage,
+      dl.ThemeModeChangedMessage(darkMode),
+    );
+  }
+
+  void sendThemeMessage(ColorScheme scheme) {
+    sendMessage(
+      dl.DesktopLyricMessageType.ThemeChangedMessage,
+      dl.ThemeChangedMessage(
+        scheme.primary.value,
+        scheme.surfaceContainer.value,
+        scheme.onSurface.value,
+      ),
+    );
+  }
+
+  void sendPlayerStateMessage(bool isPlaying) {
+    sendMessage(
+      dl.DesktopLyricMessageType.PlayerStateChangedMessage,
+      dl.PlayerStateChangedMessage(isPlaying),
+    );
+  }
+
+  void sendNowPlayingMessage(Audio nowPlaying) {
+    sendMessage(
+      dl.DesktopLyricMessageType.NowPlayingChangedMessage,
+      dl.NowPlayingChangedMessage(
+        nowPlaying.title,
+        nowPlaying.artist,
+        nowPlaying.album,
+      ),
+    );
+  }
+
+  void sendLyricLineMessage(LyricLine line) {
+    if (line is SyncLyricLine) {
+      sendMessage(
+        dl.DesktopLyricMessageType.LyricLineChangedMessage,
+        dl.LyricLineChangedMessage(line.content, line.length, line.translation),
+      );
+    } else if (line is LrcLine) {
+      final splitted = line.content.split("┃");
+      final content = splitted.first;
+      final translation = splitted.length > 1 ? splitted[1] : null;
+      sendMessage(
+        dl.DesktopLyricMessageType.LyricLineChangedMessage,
+        dl.LyricLineChangedMessage(content, line.length, translation),
+      );
+    }
   }
 }

@@ -101,8 +101,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: e87f9be4a6b5ed3fba57dcfd2b57732dd01621df
+      ref: "69b0805aab1a49b86a93e016b16b9a20ed4059a0"
+      resolved-ref: "69b0805aab1a49b86a93e016b16b9a20ed4059a0"
       url: "https://github.com/Ferry-200/desktop_lyric.git"
     source: git
     version: "0.1.0"
@@ -385,8 +385,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: "5cb976e8ae112ba21d8edf19943ad11f3c198d99"
+      ref: c6f3e0abd9c6295b3678ce10d30bc09debda9abe
+      resolved-ref: c6f3e0abd9c6295b3678ce10d30bc09debda9abe
       url: "https://github.com/Ferry-200/music_api_dart.git"
     source: git
     version: "0.0.1"
@@ -670,10 +670,10 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: a79dbe579cb51ecd6d30b17e0cae4e0ea15e2c0e66f69ad4198f22a6789e94f4
+      sha256: "68d1e89a91ed61ad9c370f9f8b6effed9ae5e0ede22a270bdfa6daf79fc2290a"
       url: "https://pub.dev"
     source: hosted
-    version: "5.5.1"
+    version: "5.5.4"
   window_manager:
     dependency: "direct main"
     description:
