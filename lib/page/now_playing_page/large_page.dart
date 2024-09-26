@@ -37,28 +37,38 @@ class _NowPlayingPage_Large extends StatelessWidget {
           const _NowPlayingSlider(),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 24),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Stack(
+              alignment: Alignment.center,
               children: [
-                Row(
-                  children: [
-                    _NowPlayingShuffleSwitch(),
-                    spacer,
-                    _NowPlayingPlayModeSwitch(),
-                    spacer,
-                    _NowPlayingVolDspSlider(),
-                  ],
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _NowPlayingShuffleSwitch(),
+                      spacer,
+                      _NowPlayingPlayModeSwitch(),
+                      spacer,
+                      _NowPlayingVolDspSlider(),
+                      spacer,
+                      _ExclusiveModeSwitch(),
+                    ],
+                  ),
                 ),
                 _NowPlayingMainControls(),
-                Row(
-                  children: [
-                    _NowPlayingLargeViewSwitch(),
-                    spacer,
-                    _DesktopLyricSwitch(),
-                    spacer,
-                    _NowPlayingMoreAction(),
-                  ],
-                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _NowPlayingLargeViewSwitch(),
+                      spacer,
+                      _DesktopLyricSwitch(),
+                      spacer,
+                      _NowPlayingMoreAction(),
+                    ],
+                  ),
+                )
               ],
             ),
           ),

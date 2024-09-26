@@ -83,6 +83,29 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
   }
 }
 
+class _ExclusiveModeSwitch extends StatelessWidget {
+  const _ExclusiveModeSwitch({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder(
+      valueListenable: PlayService.instance.playbackService.wasapiExclusive,
+      builder: (context, exclusive, _) => IconButton(
+        tooltip: "独占模式；现在：${exclusive ? "启用" : "禁用"}",
+        onPressed: () {
+          PlayService.instance.playbackService.useExclusiveMode(!exclusive);
+        },
+        icon: Center(
+          child: Text(
+            exclusive ? "Excl" : "Shrd",
+            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _NowPlayingMoreAction extends StatelessWidget {
   const _NowPlayingMoreAction({super.key});
 
@@ -103,20 +126,20 @@ class _NowPlayingMoreAction extends StatelessWidget {
 
     return MenuAnchor(
       menuChildren: [
-        ListenableBuilder(
-          listenable: playbackService.wasapiExclusive,
-          builder: (context, _) {
-            return MenuItemButton(
-              onPressed: () {
-                playbackService
-                    .useExclusiveMode(!playbackService.wasapiExclusive.value);
-              },
-              child: Text(
-                playbackService.wasapiExclusive.value ? "禁用独占模式" : "启用独占模式",
-              ),
-            );
-          },
-        ),
+        // ListenableBuilder(
+        //   listenable: playbackService.wasapiExclusive,
+        //   builder: (context, _) {
+        //     return MenuItemButton(
+        //       onPressed: () {
+        //         playbackService
+        //             .useExclusiveMode(!playbackService.wasapiExclusive.value);
+        //       },
+        //       child: Text(
+        //         playbackService.wasapiExclusive.value ? "禁用独占模式" : "启用独占模式",
+        //       ),
+        //     );
+        //   },
+        // ),
         SubmenuButton(
           menuChildren: List.generate(
             nowPlaying.splitedArtists.length,
