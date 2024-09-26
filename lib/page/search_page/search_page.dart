@@ -25,24 +25,24 @@ class _SearchPageState extends State<SearchPage> {
   final editingController = TextEditingController();
 
   UnionSearchResult unionSearch() {
-    final query = editingController.text;
+    final query = editingController.text.toLowerCase();
     final result = UnionSearchResult(query);
     final library = AudioLibrary.instance;
 
     for (int i = 0; i < library.audioCollection.length; i++) {
-      if (library.audioCollection[i].title.contains(query)) {
+      if (library.audioCollection[i].title.toLowerCase().contains(query)) {
         result.audios.add(library.audioCollection[i]);
       }
     }
 
     for (Artist item in library.artistCollection.values) {
-      if (item.name.contains(query)) {
+      if (item.name.toLowerCase().contains(query)) {
         result.artists.add(item);
       }
     }
 
     for (Album item in library.albumCollection.values) {
-      if (item.name.contains(query)) {
+      if (item.name.toLowerCase().contains(query)) {
         result.album.add(item);
       }
     }
