@@ -168,46 +168,45 @@ class SelectFontCombobox extends StatelessWidget {
       action: FutureBuilder(
         future: getInstalledFonts(),
         builder: (context, snapshot) {
-          final theme = Provider.of<ThemeProvider>(context);
           return switch (snapshot.connectionState) {
-            ConnectionState.done => snapshot.data == null
-                ? const Center(child: Text("不可用"))
-                : DropdownMenu(
-                    menuHeight: 400,
-                    hintText: theme.fontFamily ?? "默认",
-                    dropdownMenuEntries: snapshot.data!
-                        .map((font) => DropdownMenuEntry(
-                              value: font,
-                              label: font.fullName,
-                            ))
-                        .toList(),
-                    onSelected: (font) async {
-                      if (font == null) return;
-
-                      try {
-                        final fontLoader = FontLoader(font.fullName);
-                        fontLoader.addFont(
-                          File(font.path).readAsBytes().then((value) {
-                            return ByteData.sublistView(value);
-                          }),
+            ConnectionState.done => FilledButton.icon(
+                onPressed: snapshot.data == null
+                    ? null
+                    : () async {
+                        final selectedFont = await showDialog<InstalledFont>(
+                          context: context,
+                          builder: (context) =>
+                              _FontSelector(installedFont: snapshot.data!),
                         );
-                        await fontLoader.load();
-                        ThemeProvider.instance.changeFontFamily(font.fullName);
+                        if (selectedFont == null) return;
 
-                        final settings = AppSettings.instance;
-                        settings.fontFamily = font.fullName;
-                        settings.fontPath = font.path;
-                        await settings.saveSettings();
-                      } catch (err) {
-                        ThemeProvider.instance.changeFontFamily(null);
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(err.toString())),
+                        try {
+                          final fontLoader = FontLoader(selectedFont.fullName);
+                          fontLoader.addFont(
+                            File(selectedFont.path).readAsBytes().then((value) {
+                              return ByteData.sublistView(value);
+                            }),
                           );
+                          await fontLoader.load();
+                          ThemeProvider.instance
+                              .changeFontFamily(selectedFont.fullName);
+
+                          final settings = AppSettings.instance;
+                          settings.fontFamily = selectedFont.fullName;
+                          settings.fontPath = selectedFont.path;
+                          await settings.saveSettings();
+                        } catch (err) {
+                          ThemeProvider.instance.changeFontFamily(null);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(err.toString())),
+                            );
+                          }
                         }
-                      }
-                    },
-                  ),
+                      },
+                label: const Text("选择字体"),
+                icon: const Icon(Symbols.text_fields),
+              ),
             _ => const SizedBox(
                 width: 18,
                 height: 18,
@@ -215,6 +214,75 @@ class SelectFontCombobox extends StatelessWidget {
               ),
           };
         },
+      ),
+    );
+  }
+}
+
+class _FontSelector extends StatelessWidget {
+  const _FontSelector({super.key, required this.installedFont});
+  final List<InstalledFont> installedFont;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Provider.of<ThemeProvider>(context);
+    final scheme = Theme.of(context).colorScheme;
+    return Dialog(
+      insetPadding: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: SizedBox(
+        width: 350.0,
+        height: 400,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Text(
+                  "选择字体",
+                  style: TextStyle(
+                    color: scheme.onSurface,
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Text("当前字体：${theme.fontFamily ?? "默认"}"),
+              const SizedBox(height: 8.0),
+              Expanded(
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: ListView.builder(
+                    itemCount: installedFont.length,
+                    itemExtent: 48,
+                    itemBuilder: (context, i) => ListTile(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      title: Text(installedFont[i].fullName),
+                      onTap: () => Navigator.pop(context, installedFont[i]),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("取消"),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
