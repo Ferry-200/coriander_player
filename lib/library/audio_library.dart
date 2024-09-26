@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/src/rust/api/tag_reader.dart';
 import 'package:flutter/painting.dart';
-import 'package:path_provider/path_provider.dart';
 
 /// from index.json
 class AudioLibrary {
@@ -39,7 +38,7 @@ class AudioLibrary {
   /// }
   /// ```
   static Future<void> initFromIndex() async {
-    final supportPath = (await getApplicationSupportDirectory()).path;
+    final supportPath = (await getAppDataDir()).path;
     final indexPath = "$supportPath\\index.json";
 
     final indexStr = File(indexPath).readAsStringSync();

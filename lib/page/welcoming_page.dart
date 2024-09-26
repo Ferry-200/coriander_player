@@ -7,7 +7,6 @@ import 'package:filepicker_windows/filepicker_windows.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:window_manager/window_manager.dart';
 
 class WelcomingPage extends StatelessWidget {
@@ -61,7 +60,7 @@ class FolderSelectorView extends StatefulWidget {
 class _FolderSelectorViewState extends State<FolderSelectorView> {
   bool selecting = true;
   final List<String> folders = [];
-  final applicationSupportDirectory = getApplicationSupportDirectory();
+  final applicationSupportDirectory = getAppDataDir();
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +100,15 @@ class _FolderSelectorViewState extends State<FolderSelectorView> {
   Widget folderSelector(ColorScheme scheme) {
     return Column(
       children: [
+        FutureBuilder(
+          future: applicationSupportDirectory,
+          builder: (context, snapshot) {
+            if (snapshot.data == null) return const SizedBox.shrink();
+
+            return Text(
+                "${snapshot.data!.path}\n${snapshot.data!.statSync().modeString()}");
+          },
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -197,7 +205,8 @@ class _WindowControlls extends StatefulWidget {
   State<_WindowControlls> createState() => __WindowControllsState();
 }
 
-class __WindowControllsState extends State<_WindowControlls> with WindowListener {
+class __WindowControllsState extends State<_WindowControlls>
+    with WindowListener {
   @override
   void initState() {
     super.initState();

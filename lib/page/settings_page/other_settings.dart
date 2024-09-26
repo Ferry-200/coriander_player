@@ -7,7 +7,6 @@ import 'package:coriander_player/lyric/lyric_source.dart';
 import 'package:filepicker_windows/filepicker_windows.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:path_provider/path_provider.dart';
 
 class DefaultLyricSourceControl extends StatefulWidget {
   const DefaultLyricSourceControl({super.key});
@@ -88,7 +87,7 @@ class _AudioLibraryEditorDialogState extends State<AudioLibraryEditorDialog> {
     (i) => AudioLibrary.instance.folders[i].path,
   );
 
-  final applicationSupportDirectory = getApplicationSupportDirectory();
+  final applicationSupportDirectory = getAppDataDir();
 
   bool editing = true;
 

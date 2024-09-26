@@ -7,7 +7,6 @@ import 'package:coriander_player/src/rust/frb_generated.dart';
 import 'package:coriander_player/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:window_manager/window_manager.dart';
 
 Future<void> initWindow() async {
@@ -29,7 +28,8 @@ Future<void> initWindow() async {
 
 Future<void> main() async {
   await RustLib.init();
-  final supportPath = (await getApplicationSupportDirectory()).path;
+  await migrateAppData();
+  final supportPath = (await getAppDataDir()).path;
   if (File("$supportPath\\settings.json").existsSync()) {
     await AppSettings.readFromJson();
     final settings = AppSettings.instance;

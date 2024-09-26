@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/page/now_playing_page/component/lyric_view_controls.dart';
 import 'package:coriander_player/page/now_playing_page/page.dart';
 import 'package:coriander_player/page/uni_page.dart';
 import 'package:coriander_player/play_service/playback_service.dart';
-import 'package:path_provider/path_provider.dart';
 
 class PagePreference {
   int sortMethod;
@@ -110,7 +110,7 @@ class AppPreference {
       NowPlayingViewMode.withLyric, LyricTextAlign.left, 22.0, 18.0);
 
   Future<void> save() async {
-    final supportPath = (await getApplicationSupportDirectory()).path;
+    final supportPath = (await getAppDataDir()).path;
     final appPreferencePath = "$supportPath\\app_preference.json";
 
     Map prefMap = {
@@ -134,7 +134,7 @@ class AppPreference {
   }
 
   static Future<void> read() async {
-    final supportPath = (await getApplicationSupportDirectory()).path;
+    final supportPath = (await getAppDataDir()).path;
     final appPreferencePath = "$supportPath\\app_preference.json";
 
     final prefJson = await File(appPreferencePath).readAsString();
@@ -163,7 +163,8 @@ class AppPreference {
     );
     instance.startPage = prefMap["startPage"];
     instance.playbackPref = PlaybackPreference.fromMap(prefMap["playbackPref"]);
-    instance.nowPlayingPagePref = NowPlayingPagePreference.fromMap(prefMap["nowPlayingPagePref"]);
+    instance.nowPlayingPagePref =
+        NowPlayingPagePreference.fromMap(prefMap["nowPlayingPagePref"]);
   }
 
   static final AppPreference instance = AppPreference();

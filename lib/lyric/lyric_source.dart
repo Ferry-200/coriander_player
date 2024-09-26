@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:path_provider/path_provider.dart';
+import 'package:coriander_player/app_settings.dart';
 
 enum LyricSourceType {
   qq("qq"),
@@ -52,7 +52,7 @@ class LyricSource {
 Map<String, LyricSource> LYRIC_SOURCES = {};
 
 Future<void> readLyricSources() async {
-  final supportPath = (await getApplicationSupportDirectory()).path;
+  final supportPath = (await getAppDataDir()).path;
   final lyricSourcePath = "$supportPath\\lyric_source.json";
 
   final lyricSourceStr = File(lyricSourcePath).readAsStringSync();
@@ -65,7 +65,7 @@ Future<void> readLyricSources() async {
 }
 
 Future<void> saveLyricSources() async {
-  final supportPath = (await getApplicationSupportDirectory()).path;
+  final supportPath = (await getAppDataDir()).path;
   final lyricSourcePath = "$supportPath\\lyric_source.json";
 
   Map<String, Map> lyricSourceMaps = {};

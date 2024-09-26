@@ -3,8 +3,38 @@ import 'dart:io';
 import 'package:coriander_player/src/rust/api/system_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:github/github.dart';
+import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:window_manager/window_manager.dart';
+
+/// 把旧的 app data 目录（如果存在）移到新的目录
+/// 只在新 app data 目录没有数据时进行
+/// 从 C:\Users\$username\AppData\Roaming\com.example\coriander_player 移到 C:\Users\$username\Documents\coriander_player
+Future<void> migrateAppData() async {
+  try {
+    final newAppDataDir = await getAppDataDir();
+    if (newAppDataDir.listSync().isNotEmpty) return;
+
+    final oldAppDataDir = await getApplicationSupportDirectory();
+
+    if (oldAppDataDir.existsSync()) {
+      final datas = oldAppDataDir.listSync();
+      for (var item in datas) {
+        final oldDataFile = File(item.path);
+        oldDataFile.copySync(
+          path.join(newAppDataDir.path, path.basename(item.path)),
+        );
+        oldDataFile.deleteSync();
+      }
+    }
+  } catch (_) {}
+}
+
+Future<Directory> getAppDataDir() async {
+  final dir = await getApplicationDocumentsDirectory();
+  return Directory(path.join(dir.path, "coriander_player"))
+      .create(recursive: true);
+}
 
 class AppSettings {
   static final github = GitHub();
@@ -99,7 +129,7 @@ class AppSettings {
   }
 
   static Future<void> readFromJson() async {
-    final supportPath = (await getApplicationSupportDirectory()).path;
+    final supportPath = (await getAppDataDir()).path;
     final settingsPath = "$supportPath\\settings.json";
 
     final settingsStr = File(settingsPath).readAsStringSync();
@@ -177,8 +207,9 @@ class AppSettings {
     };
 
     final settingsStr = json.encode(settingsMap);
-    final supportPath = (await getApplicationSupportDirectory()).path;
+    final supportPath = (await getAppDataDir()).path;
     final settingsPath = "$supportPath\\settings.json";
-    (await File(settingsPath).create(recursive: true)).writeAsStringSync(settingsStr);
+    (await File(settingsPath).create(recursive: true))
+        .writeAsStringSync(settingsStr);
   }
 }
