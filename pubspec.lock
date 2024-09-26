@@ -101,8 +101,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "7ff7082d99638234afee71a0036d74068842945a"
-      resolved-ref: "7ff7082d99638234afee71a0036d74068842945a"
+      ref: "536be8df55c80a7fdf7cc20f603d3fc76a732821"
+      resolved-ref: "536be8df55c80a7fdf7cc20f603d3fc76a732821"
       url: "https://github.com/Ferry-200/desktop_lyric.git"
     source: git
     version: "0.1.0"
