@@ -251,11 +251,15 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
         IconButton(
           tooltip: "退出",
           onPressed: () async {
-            await savePlaylists();
-            await saveLyricSources();
-            await AppSettings.instance.saveSettings();
-            await AppPreference.instance.save();
             PlayService.instance.close();
+
+            try {
+              await savePlaylists();
+              await saveLyricSources();
+              await AppSettings.instance.saveSettings();
+              await AppPreference.instance.save();
+            } catch (_) {}
+
             windowManager.close();
           },
           icon: const Icon(Symbols.close),
