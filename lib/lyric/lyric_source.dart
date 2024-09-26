@@ -74,6 +74,6 @@ Future<void> saveLyricSources() async {
   }
 
   final lyricSourceJson = json.encode(lyricSourceMaps);
-  final output = await File(lyricSourcePath).create();
+  final output = await File(lyricSourcePath).create(recursive: true);
   await output.writeAsString(lyricSourceJson);
 }

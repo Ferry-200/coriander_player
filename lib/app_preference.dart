@@ -129,7 +129,7 @@ class AppPreference {
     };
 
     final prefJson = json.encode(prefMap);
-    final output = await File(appPreferencePath).create();
+    final output = await File(appPreferencePath).create(recursive: true);
     await output.writeAsString(prefJson);
   }
 

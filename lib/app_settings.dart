@@ -138,7 +138,6 @@ class AppSettings {
       _instance.artistSeparator = _as;
       _instance.artistSplitPattern = _instance.artistSeparator.join("|");
     }
-    
 
     final llf = settingsMap["LocalLyricFirst"];
     if (llf != null) {
@@ -180,6 +179,6 @@ class AppSettings {
     final settingsStr = json.encode(settingsMap);
     final supportPath = (await getApplicationSupportDirectory()).path;
     final settingsPath = "$supportPath\\settings.json";
-    File(settingsPath).writeAsStringSync(settingsStr);
+    (await File(settingsPath).create(recursive: true)).writeAsStringSync(settingsStr);
   }
 }
