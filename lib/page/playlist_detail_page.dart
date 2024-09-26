@@ -17,11 +17,11 @@ class PlaylistDetailPage extends StatefulWidget {
 }
 
 class _PlaylistDetailPageState extends State<PlaylistDetailPage> {
-  late final contentList = widget.playlist.audios.values.toList();
   final multiSelectController = MultiSelectController<Audio>();
 
   @override
   Widget build(BuildContext context) {
+    final contentList = widget.playlist.audios.values.toList();
     final scheme = Theme.of(context).colorScheme;
 
     return UniPage<Audio>(
@@ -48,6 +48,7 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage> {
                 widget.playlist.audios.remove(item.path);
               }
             });
+            multiSelectController.useMultiSelectView(false);
           },
           style: ButtonStyle(
             backgroundColor: WidgetStatePropertyAll(scheme.error),
