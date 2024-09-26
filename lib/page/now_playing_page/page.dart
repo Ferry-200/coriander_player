@@ -126,20 +126,6 @@ class _NowPlayingMoreAction extends StatelessWidget {
 
     return MenuAnchor(
       menuChildren: [
-        // ListenableBuilder(
-        //   listenable: playbackService.wasapiExclusive,
-        //   builder: (context, _) {
-        //     return MenuItemButton(
-        //       onPressed: () {
-        //         playbackService
-        //             .useExclusiveMode(!playbackService.wasapiExclusive.value);
-        //       },
-        //       child: Text(
-        //         playbackService.wasapiExclusive.value ? "禁用独占模式" : "启用独占模式",
-        //       ),
-        //     );
-        //   },
-        // ),
         SubmenuButton(
           menuChildren: List.generate(
             nowPlaying.splitedArtists.length,

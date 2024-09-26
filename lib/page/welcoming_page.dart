@@ -100,15 +100,6 @@ class _FolderSelectorViewState extends State<FolderSelectorView> {
   Widget folderSelector(ColorScheme scheme) {
     return Column(
       children: [
-        FutureBuilder(
-          future: applicationSupportDirectory,
-          builder: (context, snapshot) {
-            if (snapshot.data == null) return const SizedBox.shrink();
-
-            return Text(
-                "${snapshot.data!.path}\n${snapshot.data!.statSync().modeString()}");
-          },
-        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
