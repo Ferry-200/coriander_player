@@ -12,14 +12,19 @@ class AudioLibrary {
   AudioLibrary._(this.folders);
 
   /// 所有音乐
-  late List<Audio> audioCollection;
+  List<Audio> audioCollection = [];
 
   Map<String, Artist> artistCollection = {};
 
   Map<String, Album> albumCollection = {};
 
   /// must call [initFromIndex]
-  static late AudioLibrary instance;
+  static AudioLibrary get instance {
+    _instance ?? AudioLibrary._([]);
+    return _instance!;
+  }
+
+  static AudioLibrary? _instance;
 
   /// 目前 index 结构：
   /// ```json
@@ -55,7 +60,7 @@ class AudioLibrary {
       folders.add(AudioFolder.fromMap(folderMap, audios));
     }
 
-    instance = AudioLibrary._(folders);
+    _instance = AudioLibrary._(folders);
 
     instance.artistCollection.clear();
     instance.albumCollection.clear();
@@ -63,10 +68,9 @@ class AudioLibrary {
   }
 
   void _buildCollections() {
-    instance.audioCollection = folders.fold(
-      [],
-      (previousValue, element) => previousValue += element.audios,
-    );
+    for (var f in folders) {
+      audioCollection.addAll(f.audios);
+    }
 
     for (Audio audio in audioCollection) {
       for (String artistName in audio.splitedArtists) {
