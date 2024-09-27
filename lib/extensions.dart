@@ -40,10 +40,16 @@ Color? fromRGBHexString(String rgbHexStr) {
   return null;
 }
 
+Map<String, String> _pinyinCache = {};
+
 extension PinyinCompare on String {
+  /// convert str to pinyin, cache it when it hasn't been converted;
   String _getPinyin() {
+    final cachedPinyin = _pinyinCache[this];
+    if (cachedPinyin != null) return cachedPinyin;
+
     final splited = this.split("");
-    final pinyinStrBuilder = StringBuffer();
+    final pinyinBuilder = StringBuffer();
 
     for (var c in splited) {
       if (ChineseHelper.isChinese(c)) {
@@ -52,13 +58,17 @@ extension PinyinCompare on String {
           PinyinFormat.WITHOUT_TONE,
         ).firstOrNull;
 
-        pinyinStrBuilder.write(pinyin ?? c);
+        pinyinBuilder.write(pinyin ?? c);
       } else {
-        pinyinStrBuilder.write(c);
+        pinyinBuilder.write(c);
       }
     }
 
-    return pinyinStrBuilder.toString();
+    final pinyin = pinyinBuilder.toString();
+
+    _pinyinCache[this] = pinyin;
+
+    return pinyin;
   }
 
   /// Compares this string to [other] with pinyin first, else use the ordering of the code units.
@@ -67,13 +77,11 @@ extension PinyinCompare on String {
   /// a positive value if `this` is ordered after `other`,
   /// or zero if `this` and `other` are equivalent.
   int localeCompareTo(String other) {
-    if (!ChineseHelper.containsChinese(this) &&
-        !ChineseHelper.containsChinese(other)) {
-      return this.compareTo(other);
-    }
+    final thisContainsChinese = ChineseHelper.containsChinese(this);
+    final otherContainsChinese = ChineseHelper.containsChinese(other);
 
-    final thisCmpStr = this._getPinyin();
-    final otherCmpStr = other._getPinyin();
+    final thisCmpStr = thisContainsChinese ? this._getPinyin() : this;
+    final otherCmpStr = otherContainsChinese ? other._getPinyin() : other;
 
     return thisCmpStr.compareTo(otherCmpStr);
   }
