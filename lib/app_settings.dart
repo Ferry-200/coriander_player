@@ -32,7 +32,7 @@ Future<void> migrateAppData() async {
 
 Future<Directory> getAppDataDir() async {
   final dir = await getApplicationDocumentsDirectory();
-  return Directory(path.join(dir.path, "coriander_player"))
+  return Directory(path.join(dir.path, ".coriander_player"))
       .create(recursive: true);
 }
 
