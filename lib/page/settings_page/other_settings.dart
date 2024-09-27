@@ -106,7 +106,6 @@ class _AudioLibraryEditorDialogState extends State<AudioLibraryEditorDialog> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
@@ -147,19 +146,21 @@ class _AudioLibraryEditorDialogState extends State<AudioLibraryEditorDialog> {
                               return const SizedBox.shrink();
                             }
 
-                            return BuildIndexStateView(
-                              indexPath: snapshot.data!,
-                              folders: folders,
-                              whenIndexBuilt: () async {
-                                await Future.wait([
-                                  AudioLibrary.initFromIndex(),
-                                  readPlaylists(),
-                                  readLyricSources(),
-                                ]);
-                                if (context.mounted) {
-                                  Navigator.pop(context);
-                                }
-                              },
+                            return Center(
+                              child: BuildIndexStateView(
+                                indexPath: snapshot.data!,
+                                folders: folders,
+                                whenIndexBuilt: () async {
+                                  await Future.wait([
+                                    AudioLibrary.initFromIndex(),
+                                    readPlaylists(),
+                                    readLyricSources(),
+                                  ]);
+                                  if (context.mounted) {
+                                    Navigator.pop(context);
+                                  }
+                                },
+                              ),
                             );
                           },
                         ),

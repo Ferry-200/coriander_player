@@ -42,6 +42,7 @@ class _BuildIndexStateViewState extends State<BuildIndexStateView> {
       stream: buildIndexStream,
       builder: (context, snapshot) {
         return Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             LinearProgressIndicator(

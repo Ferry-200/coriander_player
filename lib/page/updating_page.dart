@@ -48,6 +48,7 @@ class _UpdatingStateViewState extends State<UpdatingStateView> {
   StreamSubscription? _subscription;
 
   void whenIndexUpdated() async {
+    await Future.delayed(const Duration(seconds: 5));
     await Future.wait([
       AudioLibrary.initFromIndex(),
       readPlaylists(),
@@ -80,6 +81,7 @@ class _UpdatingStateViewState extends State<UpdatingStateView> {
         stream: updateIndexStream,
         builder: (context, snapshot) {
           return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               LinearProgressIndicator(
