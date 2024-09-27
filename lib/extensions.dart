@@ -28,8 +28,10 @@ extension RGBHexString on Color {
 }
 
 /// [rgbHexStr] 必须是 #RRGGBB
-Color fromRGBHexString(String rgbHexStr) {
-  assert(rgbHexStr.startsWith("#") && rgbHexStr.length == 7);
+Color? fromRGBHexString(String rgbHexStr) {
+  if (rgbHexStr.startsWith("#") && rgbHexStr.length == 7) {
+    return Color(0xff000000 + int.parse(rgbHexStr.substring(1), radix: 16));
+  }
 
-  return Color(0xff000000 + int.parse(rgbHexStr.substring(1), radix: 16));
+  return null;
 }

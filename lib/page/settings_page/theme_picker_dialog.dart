@@ -47,9 +47,12 @@ class _ThemePickerDialogState extends State<ThemePickerDialog> {
                 autofocus: true,
                 controller: rgbHexTextEditingController,
                 onChanged: (value) {
-                  setState(() {
-                    selectedColor = fromRGBHexString(value);
-                  });
+                  final c = fromRGBHexString(value);
+                  if (c != null) {
+                    setState(() {
+                      selectedColor = c;
+                    });
+                  }
                 },
                 decoration: const InputDecoration(
                   labelText: "Hex RGB",
