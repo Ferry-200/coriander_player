@@ -1,8 +1,9 @@
 import 'package:coriander_player/app_paths.dart' as app_paths;
-import 'package:coriander_player/hotkey_helper.dart';
 import 'package:coriander_player/library/audio_library.dart';
+import 'package:coriander_player/main.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class UnionSearchResult {
@@ -90,9 +91,9 @@ class _SearchPageState extends State<SearchPage> {
               child: Focus(
                 onFocusChange: (focus) {
                   if (focus) {
-                    HotkeyHelper.unregisterAll();
+                    hotKeyManager.unregisterAll();
                   } else {
-                    HotkeyHelper.registerHotKeys();
+                    registerHotKeys();
                   }
                 },
                 child: TextField(

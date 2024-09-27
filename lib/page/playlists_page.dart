@@ -1,11 +1,12 @@
 import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/extensions.dart';
-import 'package:coriander_player/hotkey_helper.dart';
+import 'package:coriander_player/main.dart';
 import 'package:coriander_player/page/uni_page.dart';
 import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class PlaylistsPage extends StatefulWidget {
@@ -161,9 +162,9 @@ class _NewPlaylistDialog extends StatelessWidget {
               Focus(
                 onFocusChange: (focus) {
                   if (focus) {
-                    HotkeyHelper.unregisterAll();
+                    hotKeyManager.unregisterAll();
                   } else {
-                    HotkeyHelper.registerHotKeys();
+                    registerHotKeys();
                   }
                 },
                 child: TextField(
@@ -238,9 +239,9 @@ class _EditPlaylistDialog extends StatelessWidget {
               Focus(
                 onFocusChange: (focus) {
                   if (focus) {
-                    HotkeyHelper.unregisterAll();
+                    hotKeyManager.unregisterAll();
                   } else {
-                    HotkeyHelper.registerHotKeys();
+                    registerHotKeys();
                   }
                 },
                 child: TextField(

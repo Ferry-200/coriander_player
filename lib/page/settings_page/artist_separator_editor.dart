@@ -1,8 +1,9 @@
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/component/settings_tile.dart';
-import 'package:coriander_player/hotkey_helper.dart';
 import 'package:coriander_player/library/audio_library.dart';
+import 'package:coriander_player/main.dart';
 import 'package:flutter/material.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class ArtistSeparatorEditor extends StatelessWidget {
@@ -124,9 +125,9 @@ class __ArtistSeparatorEditDialogState
                           title: Focus(
                             onFocusChange: (focus) {
                               if (focus) {
-                                HotkeyHelper.unregisterAll();
+                                hotKeyManager.unregisterAll();
                               } else {
-                                HotkeyHelper.registerHotKeys();
+                                registerHotKeys();
                               }
                             },
                             child: TextField(
