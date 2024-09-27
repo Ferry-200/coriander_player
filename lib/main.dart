@@ -3,15 +3,12 @@ import 'dart:io';
 import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/entry.dart';
-import 'package:coriander_player/play_service/play_service.dart';
-import 'package:coriander_player/src/bass/bass_player.dart';
+import 'package:coriander_player/hotkey_helper.dart';
 import 'package:coriander_player/src/rust/frb_generated.dart';
 import 'package:coriander_player/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:go_router/go_router.dart';
 
 Future<void> initWindow() async {
   await windowManager.ensureInitialized();
@@ -29,42 +26,14 @@ Future<void> initWindow() async {
   });
 }
 
-final Map<PhysicalKeyboardKey, void Function(HotKey)> _hotKeys = {
-  PhysicalKeyboardKey.space: (_) {
-    final playbackService = PlayService.instance.playbackService;
-    final state = playbackService.playerState;
-    if (state == PlayerState.playing) {
-      playbackService.pause();
-    } else if (state == PlayerState.completed) {
-      playbackService.playAgain();
-    } else {
-      playbackService.start();
-    }
-  },
-  PhysicalKeyboardKey.escape: (_) {
-    if (ROUTER_KEY.currentContext?.canPop() == true) {
-      ROUTER_KEY.currentContext?.pop();
-    }
-  }
-};
-
-void registerHotKeys() {
-  for (var item in _hotKeys.entries) {
-    hotKeyManager.register(
-      HotKey(key: item.key, scope: HotKeyScope.inapp),
-      keyDownHandler: item.value,
-    );
-  }
-}
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await RustLib.init();
 
   // For hot reload, `unregisterAll()` needs to be called.
-  await hotKeyManager.unregisterAll();
-  registerHotKeys();
+  HotkeyHelper.unregisterAll();
+  HotkeyHelper.registerHotKeys();
 
   await migrateAppData();
 

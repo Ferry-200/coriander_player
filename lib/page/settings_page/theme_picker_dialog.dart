@@ -1,9 +1,8 @@
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/extensions.dart';
-import 'package:coriander_player/main.dart';
+import 'package:coriander_player/hotkey_helper.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:hotkey_manager/hotkey_manager.dart';
 
 class ThemePickerDialog extends StatefulWidget {
   const ThemePickerDialog({super.key});
@@ -48,9 +47,9 @@ class _ThemePickerDialogState extends State<ThemePickerDialog> {
               Focus(
                 onFocusChange: (focus) {
                   if (focus) {
-                    hotKeyManager.unregisterAll();
+                    HotkeyHelper.unregisterAll();
                   } else {
-                    registerHotKeys();
+                    HotkeyHelper.registerHotKeys();
                   }
                 },
                 child: TextField(
