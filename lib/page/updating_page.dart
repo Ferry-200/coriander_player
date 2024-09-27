@@ -48,7 +48,6 @@ class _UpdatingStateViewState extends State<UpdatingStateView> {
   StreamSubscription? _subscription;
 
   void whenIndexUpdated() async {
-    await Future.delayed(const Duration(seconds: 5));
     await Future.wait([
       AudioLibrary.initFromIndex(),
       readPlaylists(),
