@@ -79,6 +79,12 @@ class BassPlayer {
       return PlayerState.unknown;
     }
 
+    if (wasapiExclusive) {
+      return _bassWasapi.BASS_WASAPI_IsStarted() == BASS.TRUE
+          ? PlayerState.playing
+          : PlayerState.paused;
+    }
+
     switch (_bass.BASS_ChannelIsActive(_fstream!)) {
       case BASS.BASS_ACTIVE_STOPPED:
         return PlayerState.stopped;
@@ -113,10 +119,11 @@ class BassPlayer {
     return Timer.periodic(
       const Duration(milliseconds: 33),
       (timer) {
-        _positionStreamController.add(position);
+        final p = position;
+        _positionStreamController.add(p);
 
         /// check if the channel has completed
-        if (playerState == PlayerState.stopped) {
+        if (length - p < 0.01) {
           _playerStateStreamController.add(PlayerState.completed);
         }
       },
