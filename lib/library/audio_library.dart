@@ -245,12 +245,13 @@ class Audio {
         if (value == null) {
           return null;
         }
-
-        // _cover = ResizeImage.resizeIfNeeded(48, 48, MemoryImage(value));
+        final pixelRatio =
+            PlatformDispatcher.instance.views.first.devicePixelRatio;
+        final size = (48 * pixelRatio).round();
         _cover = ResizeImage(
           MemoryImage(value),
-          width: 48,
-          height: 48,
+          width: size,
+          height: size,
           policy: ResizeImagePolicy.fit,
         );
         return _cover;
@@ -266,10 +267,13 @@ class Audio {
         if (value == null) {
           return null;
         }
+        final pixelRatio =
+            PlatformDispatcher.instance.views.first.devicePixelRatio;
+        final size = (200 * pixelRatio).round();
         return ResizeImage(
           MemoryImage(value),
-          width: 200,
-          height: 200,
+          width: size,
+          height: size,
           policy: ResizeImagePolicy.fit,
         );
       });
@@ -322,7 +326,15 @@ class Artist {
         if (value == null) {
           return null;
         }
-        return ResizeImage.resizeIfNeeded(200, 200, MemoryImage(value));
+        final pixelRatio =
+            PlatformDispatcher.instance.views.first.devicePixelRatio;
+        final size = (200 * pixelRatio).round();
+        return ResizeImage(
+          MemoryImage(value),
+          width: size,
+          height: size,
+          policy: ResizeImagePolicy.fit,
+        );
       });
 
   Artist({required this.name});
@@ -344,7 +356,15 @@ class Album {
         if (value == null) {
           return null;
         }
-        return ResizeImage.resizeIfNeeded(200, 200, MemoryImage(value));
+        final pixelRatio =
+            PlatformDispatcher.instance.views.first.devicePixelRatio;
+        final size = (200 * pixelRatio).round();
+        return ResizeImage(
+          MemoryImage(value),
+          width: size,
+          height: size,
+          policy: ResizeImagePolicy.fit,
+        );
       });
 
   Album({required this.name});
