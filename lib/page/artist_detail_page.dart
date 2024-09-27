@@ -1,4 +1,5 @@
 import 'package:coriander_player/app_preference.dart';
+import 'package:coriander_player/extensions.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/audio_tile.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
@@ -59,10 +60,10 @@ class ArtistDetailPage extends StatelessWidget {
           method: (list, order) {
             switch (order) {
               case SortOrder.ascending:
-                list.sort((a, b) => a.title.compareTo(b.title));
+                list.sort((a, b) => a.title.localeCompareTo(b.title));
                 break;
               case SortOrder.decending:
-                list.sort((a, b) => b.title.compareTo(a.title));
+                list.sort((a, b) => b.title.localeCompareTo(a.title));
                 break;
             }
           },
@@ -73,10 +74,10 @@ class ArtistDetailPage extends StatelessWidget {
           method: (list, order) {
             switch (order) {
               case SortOrder.ascending:
-                list.sort((a, b) => a.album.compareTo(b.album));
+                list.sort((a, b) => a.album.localeCompareTo(b.album));
                 break;
               case SortOrder.decending:
-                list.sort((a, b) => b.album.compareTo(a.album));
+                list.sort((a, b) => b.album.localeCompareTo(a.album));
                 break;
             }
           },

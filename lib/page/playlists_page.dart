@@ -1,4 +1,5 @@
 import 'package:coriander_player/app_preference.dart';
+import 'package:coriander_player/extensions.dart';
 import 'package:coriander_player/page/uni_page.dart';
 import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
@@ -97,10 +98,10 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
           method: (list, order) {
             switch (order) {
               case SortOrder.ascending:
-                list.sort((a, b) => a.name.compareTo(b.name));
+                list.sort((a, b) => a.name.localeCompareTo(b.name));
                 break;
               case SortOrder.decending:
-                list.sort((a, b) => b.name.compareTo(a.name));
+                list.sort((a, b) => b.name.localeCompareTo(a.name));
                 break;
             }
           },

@@ -1,4 +1,5 @@
 import 'package:coriander_player/app_preference.dart';
+import 'package:coriander_player/extensions.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/page/uni_page.dart';
 import 'package:flutter/material.dart';
@@ -30,10 +31,10 @@ class FoldersPage extends StatelessWidget {
           method: (list, order) {
             switch (order) {
               case SortOrder.ascending:
-                list.sort((a, b) => a.path.compareTo(b.path));
+                list.sort((a, b) => a.path.localeCompareTo(b.path));
                 break;
               case SortOrder.decending:
-                list.sort((a, b) => b.path.compareTo(a.path));
+                list.sort((a, b) => b.path.localeCompareTo(a.path));
                 break;
             }
           },
