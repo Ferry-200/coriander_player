@@ -225,6 +225,18 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
   }
 
   @override
+  void onWindowEnterFullScreen() {
+    super.onWindowEnterFullScreen();
+    setState(() {});
+  }
+
+  @override
+  void onWindowLeaveFullScreen() {
+    super.onWindowLeaveFullScreen();
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Wrap(
       spacing: 8.0,
@@ -239,7 +251,6 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
                 await windowManager.hide();
                 await windowManager.setFullScreen(!isFullScreen);
                 await windowManager.show();
-                setState(() {});
               },
               icon: Icon(
                 isFullScreen ? Symbols.close_fullscreen : Symbols.open_in_full,
