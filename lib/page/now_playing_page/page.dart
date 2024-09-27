@@ -597,26 +597,32 @@ class __NowPlayingInfoState extends State<_NowPlayingInfo> {
               style: TextStyle(color: scheme.onSecondaryContainer),
             ),
             const SizedBox(height: 16),
-            RepaintBoundary(
-              child: nowPlayingCover == null
-                  ? placeholder
-                  : FutureBuilder(
-                      future: nowPlayingCover,
-                      builder: (context, snapshot) {
-                        if (snapshot.data == null) {
-                          return placeholder;
-                        }
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image(
-                            image: snapshot.data!,
-                            width: 400.0,
-                            height: 400.0,
-                            errorBuilder: (_, __, ___) => placeholder,
-                          ),
-                        );
-                      },
-                    ),
+            Expanded(
+              child: Center(
+                child: RepaintBoundary(
+                  child: nowPlayingCover == null
+                      ? placeholder
+                      : FutureBuilder(
+                          future: nowPlayingCover,
+                          builder: (context, snapshot) {
+                            if (snapshot.data == null) {
+                              return placeholder;
+                            }
+                            return FittedBox(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8.0),
+                                child: Image(
+                                  image: snapshot.data!,
+                                  width: 400.0,
+                                  height: 400.0,
+                                  errorBuilder: (_, __, ___) => placeholder,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                ),
+              ),
             )
           ],
         ),

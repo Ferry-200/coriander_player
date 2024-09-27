@@ -13,7 +13,7 @@ import 'package:window_manager/window_manager.dart';
 Future<void> initWindow() async {
   await windowManager.ensureInitialized();
   WindowOptions windowOptions = WindowOptions(
-    minimumSize: const Size(507, 756),
+    minimumSize: const Size(507, 507),
     size: AppSettings.instance.windowSize,
     center: true,
     backgroundColor: Colors.transparent,
