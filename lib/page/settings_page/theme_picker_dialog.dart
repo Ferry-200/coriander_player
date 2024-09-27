@@ -1,7 +1,9 @@
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/extensions.dart';
+import 'package:coriander_player/main.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
 
 class ThemePickerDialog extends StatefulWidget {
   const ThemePickerDialog({super.key});
@@ -43,20 +45,29 @@ class _ThemePickerDialogState extends State<ThemePickerDialog> {
                   ),
                 ),
               ),
-              TextField(
-                autofocus: true,
-                controller: rgbHexTextEditingController,
-                onChanged: (value) {
-                  final c = fromRGBHexString(value);
-                  if (c != null) {
-                    setState(() {
-                      selectedColor = c;
-                    });
+              Focus(
+                onFocusChange: (focus) {
+                  if (focus) {
+                    hotKeyManager.unregisterAll();
+                  } else {
+                    registerHotKeys();
                   }
                 },
-                decoration: const InputDecoration(
-                  labelText: "Hex RGB",
-                  border: OutlineInputBorder(),
+                child: TextField(
+                  autofocus: true,
+                  controller: rgbHexTextEditingController,
+                  onChanged: (value) {
+                    final c = fromRGBHexString(value);
+                    if (c != null) {
+                      setState(() {
+                        selectedColor = c;
+                      });
+                    }
+                  },
+                  decoration: const InputDecoration(
+                    labelText: "Hex RGB",
+                    border: OutlineInputBorder(),
+                  ),
                 ),
               ),
               const SizedBox(height: 16.0),

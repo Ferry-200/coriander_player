@@ -9,6 +9,7 @@ import 'package:coriander_player/lyric/lyric_source.dart';
 import 'package:coriander_player/play_service/play_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -260,6 +261,7 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
               await AppPreference.instance.save();
             } catch (_) {}
 
+            await hotKeyManager.unregisterAll();
             windowManager.close();
           },
           icon: const Icon(Symbols.close),

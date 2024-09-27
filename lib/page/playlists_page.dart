@@ -1,10 +1,12 @@
 import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/extensions.dart';
+import 'package:coriander_player/main.dart';
 import 'package:coriander_player/page/uni_page.dart';
 import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class PlaylistsPage extends StatefulWidget {
@@ -157,15 +159,24 @@ class _NewPlaylistDialog extends StatelessWidget {
                   ),
                 ),
               ),
-              TextField(
-                autofocus: true,
-                controller: editingController,
-                onSubmitted: (value) {
-                  Navigator.pop(context, value);
+              Focus(
+                onFocusChange: (focus) {
+                  if (focus) {
+                    hotKeyManager.unregisterAll();
+                  } else {
+                    registerHotKeys();
+                  }
                 },
-                decoration: const InputDecoration(
-                  labelText: "歌单名称",
-                  border: OutlineInputBorder(),
+                child: TextField(
+                  autofocus: true,
+                  controller: editingController,
+                  onSubmitted: (value) {
+                    Navigator.pop(context, value);
+                  },
+                  decoration: const InputDecoration(
+                    labelText: "歌单名称",
+                    border: OutlineInputBorder(),
+                  ),
                 ),
               ),
               const SizedBox(height: 16.0),
@@ -225,15 +236,24 @@ class _EditPlaylistDialog extends StatelessWidget {
                   ),
                 ),
               ),
-              TextField(
-                autofocus: true,
-                controller: editingController,
-                onSubmitted: (value) {
-                  Navigator.pop(context, value);
+              Focus(
+                onFocusChange: (focus) {
+                  if (focus) {
+                    hotKeyManager.unregisterAll();
+                  } else {
+                    registerHotKeys();
+                  }
                 },
-                decoration: const InputDecoration(
-                  labelText: "新歌单名称",
-                  border: OutlineInputBorder(),
+                child: TextField(
+                  autofocus: true,
+                  controller: editingController,
+                  onSubmitted: (value) {
+                    Navigator.pop(context, value);
+                  },
+                  decoration: const InputDecoration(
+                    labelText: "新歌单名称",
+                    border: OutlineInputBorder(),
+                  ),
                 ),
               ),
               const SizedBox(height: 16.0),

@@ -58,6 +58,8 @@ class SlideTransitionPage<T> extends CustomTransitionPage<T> {
   }
 }
 
+final GlobalKey<NavigatorState> ROUTER_KEY = GlobalKey();
+
 class Entry extends StatelessWidget {
   Entry({super.key, required this.welcome});
   final bool welcome;
@@ -116,6 +118,7 @@ class Entry extends StatelessWidget {
   }
 
   late final GoRouter config = GoRouter(
+    navigatorKey: ROUTER_KEY,
     initialLocation:
         welcome ? app_paths.WELCOMING_PAGE : app_paths.UPDATING_DIALOG,
     routes: [

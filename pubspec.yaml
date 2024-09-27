@@ -35,6 +35,7 @@ dependencies:
       url: https://github.com/Ferry-200/music_api_dart.git
       ref: c6f3e0abd9c6295b3678ce10d30bc09debda9abe
   pinyin: ^3.3.0
+  hotkey_manager: ^0.2.3
 
 dev_dependencies:
   flutter_test:

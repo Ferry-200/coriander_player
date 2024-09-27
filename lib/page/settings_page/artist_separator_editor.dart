@@ -1,7 +1,9 @@
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/component/settings_tile.dart';
 import 'package:coriander_player/library/audio_library.dart';
+import 'package:coriander_player/main.dart';
 import 'package:flutter/material.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class ArtistSeparatorEditor extends StatelessWidget {
@@ -120,18 +122,27 @@ class __ArtistSeparatorEditDialogState
                       setState(() {
                         editing = true;
                         children[""] = ListTile(
-                          title: TextField(
-                            controller: currEditController,
-                            autofocus: true,
-                            decoration: InputDecoration(
-                              suffixIcon: IconButton(
-                                onPressed: _addArtistSeparator,
-                                icon: const Icon(Symbols.done),
-                              ),
-                            ),
-                            onSubmitted: (value) {
-                              _addArtistSeparator();
+                          title: Focus(
+                            onFocusChange: (focus) {
+                              if (focus) {
+                                hotKeyManager.unregisterAll();
+                              } else {
+                                registerHotKeys();
+                              }
                             },
+                            child: TextField(
+                              controller: currEditController,
+                              autofocus: true,
+                              decoration: InputDecoration(
+                                suffixIcon: IconButton(
+                                  onPressed: _addArtistSeparator,
+                                  icon: const Icon(Symbols.done),
+                                ),
+                              ),
+                              onSubmitted: (value) {
+                                _addArtistSeparator();
+                              },
+                            ),
                           ),
                         );
                       });
