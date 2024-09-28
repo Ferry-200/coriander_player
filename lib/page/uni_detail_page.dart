@@ -20,6 +20,7 @@ class UniDetailPage<P, S, T> extends StatefulWidget {
     required this.pref,
     required this.primaryContent,
     required this.primaryPic,
+    required this.backgroundPic,
     required this.picShape,
     required this.title,
     required this.subtitle,
@@ -40,7 +41,13 @@ class UniDetailPage<P, S, T> extends StatefulWidget {
   final PagePreference pref;
 
   final P primaryContent;
+
+  /// 用来展示内容图片，较高清
   final Future<ImageProvider?> primaryPic;
+
+  /// 当作毛玻璃的背景，较模糊
+  final Future<ImageProvider?> backgroundPic;
+
   final PicShape picShape;
 
   final String title;
@@ -160,6 +167,7 @@ class _UniDetailPageState<P, S, T> extends State<UniDetailPage<P, S, T>> {
             // head
             _UniDetailPageHeader(
               pic: widget.primaryPic,
+              backgroundPic: widget.backgroundPic,
               picShape: widget.picShape,
               title: widget.title,
               subtitle: widget.subtitle,
@@ -241,6 +249,7 @@ enum PicShape { oval, rrect }
 class _UniDetailPageHeader extends StatelessWidget {
   const _UniDetailPageHeader({
     required this.pic,
+    required this.backgroundPic,
     required this.picShape,
     required this.title,
     required this.subtitle,
@@ -250,6 +259,7 @@ class _UniDetailPageHeader extends StatelessWidget {
   });
 
   final Future<ImageProvider?> pic;
+  final Future<ImageProvider?> backgroundPic;
   final PicShape picShape;
 
   final String title;
@@ -269,12 +279,11 @@ class _UniDetailPageHeader extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           FutureBuilder(
-            future: pic,
+            future: backgroundPic,
             builder: (context, snapshot) {
               if (snapshot.data == null) return const SizedBox.shrink();
 
               return Image(
-                height: 200,
                 image: snapshot.data!,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => const SizedBox.shrink(),
@@ -286,7 +295,7 @@ class _UniDetailPageHeader extends StatelessWidget {
             Brightness.light => const ColoredBox(color: Colors.white30),
           },
           BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
+            filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
             child: const ColoredBox(color: Colors.transparent),
           ),
           Row(
@@ -300,24 +309,33 @@ class _UniDetailPageHeader extends StatelessWidget {
                     size: 200.0,
                     color: scheme.onSurface,
                   );
-                  if (snapshot.data == null) return placeholder;
-
-                  return switch (picShape) {
-                    PicShape.oval => ClipOval(
-                        child: Image(
-                          image: snapshot.data!,
-                          width: 200.0,
-                          height: 200.0,
-                          errorBuilder: (_, __, ___) => placeholder,
-                        ),
-                      ),
-                    PicShape.rrect => ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Image(
-                          image: snapshot.data!,
-                          width: 200.0,
-                          height: 200.0,
-                          errorBuilder: (_, __, ___) => placeholder,
+                  return switch (snapshot.connectionState) {
+                    ConnectionState.done => snapshot.data == null
+                        ? placeholder
+                        : switch (picShape) {
+                            PicShape.oval => ClipOval(
+                                child: Image(
+                                  image: snapshot.data!,
+                                  width: 200.0,
+                                  height: 200.0,
+                                  errorBuilder: (_, __, ___) => placeholder,
+                                ),
+                              ),
+                            PicShape.rrect => ClipRRect(
+                                borderRadius: BorderRadius.circular(8.0),
+                                child: Image(
+                                  image: snapshot.data!,
+                                  width: 200.0,
+                                  height: 200.0,
+                                  errorBuilder: (_, __, ___) => placeholder,
+                                ),
+                              ),
+                          },
+                    _ => const SizedBox(
+                        width: 200,
+                        height: 200,
+                        child: Center(
+                          child: CircularProgressIndicator(),
                         ),
                       ),
                   };
