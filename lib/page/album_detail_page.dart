@@ -24,6 +24,7 @@ class AlbumDetailPage extends StatelessWidget {
       pref: AppPreference.instance.albumDetailPagePref,
       primaryContent: album,
       primaryPic: album.cover,
+      backgroundPic: album.works.first.cover,
       picShape: PicShape.rrect,
       title: album.name,
       subtitle: "${album.works.length} 首作品",

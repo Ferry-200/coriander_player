@@ -81,20 +81,26 @@ class _NowPlayingForeground extends StatelessWidget {
                   nowPlaying != null
                       ? FutureBuilder(
                           future: nowPlaying.cover,
-                          builder: (context, snapshot) {
-                            if (snapshot.data == null) {
-                              return placeholder;
-                            }
-
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Image(
-                                image: snapshot.data!,
-                                width: 48.0,
-                                height: 48.0,
-                                errorBuilder: (_, __, ___) => placeholder,
+                          builder: (context, snapshot) =>
+                              switch (snapshot.connectionState) {
+                            ConnectionState.done => snapshot.data == null
+                                ? placeholder
+                                : ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: Image(
+                                      image: snapshot.data!,
+                                      width: 48.0,
+                                      height: 48.0,
+                                      errorBuilder: (_, __, ___) => placeholder,
+                                    ),
+                                  ),
+                            _ => const SizedBox(
+                                width: 48,
+                                height: 48,
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
                               ),
-                            );
                           },
                         )
                       : placeholder,

@@ -24,6 +24,7 @@ class ArtistDetailPage extends StatelessWidget {
       pref: AppPreference.instance.artistDetailPagePref,
       primaryContent: artist,
       primaryPic: artist.picture,
+      backgroundPic: artist.works.first.cover,
       picShape: PicShape.oval,
       title: artist.name,
       subtitle: "${artist.works.length} 首作品",

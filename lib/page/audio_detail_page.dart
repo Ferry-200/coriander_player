@@ -45,19 +45,26 @@ class AudioDetailPage extends StatelessWidget {
               children: [
                 FutureBuilder(
                   future: audio.mediumCover,
-                  builder: (context, snapshot) {
-                    if (snapshot.data == null) {
-                      return placeholder;
-                    }
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image(
-                        image: snapshot.data!,
+                  builder: (context, snapshot) =>
+                      switch (snapshot.connectionState) {
+                    ConnectionState.done => snapshot.data == null
+                        ? placeholder
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image(
+                              image: snapshot.data!,
+                              width: 200,
+                              height: 200,
+                              errorBuilder: (_, __, ___) => placeholder,
+                            ),
+                          ),
+                    _ => const SizedBox(
                         width: 200,
                         height: 200,
-                        errorBuilder: (_, __, ___) => placeholder,
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
                       ),
-                    );
                   },
                 ),
                 Text(audio.title, style: styleTitle),
