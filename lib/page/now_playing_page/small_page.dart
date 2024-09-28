@@ -1,7 +1,7 @@
 part of 'page.dart';
 
 class _NowPlayingPage_Small extends StatefulWidget {
-  const _NowPlayingPage_Small({super.key});
+  const _NowPlayingPage_Small();
 
   @override
   State<_NowPlayingPage_Small> createState() => _NowPlayingPage_SmallState();
@@ -117,7 +117,7 @@ class _NowPlayingPage_SmallState extends State<_NowPlayingPage_Small> {
 
 class _NowPlayingSmallViewSwitch extends StatefulWidget {
   const _NowPlayingSmallViewSwitch(
-      {super.key, required this.onTap, required this.icon});
+      {required this.onTap, required this.icon});
 
   final void Function() onTap;
   final IconData icon;

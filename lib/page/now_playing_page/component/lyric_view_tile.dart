@@ -48,7 +48,7 @@ class LyricViewTile extends StatelessWidget {
 
 class _SyncLineContent extends StatelessWidget {
   const _SyncLineContent(
-      {super.key, required this.syncLine, required this.isMainLine});
+      {required this.syncLine, required this.isMainLine});
 
   final SyncLyricLine syncLine;
   final bool isMainLine;
@@ -216,7 +216,7 @@ class _SyncLineContent extends StatelessWidget {
 
 class _LrcLineContent extends StatelessWidget {
   const _LrcLineContent(
-      {super.key, required this.lrcLine, required this.isMainLine});
+      {required this.lrcLine, required this.isMainLine});
 
   final LrcLine lrcLine;
   final bool isMainLine;

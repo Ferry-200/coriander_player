@@ -247,7 +247,6 @@ enum PicShape { oval, rrect }
 
 class _UniDetailPageHeader extends StatelessWidget {
   const _UniDetailPageHeader({
-    super.key,
     required this.pic,
     required this.picShape,
     required this.title,

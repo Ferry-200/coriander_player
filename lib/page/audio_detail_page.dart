@@ -162,7 +162,6 @@ class AudioDetailPage extends StatelessWidget {
 
 class _AudioDetailTile extends StatelessWidget {
   const _AudioDetailTile({
-    super.key,
     required this.title,
     required this.detail,
   });

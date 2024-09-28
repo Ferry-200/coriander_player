@@ -1,7 +1,7 @@
 part of 'page.dart';
 
 class _NowPlayingPage_Large extends StatelessWidget {
-  const _NowPlayingPage_Large({super.key});
+  const _NowPlayingPage_Large();
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +80,7 @@ class _NowPlayingPage_Large extends StatelessWidget {
 
 /// 切换视图：lyric / playlist
 class _NowPlayingLargeViewSwitch extends StatelessWidget {
-  const _NowPlayingLargeViewSwitch({super.key});
+  const _NowPlayingLargeViewSwitch();
 
   @override
   Widget build(BuildContext context) {

@@ -163,9 +163,9 @@ class AppSettings {
       _instance.dynamicTheme = dt;
     }
 
-    final _as = settingsMap["ArtistSeparator"];
-    if (_as != null) {
-      _instance.artistSeparator = _as;
+    final as = settingsMap["ArtistSeparator"];
+    if (as != null) {
+      _instance.artistSeparator = as;
       _instance.artistSplitPattern = _instance.artistSeparator.join("|");
     }
 

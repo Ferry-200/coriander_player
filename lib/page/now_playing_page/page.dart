@@ -84,7 +84,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
 }
 
 class _ExclusiveModeSwitch extends StatelessWidget {
-  const _ExclusiveModeSwitch({super.key});
+  const _ExclusiveModeSwitch();
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +107,7 @@ class _ExclusiveModeSwitch extends StatelessWidget {
 }
 
 class _NowPlayingMoreAction extends StatelessWidget {
-  const _NowPlayingMoreAction({super.key});
+  const _NowPlayingMoreAction();
 
   @override
   Widget build(BuildContext context) {
@@ -179,7 +179,7 @@ class _NowPlayingMoreAction extends StatelessWidget {
 }
 
 class _DesktopLyricSwitch extends StatelessWidget {
-  const _DesktopLyricSwitch({super.key});
+  const _DesktopLyricSwitch();
 
   @override
   Widget build(BuildContext context) {
@@ -216,7 +216,7 @@ class _DesktopLyricSwitch extends StatelessWidget {
 }
 
 class _NowPlayingVolDspSlider extends StatefulWidget {
-  const _NowPlayingVolDspSlider({super.key});
+  const _NowPlayingVolDspSlider();
 
   @override
   State<_NowPlayingVolDspSlider> createState() =>
@@ -290,7 +290,7 @@ class _NowPlayingVolDspSliderState extends State<_NowPlayingVolDspSlider> {
 }
 
 class _NowPlayingPlayModeSwitch extends StatelessWidget {
-  const _NowPlayingPlayModeSwitch({super.key});
+  const _NowPlayingPlayModeSwitch();
 
   @override
   Widget build(BuildContext context) {
@@ -333,7 +333,7 @@ class _NowPlayingPlayModeSwitch extends StatelessWidget {
 }
 
 class _NowPlayingShuffleSwitch extends StatelessWidget {
-  const _NowPlayingShuffleSwitch({super.key});
+  const _NowPlayingShuffleSwitch();
 
   @override
   Widget build(BuildContext context) {
@@ -356,7 +356,7 @@ class _NowPlayingShuffleSwitch extends StatelessWidget {
 
 /// previous audio, pause/resume, next audio
 class _NowPlayingMainControls extends StatelessWidget {
-  const _NowPlayingMainControls({super.key});
+  const _NowPlayingMainControls();
 
   @override
   Widget build(BuildContext context) {
@@ -413,7 +413,7 @@ class _NowPlayingMainControls extends StatelessWidget {
 
 /// suiggly slider, position and length
 class _NowPlayingSlider extends StatefulWidget {
-  const _NowPlayingSlider({super.key});
+  const _NowPlayingSlider();
 
   @override
   State<_NowPlayingSlider> createState() => _NowPlayingSliderState();
@@ -537,7 +537,7 @@ class _NowPlayingSliderState extends State<_NowPlayingSlider> {
 
 /// title, artist, album, cover
 class _NowPlayingInfo extends StatefulWidget {
-  const _NowPlayingInfo({super.key});
+  const _NowPlayingInfo();
 
   @override
   State<_NowPlayingInfo> createState() => __NowPlayingInfoState();

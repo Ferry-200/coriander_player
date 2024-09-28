@@ -220,7 +220,7 @@ class SelectFontCombobox extends StatelessWidget {
 }
 
 class _FontSelector extends StatelessWidget {
-  const _FontSelector({super.key, required this.installedFont});
+  const _FontSelector({required this.installedFont});
   final List<InstalledFont> installedFont;
 
   @override

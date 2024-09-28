@@ -190,7 +190,7 @@ class _TitleBar extends StatelessWidget {
 }
 
 class _WindowControlls extends StatefulWidget {
-  const _WindowControlls({super.key});
+  const _WindowControlls();
 
   @override
   State<_WindowControlls> createState() => __WindowControllsState();

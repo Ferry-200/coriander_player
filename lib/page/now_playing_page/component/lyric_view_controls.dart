@@ -86,7 +86,7 @@ class LyricViewControls extends StatelessWidget {
 }
 
 class _LyricAlignSwitchBtn extends StatelessWidget {
-  const _LyricAlignSwitchBtn({super.key});
+  const _LyricAlignSwitchBtn();
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +107,7 @@ class _LyricAlignSwitchBtn extends StatelessWidget {
 }
 
 class _IncreaseFontSizeBtn extends StatelessWidget {
-  const _IncreaseFontSizeBtn({super.key});
+  const _IncreaseFontSizeBtn();
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +124,7 @@ class _IncreaseFontSizeBtn extends StatelessWidget {
 }
 
 class _DecreaseFontSizeBtn extends StatelessWidget {
-  const _DecreaseFontSizeBtn({super.key});
+  const _DecreaseFontSizeBtn();
 
   @override
   Widget build(BuildContext context) {

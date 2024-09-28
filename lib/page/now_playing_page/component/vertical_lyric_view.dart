@@ -97,7 +97,7 @@ class _VerticalLyricViewState extends State<VerticalLyricView> {
 final LYRIC_VIEW_KEY = GlobalKey();
 
 class _VerticalLyricScrollView extends StatefulWidget {
-  const _VerticalLyricScrollView({super.key, required this.lyric});
+  const _VerticalLyricScrollView({required this.lyric});
 
   final Lyric lyric;
 

@@ -27,7 +27,7 @@ class ArtistSeparatorEditor extends StatelessWidget {
 }
 
 class _ArtistSeparatorEditDialog extends StatefulWidget {
-  const _ArtistSeparatorEditDialog({super.key});
+  const _ArtistSeparatorEditDialog();
 
   @override
   State<_ArtistSeparatorEditDialog> createState() =>
