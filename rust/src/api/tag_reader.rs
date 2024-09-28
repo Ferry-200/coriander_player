@@ -1,11 +1,12 @@
 use std::{
     collections::HashSet,
     fs::{self},
-    io::{self, Write},
+    io::{self, Cursor, Write},
     path::{Path, PathBuf},
     time::{Duration, UNIX_EPOCH},
 };
 
+use image::imageops;
 use lofty::prelude::{Accessor, AudioFile, ItemKey, TaggedFileExt};
 use windows::{
     core::Interface,
@@ -406,17 +407,43 @@ fn _get_picture_by_windows(path: String) -> Result<Vec<u8>, windows::core::Error
 
 /// for Flutter  
 /// 如果无法通过 Lofty 获取则通过 Windows 获取
-pub fn get_picture_from_path(path: String) -> Option<Vec<u8>> {
-    if let Ok(tagged_file) = lofty::read_from_path(&path) {
+pub fn get_picture_from_path(path: String, width: u32, height: u32) -> Option<Vec<u8>> {
+    let pic_option: Option<Vec<u8>> = if let Ok(tagged_file) = lofty::read_from_path(&path) {
         let tag = tagged_file.primary_tag().or(tagged_file.first_tag())?;
-        return Some(tag.pictures().first()?.data().to_vec());
+
+        Some(tag.pictures().first()?.data().to_vec())
+    } else if let Ok(pic) = _get_picture_by_windows(path) {
+        Some(pic)
+    } else {
+        None
+    };
+
+    if let Some(pic) = &pic_option {
+        if let Ok(loaded_pic) = image::load_from_memory(pic) {
+            // 计算新的宽高，保持原比例
+            let pic_ratio = loaded_pic.width() as f32 / loaded_pic.height() as f32;
+
+            let (result_width, result_height) = if pic_ratio > 1.0 {
+                (width, (width as f32 / pic_ratio).round() as u32)
+            } else {
+                ((height as f32 * pic_ratio).round() as u32, height)
+            };
+
+            let resized_img = imageops::resize(
+                &loaded_pic,
+                result_width,
+                result_height,
+                imageops::FilterType::Triangle,
+            );
+
+            let mut output = Cursor::new(Vec::new());
+            if let Ok(_) = resized_img.write_to(&mut output, image::ImageFormat::Png) {
+                return Some(output.into_inner());
+            }
+        }
     }
 
-    if let Ok(pic) = _get_picture_by_windows(path) {
-        return Some(pic);
-    }
-
-    None
+    pic_option
 }
 
 /// for Flutter   

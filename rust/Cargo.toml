@@ -26,3 +26,4 @@ windows = { version = "0.57.0", features = [
 ] }
 anyhow = "1.0.86"
 ttf-parser = "0.24.1"
+image = "0.25.2"

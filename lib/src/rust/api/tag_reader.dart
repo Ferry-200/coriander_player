@@ -12,8 +12,10 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 /// for Flutter
 /// 如果无法通过 Lofty 获取则通过 Windows 获取
-Future<Uint8List?> getPictureFromPath({required String path}) =>
-    RustLib.instance.api.crateApiTagReaderGetPictureFromPath(path: path);
+Future<Uint8List?> getPictureFromPath(
+        {required String path, required int width, required int height}) =>
+    RustLib.instance.api.crateApiTagReaderGetPictureFromPath(
+        path: path, width: width, height: height);
 
 /// for Flutter
 /// 只支持读取 ID3V2, VorbisComment, Mp4Ilst 存储的内嵌歌词

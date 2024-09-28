@@ -114,7 +114,7 @@ abstract class RustLibApi extends BaseApi {
   Future<String?> crateApiTagReaderGetLyricFromPath({required String path});
 
   Future<Uint8List?> crateApiTagReaderGetPictureFromPath(
-      {required String path});
+      {required String path, required int width, required int height});
 
   Stream<IndexActionState> crateApiTagReaderUpdateIndex(
       {required String indexPath});
@@ -452,11 +452,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<Uint8List?> crateApiTagReaderGetPictureFromPath(
-      {required String path}) {
+      {required String path, required int width, required int height}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
+        sse_encode_u_32(width, serializer);
+        sse_encode_u_32(height, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 12, port: port_);
       },
@@ -465,7 +467,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData: null,
       ),
       constMeta: kCrateApiTagReaderGetPictureFromPathConstMeta,
-      argValues: [path],
+      argValues: [path, width, height],
       apiImpl: this,
     ));
   }
@@ -473,7 +475,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiTagReaderGetPictureFromPathConstMeta =>
       const TaskConstMeta(
         debugName: "get_picture_from_path",
-        argNames: ["path"],
+        argNames: ["path", "width", "height"],
       );
 
   @override
@@ -762,6 +764,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  int dco_decode_u_32(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as int;
+  }
+
+  @protected
   int dco_decode_u_8(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as int;
@@ -972,6 +980,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_fore = sse_decode_record_u_8_u_8_u_8_u_8(deserializer);
     var var_accent = sse_decode_record_u_8_u_8_u_8_u_8(deserializer);
     return SystemTheme(fore: var_fore, accent: var_accent);
+  }
+
+  @protected
+  int sse_decode_u_32(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return deserializer.buffer.getUint32();
   }
 
   @protected
@@ -1191,6 +1205,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_record_u_8_u_8_u_8_u_8(self.fore, serializer);
     sse_encode_record_u_8_u_8_u_8_u_8(self.accent, serializer);
+  }
+
+  @protected
+  void sse_encode_u_32(int self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    serializer.buffer.putUint32(self);
   }
 
   @protected

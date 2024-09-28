@@ -531,12 +531,15 @@ fn wire__crate__api__tag_reader__get_picture_from_path_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_path = <String>::sse_decode(&mut deserializer);
+            let api_width = <u32>::sse_decode(&mut deserializer);
+            let api_height = <u32>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, ()>((move || {
-                    let output_ok = Result::<_, ()>::Ok(
-                        crate::api::tag_reader::get_picture_from_path(api_path),
-                    )?;
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::tag_reader::get_picture_from_path(
+                            api_path, api_width, api_height,
+                        ))?;
                     Ok(output_ok)
                 })())
             }
@@ -932,6 +935,13 @@ impl SseDecode for crate::api::system_theme::SystemTheme {
             fore: var_fore,
             accent: var_accent,
         };
+    }
+}
+
+impl SseDecode for u32 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        deserializer.cursor.read_u32::<NativeEndian>().unwrap()
     }
 }
 
@@ -1390,6 +1400,13 @@ impl SseEncode for crate::api::system_theme::SystemTheme {
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <(u8, u8, u8, u8)>::sse_encode(self.fore, serializer);
         <(u8, u8, u8, u8)>::sse_encode(self.accent, serializer);
+    }
+}
+
+impl SseEncode for u32 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        serializer.cursor.write_u32::<NativeEndian>(self).unwrap();
     }
 }
 

@@ -235,66 +235,48 @@ class Audio {
         "by": by
       };
 
+  /// 读取音乐文件的图片，自动适应缩放
+  Future<ImageProvider?> _getResizedPic({
+    required int width,
+    required int height,
+  }) async {
+    final ratio = PlatformDispatcher.instance.views.first.devicePixelRatio;
+    return getPictureFromPath(
+      path: path,
+      width: (width * ratio).round(),
+      height: (height * ratio).round(),
+    ).then((pic) {
+      if (pic == null) return null;
+
+      return MemoryImage(pic);
+    });
+  }
+
   /// 缓存ImageProvider而不是Uint8List（bytes）
   /// 缓存bytes时，每次加载图片都要重新解码，内存占用很大。快速滚动时能到700mb
   /// 缓存ImageProvider不用重新解码。快速滚动时最多250mb
   /// 48*48
   Future<ImageProvider?> get cover {
     if (_cover == null) {
-      return getPictureFromPath(path: path).then((value) {
-        if (value == null) {
-          return null;
-        }
-        final pixelRatio =
-            PlatformDispatcher.instance.views.first.devicePixelRatio;
-        final size = (48 * pixelRatio).round();
-        _cover = ResizeImage(
-          MemoryImage(value),
-          width: size,
-          height: size,
-          policy: ResizeImagePolicy.fit,
-        );
+      return _getResizedPic(width: 48, height: 48).then((value) {
+        if (value == null) return null;
+
+        _cover = value;
         return _cover;
       });
     }
-    return Future.value(_cover!);
+    return Future.value(_cover);
   }
 
   /// audio detail page 不需要频繁调用，所以不缓存图片
   /// 200 * 200
   Future<ImageProvider?> get mediumCover =>
-      getPictureFromPath(path: path).then((value) {
-        if (value == null) {
-          return null;
-        }
-        final pixelRatio =
-            PlatformDispatcher.instance.views.first.devicePixelRatio;
-        final size = (200 * pixelRatio).round();
-        return ResizeImage(
-          MemoryImage(value),
-          width: size,
-          height: size,
-          policy: ResizeImagePolicy.fit,
-        );
-      });
+      _getResizedPic(width: 200, height: 200);
 
   /// now playing 不需要频繁调用，所以不缓存图片
   /// size: 400 * devicePixelRatio（屏幕缩放大小）
   Future<ImageProvider?> get largeCover =>
-      getPictureFromPath(path: path).then((value) {
-        if (value == null) {
-          return null;
-        }
-        final pixelRatio =
-            PlatformDispatcher.instance.views.first.devicePixelRatio;
-        final size = (400 * pixelRatio).round();
-        return ResizeImage(
-          MemoryImage(value),
-          width: size,
-          height: size,
-          policy: ResizeImagePolicy.fit,
-        );
-      });
+      _getResizedPic(width: 400, height: 400);
 
   @override
   String toString() {
@@ -322,20 +304,7 @@ class Artist {
   /// 只能用在artist detail page
   /// 200*200
   Future<ImageProvider?> get picture =>
-      getPictureFromPath(path: works.first.path).then((value) {
-        if (value == null) {
-          return null;
-        }
-        final pixelRatio =
-            PlatformDispatcher.instance.views.first.devicePixelRatio;
-        final size = (200 * pixelRatio).round();
-        return ResizeImage(
-          MemoryImage(value),
-          width: size,
-          height: size,
-          policy: ResizeImagePolicy.fit,
-        );
-      });
+      works.first._getResizedPic(width: 200, height: 200);
 
   Artist({required this.name});
 }
@@ -352,20 +321,7 @@ class Album {
   /// 只能用在album detail page
   /// 200*200
   Future<ImageProvider?> get cover =>
-      getPictureFromPath(path: works.first.path).then((value) {
-        if (value == null) {
-          return null;
-        }
-        final pixelRatio =
-            PlatformDispatcher.instance.views.first.devicePixelRatio;
-        final size = (200 * pixelRatio).round();
-        return ResizeImage(
-          MemoryImage(value),
-          width: size,
-          height: size,
-          policy: ResizeImagePolicy.fit,
-        );
-      });
+      works.first._getResizedPic(width: 200, height: 200);
 
   Album({required this.name});
 }
