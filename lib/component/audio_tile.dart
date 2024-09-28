@@ -174,7 +174,7 @@ class AudioTile extends StatelessWidget {
             onSecondaryTapDown: (details) {
               if (multiSelectController?.enableMultiSelectView == true) return;
 
-              controller.open(position: details.localPosition);
+              controller.open(position: details.localPosition.translate(0, -240));
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
