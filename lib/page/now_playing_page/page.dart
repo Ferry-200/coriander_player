@@ -1,5 +1,7 @@
 // ignore_for_file: camel_case_types
 
+import 'dart:ui';
+
 import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/component/title_bar.dart';
 import 'package:coriander_player/extensions.dart';
@@ -46,9 +48,33 @@ class NowPlayingPage extends StatefulWidget {
 }
 
 class _NowPlayingPageState extends State<NowPlayingPage> {
+  final playbackService = PlayService.instance.playbackService;
+  Future<ImageProvider<Object>?>? nowPlayingCover;
+
+  void updateCover() {
+    setState(() {
+      nowPlayingCover = playbackService.nowPlaying?.cover;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    playbackService.addListener(updateCover);
+    nowPlayingCover = playbackService.nowPlaying?.cover;
+  }
+
+  @override
+  void dispose() {
+    playbackService.removeListener(updateCover);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final brightness = theme.brightness;
+    final scheme = theme.colorScheme;
 
     return Scaffold(
       appBar: const PreferredSize(
@@ -65,19 +91,45 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
         ),
       ),
       backgroundColor: scheme.secondaryContainer,
-      body: ChangeNotifierProvider.value(
-        value: PlayService.instance.playbackService,
-        builder: (context, _) {
-          return ResponsiveBuilder2(builder: (context, screenType) {
-            switch (screenType) {
-              case ScreenType.small:
-                return const _NowPlayingPage_Small();
-              case ScreenType.medium:
-              case ScreenType.large:
-                return const _NowPlayingPage_Large();
-            }
-          });
-        },
+      body: Stack(
+        fit: StackFit.expand,
+        alignment: AlignmentDirectional.center,
+        children: [
+          FutureBuilder(
+            future: nowPlayingCover,
+            builder: (context, snapshot) {
+              if (snapshot.data == null) return const SizedBox.shrink();
+
+              return Image(
+                image: snapshot.data!,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+              );
+            },
+          ),
+          switch (brightness) {
+            Brightness.dark => const ColoredBox(color: Colors.black45),
+            Brightness.light => const ColoredBox(color: Colors.white54),
+          },
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 250, sigmaY: 250),
+            child: const ColoredBox(color: Colors.transparent),
+          ),
+          ChangeNotifierProvider.value(
+            value: PlayService.instance.playbackService,
+            builder: (context, _) {
+              return ResponsiveBuilder2(builder: (context, screenType) {
+                switch (screenType) {
+                  case ScreenType.small:
+                    return const _NowPlayingPage_Small();
+                  case ScreenType.medium:
+                  case ScreenType.large:
+                    return const _NowPlayingPage_Large();
+                }
+              });
+            },
+          ),
+        ],
       ),
     );
   }
@@ -573,6 +625,14 @@ class __NowPlayingInfoState extends State<_NowPlayingInfo> {
       ),
     );
 
+    const loadingWidget = Center(
+      child: SizedBox(
+        width: 24,
+        height: 24,
+        child: CircularProgressIndicator(),
+      ),
+    );
+
     return Center(
       child: SizedBox(
         width: 400.0,
@@ -604,21 +664,23 @@ class __NowPlayingInfoState extends State<_NowPlayingInfo> {
                       ? placeholder
                       : FutureBuilder(
                           future: nowPlayingCover,
-                          builder: (context, snapshot) {
-                            if (snapshot.data == null) {
-                              return placeholder;
-                            }
-                            return FittedBox(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: Image(
-                                  image: snapshot.data!,
-                                  width: 400.0,
-                                  height: 400.0,
-                                  errorBuilder: (_, __, ___) => placeholder,
-                                ),
-                              ),
-                            );
+                          builder: (context, snapshot) =>
+                              switch (snapshot.connectionState) {
+                            ConnectionState.done => snapshot.data == null
+                                ? placeholder
+                                : FittedBox(
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      child: Image(
+                                        image: snapshot.data!,
+                                        width: 400.0,
+                                        height: 400.0,
+                                        errorBuilder: (_, __, ___) =>
+                                            placeholder,
+                                      ),
+                                    ),
+                                  ),
+                            _ => loadingWidget,
                           },
                         ),
                 ),
