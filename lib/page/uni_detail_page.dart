@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/page/uni_page.dart';
 import 'package:coriander_player/page/uni_page_components.dart';
@@ -149,127 +151,92 @@ class _UniDetailPageState<P, S, T> extends State<UniDetailPage<P, S, T>> {
 
   Widget result(MultiSelectController<S>? multiSelectController,
       List<Widget> actions, ColorScheme scheme) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(8.0),
-          bottomRight: Radius.circular(8.0),
-        ),
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(8.0),
+        bottomRight: Radius.circular(8.0),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // head
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                _PrimaryContentPicture(
-                  pic: widget.primaryPic,
-                  picShape: widget.picShape,
-                ),
-                const SizedBox(width: 16.0),
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Flexible(
-                        child: Text(
-                          widget.title,
-                          style: TextStyle(
-                            fontSize: 22.0,
-                            color: scheme.onSurface,
-                            fontWeight: FontWeight.bold,
+      child: ColoredBox(
+        color: scheme.surface,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              // head
+              _UniDetailPageHeader(
+                pic: widget.primaryPic,
+                picShape: widget.picShape,
+                title: widget.title,
+                subtitle: widget.subtitle,
+                actions: actions,
+                multiSelectController: multiSelectController,
+                multiSelectViewActions: widget.multiSelectViewActions,
+              ),
+              const SizedBox(height: 16.0),
+              Expanded(
+                child: Material(
+                  borderRadius: BorderRadius.circular(8.0),
+                  type: MaterialType.transparency,
+                  child: CustomScrollView(
+                    slivers: [
+                      // secondary content
+                      switch (currContentView) {
+                        ContentView.list => SliverFixedExtentList.builder(
+                            itemExtent: 64,
+                            itemCount: widget.secondaryContent.length,
+                            itemBuilder: (context, i) =>
+                                widget.secondaryContentBuilder(
+                              context,
+                              widget.secondaryContent[i],
+                              i,
+                              multiSelectController,
+                            ),
+                          ),
+                        ContentView.table => SliverGrid.builder(
+                            gridDelegate: gridDelegate,
+                            itemCount: widget.secondaryContent.length,
+                            itemBuilder: (context, i) =>
+                                widget.secondaryContentBuilder(
+                              context,
+                              widget.secondaryContent[i],
+                              i,
+                              multiSelectController,
+                            ),
+                          ),
+                      },
+
+                      // tertiary content
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            widget.tertiaryContentTitle,
+                            style: TextStyle(
+                              color: scheme.onSurface,
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
-                      Text(
-                        widget.subtitle,
-                        style: TextStyle(
-                          fontSize: 14.0,
-                          color: scheme.onSurface,
+                      SliverList.builder(
+                        itemCount: widget.tertiaryContent.length,
+                        itemBuilder: (context, i) =>
+                            widget.tertiaryContentBuilder(
+                          context,
+                          widget.tertiaryContent[i],
+                          i,
+                          null,
                         ),
                       ),
-                      const SizedBox(height: 8.0),
-                      Wrap(
-                        spacing: 8.0,
-                        runSpacing: 8.0,
-                        children: multiSelectController == null
-                            ? actions
-                            : multiSelectController.enableMultiSelectView
-                                ? widget.multiSelectViewActions!
-                                : actions,
-                      )
+                      const SliverPadding(
+                          padding: EdgeInsets.only(bottom: 96.0)),
                     ],
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 16.0),
-            Expanded(
-              child: Material(
-                color: scheme.surface,
-                child: CustomScrollView(
-                  slivers: [
-                    // secondary content
-                    switch (currContentView) {
-                      ContentView.list => SliverFixedExtentList.builder(
-                          itemExtent: 64,
-                          itemCount: widget.secondaryContent.length,
-                          itemBuilder: (context, i) =>
-                              widget.secondaryContentBuilder(
-                            context,
-                            widget.secondaryContent[i],
-                            i,
-                            multiSelectController,
-                          ),
-                        ),
-                      ContentView.table => SliverGrid.builder(
-                          gridDelegate: gridDelegate,
-                          itemCount: widget.secondaryContent.length,
-                          itemBuilder: (context, i) =>
-                              widget.secondaryContentBuilder(
-                            context,
-                            widget.secondaryContent[i],
-                            i,
-                            multiSelectController,
-                          ),
-                        ),
-                    },
-
-                    // tertiary content
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          widget.tertiaryContentTitle,
-                          style: TextStyle(
-                            color: scheme.onSurface,
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SliverList.builder(
-                      itemCount: widget.tertiaryContent.length,
-                      itemBuilder: (context, i) =>
-                          widget.tertiaryContentBuilder(
-                        context,
-                        widget.tertiaryContent[i],
-                        i,
-                        null,
-                      ),
-                    ),
-                    const SliverPadding(padding: EdgeInsets.only(bottom: 96.0)),
-                  ],
-                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -278,49 +245,132 @@ class _UniDetailPageState<P, S, T> extends State<UniDetailPage<P, S, T>> {
 
 enum PicShape { oval, rrect }
 
-class _PrimaryContentPicture extends StatelessWidget {
-  const _PrimaryContentPicture(
-      {super.key, required this.pic, required this.picShape});
+class _UniDetailPageHeader extends StatelessWidget {
+  const _UniDetailPageHeader({
+    super.key,
+    required this.pic,
+    required this.picShape,
+    required this.title,
+    required this.subtitle,
+    this.multiSelectController,
+    required this.actions,
+    this.multiSelectViewActions,
+  });
 
   final Future<ImageProvider?> pic;
   final PicShape picShape;
 
+  final String title;
+  final String subtitle;
+  final MultiSelectController? multiSelectController;
+  final List<Widget> actions;
+  final List<Widget>? multiSelectViewActions;
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: pic,
-      builder: (context, snapshot) {
-        final scheme = Theme.of(context).colorScheme;
-        final placeholder = Icon(
-          Symbols.broken_image,
-          size: 200.0,
-          color: scheme.onSurface,
-        );
-        if (snapshot.data == null) {
-          return Flexible(
-            child: placeholder,
-          );
-        }
-        return switch (picShape) {
-          PicShape.oval => ClipOval(
-              child: Image(
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final brightness = theme.brightness;
+    return SizedBox(
+      height: 200,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          FutureBuilder(
+            future: pic,
+            builder: (context, snapshot) {
+              if (snapshot.data == null) return const SizedBox.shrink();
+
+              return Image(
+                height: 200,
                 image: snapshot.data!,
-                width: 200.0,
-                height: 200.0,
-                errorBuilder: (_, __, ___) => placeholder,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+              );
+            },
+          ),
+          switch (brightness) {
+            Brightness.dark => const ColoredBox(color: Colors.black38),
+            Brightness.light => const ColoredBox(color: Colors.white30),
+          },
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
+            child: const ColoredBox(color: Colors.transparent),
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              FutureBuilder(
+                future: pic,
+                builder: (context, snapshot) {
+                  final placeholder = Icon(
+                    Symbols.broken_image,
+                    size: 200.0,
+                    color: scheme.onSurface,
+                  );
+                  if (snapshot.data == null) return placeholder;
+
+                  return switch (picShape) {
+                    PicShape.oval => ClipOval(
+                        child: Image(
+                          image: snapshot.data!,
+                          width: 200.0,
+                          height: 200.0,
+                          errorBuilder: (_, __, ___) => placeholder,
+                        ),
+                      ),
+                    PicShape.rrect => ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: Image(
+                          image: snapshot.data!,
+                          width: 200.0,
+                          height: 200.0,
+                          errorBuilder: (_, __, ___) => placeholder,
+                        ),
+                      ),
+                  };
+                },
               ),
-            ),
-          PicShape.rrect => ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: Image(
-                image: snapshot.data!,
-                width: 200.0,
-                height: 200.0,
-                errorBuilder: (_, __, ___) => placeholder,
+              const SizedBox(width: 16.0),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 22.0,
+                          color: scheme.onSurface,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: scheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 8.0),
+                    Wrap(
+                      spacing: 8.0,
+                      runSpacing: 8.0,
+                      children: multiSelectController == null
+                          ? actions
+                          : multiSelectController!.enableMultiSelectView
+                              ? multiSelectViewActions!
+                              : actions,
+                    )
+                  ],
+                ),
               ),
-            ),
-        };
-      },
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
