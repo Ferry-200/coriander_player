@@ -65,7 +65,15 @@ class _AppShell_Large extends StatelessWidget {
         children: [
           const SideNav(),
           Expanded(
-            child: Stack(children: [page, const MiniNowPlaying()]),
+            child: Stack(children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(8.0),
+                ),
+                child: page,
+              ),
+              const MiniNowPlaying()
+            ]),
           ),
         ],
       ),

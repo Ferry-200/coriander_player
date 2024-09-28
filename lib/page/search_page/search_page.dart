@@ -63,14 +63,8 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(8.0),
-          bottomRight: Radius.circular(8.0),
-        ),
-      ),
+    return ColoredBox(
+      color: scheme.surface,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

@@ -104,16 +104,8 @@ class PageScaffold extends StatelessWidget {
         }
       }
 
-      return DecoratedBox(
-        decoration: BoxDecoration(
-          color: scheme.surface,
-          borderRadius: BorderRadius.only(
-            topLeft: screenType == ScreenType.small
-                ? Radius.zero
-                : const Radius.circular(8.0),
-            bottomRight: const Radius.circular(8.0),
-          ),
-        ),
+      return ColoredBox(
+        color: scheme.surface,
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 16.0,

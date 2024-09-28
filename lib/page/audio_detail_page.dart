@@ -33,10 +33,6 @@ class AudioDetailPage extends StatelessWidget {
 
     return Material(
       color: scheme.surface,
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(8.0),
-        bottomRight: Radius.circular(8.0),
-      ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 96.0),
         child: Column(

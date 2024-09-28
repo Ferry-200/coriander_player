@@ -14,11 +14,6 @@ class AudioSearchResultPage extends StatelessWidget {
 
     return Material(
       color: scheme.surface,
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(8.0),
-        bottomRight: Radius.circular(8.0),
-      ),
-      clipBehavior: Clip.hardEdge,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 8.0),
         child: CustomScrollView(
@@ -68,11 +63,6 @@ class ArtistSearchResultPage extends StatelessWidget {
 
     return Material(
       color: scheme.surface,
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(8.0),
-        bottomRight: Radius.circular(8.0),
-      ),
-      clipBehavior: Clip.hardEdge,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 8.0),
         child: CustomScrollView(
@@ -117,11 +107,6 @@ class AlbumSearchResultPage extends StatelessWidget {
 
     return Material(
       color: scheme.surface,
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(8.0),
-        bottomRight: Radius.circular(8.0),
-      ),
-      clipBehavior: Clip.hardEdge,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 8.0),
         child: CustomScrollView(

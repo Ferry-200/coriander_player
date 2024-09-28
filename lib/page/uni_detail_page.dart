@@ -151,92 +151,85 @@ class _UniDetailPageState<P, S, T> extends State<UniDetailPage<P, S, T>> {
 
   Widget result(MultiSelectController<S>? multiSelectController,
       List<Widget> actions, ColorScheme scheme) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(8.0),
-        bottomRight: Radius.circular(8.0),
-      ),
-      child: ColoredBox(
-        color: scheme.surface,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              // head
-              _UniDetailPageHeader(
-                pic: widget.primaryPic,
-                picShape: widget.picShape,
-                title: widget.title,
-                subtitle: widget.subtitle,
-                actions: actions,
-                multiSelectController: multiSelectController,
-                multiSelectViewActions: widget.multiSelectViewActions,
-              ),
-              const SizedBox(height: 16.0),
-              Expanded(
-                child: Material(
-                  borderRadius: BorderRadius.circular(8.0),
-                  type: MaterialType.transparency,
-                  child: CustomScrollView(
-                    slivers: [
-                      // secondary content
-                      switch (currContentView) {
-                        ContentView.list => SliverFixedExtentList.builder(
-                            itemExtent: 64,
-                            itemCount: widget.secondaryContent.length,
-                            itemBuilder: (context, i) =>
-                                widget.secondaryContentBuilder(
-                              context,
-                              widget.secondaryContent[i],
-                              i,
-                              multiSelectController,
-                            ),
+    return ColoredBox(
+      color: scheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            // head
+            _UniDetailPageHeader(
+              pic: widget.primaryPic,
+              picShape: widget.picShape,
+              title: widget.title,
+              subtitle: widget.subtitle,
+              actions: actions,
+              multiSelectController: multiSelectController,
+              multiSelectViewActions: widget.multiSelectViewActions,
+            ),
+            const SizedBox(height: 16.0),
+            Expanded(
+              child: Material(
+                borderRadius: BorderRadius.circular(8.0),
+                type: MaterialType.transparency,
+                child: CustomScrollView(
+                  slivers: [
+                    // secondary content
+                    switch (currContentView) {
+                      ContentView.list => SliverFixedExtentList.builder(
+                          itemExtent: 64,
+                          itemCount: widget.secondaryContent.length,
+                          itemBuilder: (context, i) =>
+                              widget.secondaryContentBuilder(
+                            context,
+                            widget.secondaryContent[i],
+                            i,
+                            multiSelectController,
                           ),
-                        ContentView.table => SliverGrid.builder(
-                            gridDelegate: gridDelegate,
-                            itemCount: widget.secondaryContent.length,
-                            itemBuilder: (context, i) =>
-                                widget.secondaryContentBuilder(
-                              context,
-                              widget.secondaryContent[i],
-                              i,
-                              multiSelectController,
-                            ),
+                        ),
+                      ContentView.table => SliverGrid.builder(
+                          gridDelegate: gridDelegate,
+                          itemCount: widget.secondaryContent.length,
+                          itemBuilder: (context, i) =>
+                              widget.secondaryContentBuilder(
+                            context,
+                            widget.secondaryContent[i],
+                            i,
+                            multiSelectController,
                           ),
-                      },
+                        ),
+                    },
 
-                      // tertiary content
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            widget.tertiaryContentTitle,
-                            style: TextStyle(
-                              color: scheme.onSurface,
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold,
-                            ),
+                    // tertiary content
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          widget.tertiaryContentTitle,
+                          style: TextStyle(
+                            color: scheme.onSurface,
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                      SliverList.builder(
-                        itemCount: widget.tertiaryContent.length,
-                        itemBuilder: (context, i) =>
-                            widget.tertiaryContentBuilder(
-                          context,
-                          widget.tertiaryContent[i],
-                          i,
-                          null,
-                        ),
+                    ),
+                    SliverList.builder(
+                      itemCount: widget.tertiaryContent.length,
+                      itemBuilder: (context, i) =>
+                          widget.tertiaryContentBuilder(
+                        context,
+                        widget.tertiaryContent[i],
+                        i,
+                        null,
                       ),
-                      const SliverPadding(
-                          padding: EdgeInsets.only(bottom: 96.0)),
-                    ],
-                  ),
+                    ),
+                    const SliverPadding(padding: EdgeInsets.only(bottom: 96.0)),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
