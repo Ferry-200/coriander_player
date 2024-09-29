@@ -7,7 +7,7 @@ import 'package:coriander_player/app_paths.dart' as app_paths;
 import 'package:coriander_player/play_service/play_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 /// 由[playlist]和[audioIndex]确定audio，而不是直接传入audio，
 /// 这是为了实现点击列表项播放乐曲时指定该列表为播放列表。

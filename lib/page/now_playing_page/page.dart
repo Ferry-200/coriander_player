@@ -16,7 +16,7 @@ import 'package:coriander_player/play_service/playback_service.dart';
 import 'package:coriander_player/src/bass/bass_player.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 
