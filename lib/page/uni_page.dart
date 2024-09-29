@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/page/uni_page_components.dart';
 import 'package:coriander_player/page/page_scaffold.dart';
@@ -142,17 +144,30 @@ class _UniPageState<T> extends State<UniPage<T>> {
       widget.sortMethods?[widget.pref.sortMethod];
   late SortOrder currSortOrder = widget.pref.sortOrder;
   late ContentView currContentView = widget.pref.contentView;
-  late ScrollController scrollController;
+  late ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     currSortMethod?.method(widget.contentList, currSortOrder);
-    int targetAt = 0;
-    if (widget.locateTo != null) {
-      targetAt = widget.contentList.indexOf(widget.locateTo as T);
-    }
-    scrollController = ScrollController(initialScrollOffset: targetAt * 64);
+    if (widget.locateTo == null) return;
+
+    int targetAt = widget.contentList.indexOf(widget.locateTo as T);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (currContentView == ContentView.list) {
+        scrollController.jumpTo(targetAt * 64);
+      } else {
+        final renderObject = context.findRenderObject();
+        if (renderObject is RenderBox) {
+          final ratio =
+              PlatformDispatcher.instance.views.first.devicePixelRatio;
+          final crossAxisCount =
+              (renderObject.size.width * ratio / 300).floor();
+          final offset = (targetAt ~/ crossAxisCount) * (64.0 + 8.0);
+          scrollController.jumpTo(offset);
+        }
+      }
+    });
   }
 
   @override
