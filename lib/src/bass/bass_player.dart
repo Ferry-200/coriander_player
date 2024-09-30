@@ -123,7 +123,7 @@ class BassPlayer {
         _positionStreamController.add(p);
 
         /// check if the channel has completed
-        if (length - p < 0.01) {
+        if (length - p < 0.1) {
           _playerStateStreamController.add(PlayerState.completed);
         }
       },
