@@ -3,7 +3,7 @@
 
 ## [更多软件截图在下面（点我滚动到下面）](#软件截图)
 
-**该播放器拥有桌面歌词组件。这个桌面歌词组件也可以给别的音乐播放器使用。请见 [desktop_lyric](https://github.com/Ferry-200/desktop_lyric.git)**
+**该播放器发行版已经附带桌面歌词组件。项目仓库请见 [desktop_lyric](https://github.com/Ferry-200/desktop_lyric.git)**
 
 ## 安装
 1. 下载 [Release](https://github.com/Ferry-200/coriander_player/releases/latest) 里文件安装
@@ -55,7 +55,7 @@
 1. 开发 flutter 需要的环境
 2. 需要编译 Coriander Player（本仓库） 软件本体和 desktop_lyric。[desktop_lyric](https://github.com/Ferry-200/desktop_lyric.git) 也是 Flutter 应用，直接编译即可
 3. 要把得到的 desktop_lyric 产物放在软件目录的 `desktop_lyric/` 目录下
-4. 编译后要把 BASS 库的 64 位的 `bass.dll`, `bassape.dll`, `bassdsd.dll`, `bassflac.dll`, `bassmidi.dll`, `bassopus.dll`, `basswv.dll` 放在软件目录的 `BASS` 文件夹下
+4. 编译后要把 BASS 库的 64 位的 `bass.dll`, `bassape.dll`, `bassdsd.dll`, `bassflac.dll`, `bassmidi.dll`, `bassopus.dll`, `basswv.dll`, `basswasapi.dll` 放在软件目录的 `BASS` 文件夹下
 
 ## 歌词特性解释
 1. lrc歌词的间奏识别   
