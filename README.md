@@ -69,7 +69,7 @@
    ```
    如果这一行（第三行）的时间戳和下一行的时间戳之间大于5s，就把这两行之间的时间作为间奏时长  
    **所以，不是所有lrc歌词在间奏时都能显示间奏动画。**
-2. krc、qrc逐字歌词的间奏识别  
+2. 逐字歌词的间奏识别  
    逐字歌词都会给出每一行的开始时间和持续时间，所以识别间奏会简单得多。如
    ```
    [5905,5466]<0,217,0>世<217,383,0>界<600,495,0>は<1095,272,0>と<1367,328,0>て<1695,343,0>も<2038,616,0>綺<2654,752,0>麗<3406,276,0>だ<3682,276,0>っ<3958,504,0>た<4462,1004,0>な
@@ -81,7 +81,8 @@
 - [music_api](https://github.com/yhsj0919/music_api.git)：实现歌曲的匹配和歌词的获取
 - [Lofty](https://crates.io/crates/lofty)：歌曲标签获取
 - [BASS](https://www.un4seen.com/bass.html)：播放乐曲
-- [flutter_rust_bridge](https://pub.dev/packages/flutter_rust_bridge)
+- [flutter_rust_bridge](https://pub.dev/packages/flutter_rust_bridge)：实现许多 Windows 原生交互
+- [Silicon7921](https://github.com/Silicon7921)：绘制了新图标
 
 ## 软件截图
 ![音乐页](软件截图/音乐页.png)
