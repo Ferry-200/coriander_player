@@ -104,6 +104,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                 image: snapshot.data!,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                gaplessPlayback: true,
               );
             },
           ),
