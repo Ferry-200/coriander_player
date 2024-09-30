@@ -73,7 +73,9 @@ class _LyricHorizontalScrollAreaState
       if (first is LrcLine) {
         currContent = first.content;
       } else if (first is SyncLyricLine) {
-        currContent = first.content;
+        currContent = first.translation == null
+            ? first.content
+            : "${first.content}┃${first.translation}";
       }
     }
 
@@ -85,7 +87,9 @@ class _LyricHorizontalScrollAreaState
         if (currLine is LrcLine) {
           currContent = currLine.content;
         } else if (currLine is SyncLyricLine) {
-          currContent = currLine.content;
+          currContent = currLine.translation == null
+              ? currLine.content
+              : "${currLine.content}┃${currLine.translation}";
         }
       });
 
