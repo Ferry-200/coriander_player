@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/lyric/lyric.dart';
 import 'package:coriander_player/src/rust/api/tag_reader.dart';
@@ -22,7 +24,7 @@ class LrcLine extends UnsyncLyricLine {
   }
 
   /// line: [mm:ss.msmsms]content
-  static LrcLine? fromLine(String line) {
+  static LrcLine? fromLine(String line, [int? offset]) {
     if (line.trim().isEmpty) {
       return null;
     }
@@ -57,7 +59,9 @@ class LrcLine extends UnsyncLyricLine {
     var inMilliseconds = ((minute * 60 + second) * 1000).toInt();
 
     return LrcLine(
-      Duration(milliseconds: inMilliseconds),
+      Duration(
+        milliseconds: max(inMilliseconds - (offset ?? 0), 0),
+      ),
       content,
       isBlank: content.isEmpty,
     );
@@ -101,7 +105,6 @@ class Lrc extends Lyric {
 
   /// line_1 and line_2时间戳相同，合并成line_1[separator]line_2
   Lrc _combineLrcLine(String separator) {
-    _sort();
     List<LrcLine> combinedLines = [];
     var buf = StringBuffer();
     for (var i = 1; i < lines.length; i++) {
@@ -136,9 +139,18 @@ class Lrc extends Lyric {
   static Lrc? fromLrcText(String lrc, LrcSource source, {String? separator}) {
     var lrcLines = lrc.split("\n");
 
+    int? offsetInMilliseconds;
+    final offsetPattern = RegExp(r'\[\s*offset\s*:\s*([+-]?\d+)\s*\]');
+    for (var line in lrcLines) {
+      final matched = offsetPattern.firstMatch(line);
+      if (matched == null) continue;
+      offsetInMilliseconds = int.tryParse(matched.group(1) ?? "");
+      break;
+    }
+
     var lines = <LrcLine>[];
     for (int i = 0; i < lrcLines.length; i++) {
-      var lyricLine = LrcLine.fromLine(lrcLines[i]);
+      var lyricLine = LrcLine.fromLine(lrcLines[i], offsetInMilliseconds);
       if (lyricLine == null) {
         continue;
       }
@@ -157,42 +169,13 @@ class Lrc extends Lyric {
     }
 
     final result = Lrc(lines, source);
+    result._sort();
 
     if (separator == null) {
       return result;
     }
 
     return result._combineLrcLine(separator);
-  }
-
-  /// 必须保证 trans 的数量和顺序与 lrc 分割得的一致
-  static Lrc fromLrcTextAndTrans(String lrc, List<String> trans, LrcSource source) {
-    var lrcLines = lrc.split("\n");
-
-    var lines = <LrcLine>[];
-    for (int i = 0; i < lrcLines.length; i++) {
-      var lyricLine = LrcLine.fromLine(lrcLines[i]);
-      if (lyricLine == null) {
-        continue;
-      }
-      lines.add(lyricLine);
-    }
-
-    int it = 0;
-    for (var transLine in trans) {
-      if (it == lines.length - 1) break;
-      lines[it].content += "┃$transLine";
-      it += 1;
-    }
-
-    for (var i = 0; i < lines.length - 1; i++) {
-      lines[i].length = lines[i + 1].start - lines[i].start;
-    }
-    if (lines.isNotEmpty) {
-      lines.last.length = Duration.zero;
-    }
-
-    return Lrc(lines, source);
   }
 
   /// 只支持读取 ID3V2, VorbisComment, Mp4Ilst 存储的内嵌歌词
