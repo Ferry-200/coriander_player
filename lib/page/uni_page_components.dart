@@ -79,6 +79,7 @@ class SortMethodComboBox<T> extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.only(left: 16.0, right: 12.0),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       Symbols.sort,
