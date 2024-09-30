@@ -40,7 +40,7 @@ class LrcLine extends UnsyncLyricLine {
 
     // replace [mm:ss.msms...] with ""
     var content = line
-        .substring(line.indexOf("]") + 1)
+        .substring(right + 1)
         .trim()
         .replaceAll(RegExp(r"\[\d{2}:\d{2}\.\d{2,}\]"), "");
 
