@@ -42,9 +42,7 @@ class SortMethodComboBox<T> extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
 
     return MenuAnchor(
-      crossAxisUnconstrained: false,
       style: MenuStyle(
-        fixedSize: const WidgetStatePropertyAll(Size.fromWidth(141)),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         ),
@@ -65,7 +63,6 @@ class SortMethodComboBox<T> extends StatelessWidget {
 
         return SizedBox(
           height: 40.0,
-          width: 141.0,
           child: Material(
             borderRadius: borderRadius,
             color: scheme.secondaryContainer,
@@ -89,17 +86,13 @@ class SortMethodComboBox<T> extends StatelessWidget {
                       color: scheme.onSecondaryContainer,
                     ),
                     const SizedBox(width: 4.0),
-                    Expanded(
-                      child: Text(
-                        currSortMethod.name,
-                        style: TextStyle(color: scheme.onSecondaryContainer),
-                      ),
+                    Text(
+                      currSortMethod.name,
+                      style: TextStyle(color: scheme.onSecondaryContainer),
                     ),
                     const SizedBox(width: 4.0),
                     Icon(
-                      menuController.isOpen
-                          ? Symbols.arrow_drop_up
-                          : Symbols.arrow_drop_down,
+                      Symbols.arrow_drop_down,
                       size: 24,
                       color: scheme.onSecondaryContainer,
                     ),
