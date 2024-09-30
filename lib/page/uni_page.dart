@@ -161,8 +161,8 @@ class _UniPageState<T> extends State<UniPage<T>> {
         if (renderObject is RenderBox) {
           final ratio =
               PlatformDispatcher.instance.views.first.devicePixelRatio;
-          final crossAxisCount =
-              (renderObject.size.width * ratio / 300).floor();
+          final width = renderObject.size.width - 32;
+          final crossAxisCount = (width * ratio / 300).floor();
           final offset = (targetAt ~/ crossAxisCount) * (64.0 + 8.0);
           scrollController.jumpTo(offset);
         }
