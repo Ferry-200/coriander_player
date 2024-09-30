@@ -116,7 +116,8 @@ impl Audio {
     /// 再不能的话：title: filename 代替
     fn read_from_path(path: impl AsRef<Path>) -> Option<Self> {
         let path = path.as_ref();
-        let lofty_support: bool = *SUPPORT_FORMAT.get(&path.extension()?.to_string_lossy())?;
+        let lofty_support: bool =
+            *SUPPORT_FORMAT.get(&path.extension()?.to_ascii_lowercase().to_string_lossy())?;
 
         let file_metadata = fs::metadata(path).unwrap();
         let modified = file_metadata
