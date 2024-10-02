@@ -79,16 +79,19 @@ class BassPlayer {
       return PlayerState.unknown;
     }
 
-    if (wasapiExclusive) {
-      return _bassWasapi.BASS_WASAPI_IsStarted() == BASS.TRUE
-          ? PlayerState.playing
-          : PlayerState.paused;
-    }
-
     switch (_bass.BASS_ChannelIsActive(_fstream!)) {
       case BASS.BASS_ACTIVE_STOPPED:
         return PlayerState.stopped;
       case BASS.BASS_ACTIVE_PLAYING:
+        if (wasapiExclusive) {
+          /// wasapi exclusive's channel is a decoding channel,
+          /// will be BASS_ACTIVE_PLAYING as long as there is still data to decode.
+          /// So here we check BASS_WASAPI_IsStarted to
+          /// judge between BASS_ACTIVE_PLAYING and BASS_ACTIVE_PAUSED
+          return _bassWasapi.BASS_WASAPI_IsStarted() == BASS.TRUE
+              ? PlayerState.playing
+              : PlayerState.paused;
+        }
         return PlayerState.playing;
       case BASS.BASS_ACTIVE_PAUSED:
         return PlayerState.paused;
@@ -123,7 +126,7 @@ class BassPlayer {
         _positionStreamController.add(p);
 
         /// check if the channel has completed
-        if (length - p < 0.1) {
+        if (playerState == PlayerState.stopped) {
           _playerStateStreamController.add(PlayerState.completed);
         }
       },
@@ -365,7 +368,7 @@ class BassPlayer {
           throw const FormatException("Some other mystery problem!");
       }
     }
-    _playerStateStreamController.add(PlayerState.playing);
+    _playerStateStreamController.add(playerState);
     _positionUpdater = _getPositionUpdater();
   }
 
@@ -391,13 +394,13 @@ class BassPlayer {
       }
     }
 
-    _playerStateStreamController.add(PlayerState.playing);
+    _playerStateStreamController.add(playerState);
     _positionUpdater = _getPositionUpdater();
   }
 
   void _pause_wasapiExclusive() {
     if (_bassWasapi.BASS_WASAPI_Stop(BASS.FALSE) == BASS.TRUE) {
-      _playerStateStreamController.add(PlayerState.paused);
+      _playerStateStreamController.add(playerState);
       _positionUpdater?.cancel();
     }
   }
@@ -424,24 +427,7 @@ class BassPlayer {
       }
     }
 
-    _playerStateStreamController.add(PlayerState.paused);
-    _positionUpdater?.cancel();
-  }
-
-  /// pause channel. can't resume by calling [start]
-  ///
-  /// do nothing if [setSource] hasn't been called
-  void stop() {
-    if (_fstream == null) return;
-
-    if (_bass.BASS_ChannelStop(_fstream!) == 0) {
-      switch (_bass.BASS_ErrorGetCode()) {
-        case BASS.BASS_ERROR_HANDLE:
-          throw const FormatException("handle is not a valid channel.");
-      }
-    }
-
-    _playerStateStreamController.add(PlayerState.stopped);
+    _playerStateStreamController.add(playerState);
     _positionUpdater?.cancel();
   }
 
