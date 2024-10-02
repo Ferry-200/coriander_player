@@ -20,6 +20,8 @@ const int BASS_ERROR_DECODE = 38;
 
 const int BASS_ERROR_ILLTYPE = 19;
 
+const int BASS_ERROR_REINIT = 11;
+
 const int BASS_STREAM_DECODE = 2097152;
 
 const int BASS_ERROR_HANDLE = 5;
@@ -107,6 +109,14 @@ class Bass {
       ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
           lookup)
       : _lookup = lookup;
+
+  int BASS_Start() {
+    return _BASS_Start();
+  }
+
+  late final _BASS_StartPtr =
+      _lookup<ffi.NativeFunction<BOOL Function()>>('BASS_Start');
+  late final _BASS_Start = _BASS_StartPtr.asFunction<int Function()>();
 
   int BASS_Free() {
     return _BASS_Free();

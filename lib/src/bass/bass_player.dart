@@ -164,6 +164,24 @@ class BassPlayer {
     }
   }
 
+  void _startDevice() {
+    if (_bass.BASS_Start() == BASS.FALSE) {
+      switch (_bass.BASS_ErrorGetCode()) {
+        case BASS.BASS_ERROR_INIT:
+          throw const FormatException(
+              "BASS_Init has not been successfully called.");
+        case BASS.BASS_ERROR_BUSY:
+          throw const FormatException(
+              "The app's audio has been interrupted and cannot be resumed yet. (iOS only)");
+        case BASS.BASS_ERROR_REINIT:
+          throw const FormatException(
+              "The device is currently being reinitialized or needs to be.");
+        case BASS.BASS_ERROR_UNKNOWN:
+          throw const FormatException("Some other mystery problem!");
+      }
+    }
+  }
+
   /// load bass.dll from the exe's path\\BASS
   /// ensure that there's bass.dll at path of .exe\\BASS
   /// leave the device's output freq as it is
@@ -389,8 +407,8 @@ class BassPlayer {
           throw const FormatException(
               "handle is a decoding channel, so cannot be played.");
         case BASS.BASS_ERROR_START:
-          throw const FormatException(
-              "The output is paused/stopped, use BASS_Start to start it.");
+          _startDevice();
+          break;
       }
     }
 
