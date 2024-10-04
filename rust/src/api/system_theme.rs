@@ -1,11 +1,5 @@
 use flutter_rust_bridge::frb;
-use windows::{
-    core::IInspectable,
-    Foundation::TypedEventHandler,
-    UI::ViewManagement::{UIColorType, UISettings},
-};
-
-use crate::frb_generated::StreamSink;
+use windows::UI::ViewManagement::{UIColorType, UISettings};
 
 pub struct SystemTheme {
     /// a, r, g, b
@@ -42,19 +36,5 @@ impl SystemTheme {
             Ok(value) => value,
             Err(_) => SystemTheme::default(),
         }
-    }
-
-    pub fn on_system_theme_changed(sink: StreamSink<SystemTheme>) {
-        let ui_settings = UISettings::new().unwrap();
-        ui_settings
-            .ColorValuesChanged(&TypedEventHandler::<UISettings, IInspectable>::new(
-                move |ui_settings: &Option<UISettings>, _| {
-                    let theme = SystemTheme::from_ui_settings(ui_settings.clone().unwrap())?;
-                    sink.add(theme).unwrap();
-
-                    Ok(())
-                },
-            ))
-            .unwrap();
     }
 }

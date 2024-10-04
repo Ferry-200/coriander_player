@@ -281,16 +281,24 @@ impl AudioFolder {
             let mut latest: u64 = 0;
 
             for item in dir {
-                let entry = item?;
+                let entry = match item {
+                    Ok(value) => value,
+                    Err(_) => continue,
+                };
 
-                if entry.file_type()?.is_dir() {
-                    continue;
-                } else if let Some(metadata) = Audio::read_from_path(entry.path()) {
-                    if metadata.created > latest {
-                        latest = metadata.created;
+                let file_type = match entry.file_type() {
+                    Ok(value) => value,
+                    Err(_) => continue,
+                };
+
+                if file_type.is_file() {
+                    if let Some(audio_item) = Audio::read_from_path(entry.path()) {
+                        if audio_item.created > latest {
+                            latest = audio_item.created;
+                        }
+
+                        audios.push(audio_item);
                     }
-
-                    audios.push(metadata);
                 }
             }
 
@@ -329,29 +337,36 @@ impl AudioFolder {
         }
 
         if let Ok(dir) = fs::read_dir(folder) {
-            sink.add(IndexActionState {
+            let _ = sink.add(IndexActionState {
                 progress: *scaned_count as f64 / *total_count as f64,
                 message: String::from("正在扫描 ") + &folder.to_string_lossy(),
-            })
-            .unwrap(); // TODO: map_err???
+            });
 
             scaned_folders.insert(folder.to_string_lossy().to_string());
             let mut audios: Vec<Audio> = vec![];
             let mut latest: u64 = 0;
 
             for item in dir {
-                let entry = item?;
+                let entry = match item {
+                    Ok(value) => value,
+                    Err(_) => continue,
+                };
 
-                if entry.file_type()?.is_dir() {
+                let file_type = match entry.file_type() {
+                    Ok(value) => value,
+                    Err(_) => continue,
+                };
+
+                if file_type.is_dir() {
                     *total_count += 1;
-                    Self::read_from_folder_recursively(
+                    let _ = Self::read_from_folder_recursively(
                         entry.path(),
                         result,
                         scaned_count,
                         total_count,
                         scaned_folders,
                         sink,
-                    )?;
+                    );
                 } else if let Some(metadata) = Audio::read_from_path(entry.path()) {
                     if metadata.created > latest {
                         latest = metadata.created;
@@ -375,18 +390,17 @@ impl AudioFolder {
             }
 
             *scaned_count += 1;
-            sink.add(IndexActionState {
+            let _ = sink.add(IndexActionState {
                 progress: *scaned_count as f64 / *total_count as f64,
                 message: String::new(),
-            })
-            .unwrap();
+            });
         }
 
         Ok(())
     }
 }
 
-fn _get_picture_by_windows(path: String) -> Result<Vec<u8>, windows::core::Error> {
+fn _get_picture_by_windows(path: &String) -> Result<Vec<u8>, windows::core::Error> {
     let file = StorageFile::GetFileFromPathAsync(&HSTRING::from(path))?.get()?;
     let thumbnail = file
         .GetThumbnailAsyncOverloadDefaultSizeDefaultOptions(ThumbnailMode::MusicView)?
@@ -406,18 +420,20 @@ fn _get_picture_by_windows(path: String) -> Result<Vec<u8>, windows::core::Error
     Ok(buffer)
 }
 
+fn _get_picture_by_lofty(path: &String) -> Option<Vec<u8>> {
+    if let Ok(tagged_file) = lofty::read_from_path(&path) {
+        let tag = tagged_file.primary_tag().or(tagged_file.first_tag())?;
+
+        return Some(tag.pictures().first()?.data().to_vec());
+    }
+
+    None
+}
+
 /// for Flutter  
 /// 如果无法通过 Lofty 获取则通过 Windows 获取
 pub fn get_picture_from_path(path: String, width: u32, height: u32) -> Option<Vec<u8>> {
-    let pic_option: Option<Vec<u8>> = if let Ok(tagged_file) = lofty::read_from_path(&path) {
-        let tag = tagged_file.primary_tag().or(tagged_file.first_tag())?;
-
-        Some(tag.pictures().first()?.data().to_vec())
-    } else if let Ok(pic) = _get_picture_by_windows(path) {
-        Some(pic)
-    } else {
-        None
-    };
+    let pic_option = _get_picture_by_lofty(&path).or(_get_picture_by_windows(&path).ok());
 
     if let Some(pic) = &pic_option {
         if let Ok(loaded_pic) = image::load_from_memory(pic) {
@@ -447,49 +463,55 @@ pub fn get_picture_from_path(path: String, width: u32, height: u32) -> Option<Ve
     pic_option
 }
 
+fn _get_lyric_from_lofty(path: &String) -> Option<String> {
+    if let Ok(tagged_file) = lofty::read_from_path(&path) {
+        let tag = tagged_file.primary_tag().or(tagged_file.first_tag())?;
+        let lyric_tag = tag.get(&ItemKey::Lyrics)?;
+        let lyric = lyric_tag.value().text()?;
+
+        return Some(lyric.to_string());
+    }
+
+    None
+}
+
+fn _get_lyric_from_lrc_file(path: &String) -> anyhow::Result<String> {
+    let mut lrc_file_path = PathBuf::from(path);
+    lrc_file_path.set_extension("lrc");
+
+    let lrc_bytes = fs::read(lrc_file_path)?;
+
+    let is_le = lrc_bytes.starts_with(&[0xFF, 0xFE]);
+    let is_utf16 = (is_le || lrc_bytes.starts_with(&[0xFE, 0xFF])) && lrc_bytes.len() % 2 == 0;
+
+    if is_utf16 {
+        let convert_fn = match is_le {
+            true => u16::from_le_bytes,
+            false => u16::from_be_bytes,
+        };
+
+        let mut u16_bytes: Vec<u16> = vec![];
+        let mut chunk_iter = lrc_bytes.chunks_exact(2);
+        chunk_iter.next();
+
+        for chunk in chunk_iter {
+            u16_bytes.push(convert_fn([chunk[0], chunk[1]]));
+        }
+        return Ok(String::from_utf16(&u16_bytes)?);
+    }
+
+    return Ok(String::from_utf8(lrc_bytes)?);
+}
+
 /// for Flutter   
 /// 只支持读取 ID3V2, VorbisComment, Mp4Ilst 存储的内嵌歌词
 /// 以及相同目录相同文件名的 .lrc 外挂歌词（utf-8 or utf-16）
 pub fn get_lyric_from_path(path: String) -> Option<String> {
-    if let Ok(tagged_file) = lofty::read_from_path(&path) {
-        if let Some(tag) = tagged_file.primary_tag().or(tagged_file.first_tag()) {
-            if let Some(lyric_tag) = tag.get(&ItemKey::Lyrics) {
-                if let Some(lyric) = lyric_tag.value().text() {
-                    return Some(lyric.to_string());
-                }
-            }
-        }
+    if let Some(lyric) = _get_lyric_from_lofty(&path) {
+        return Some(lyric);
     }
 
-    let mut lrc_file_path = PathBuf::from(path);
-    lrc_file_path.set_extension("lrc");
-
-    if let Ok(lrc_bytes) = fs::read(lrc_file_path) {
-        let is_le = lrc_bytes.starts_with(&[0xFF, 0xFE]);
-        let is_utf16 = (is_le || lrc_bytes.starts_with(&[0xFE, 0xFF])) && lrc_bytes.len() % 2 == 0;
-
-        if is_utf16 {
-            let convert_fn = match is_le {
-                true => u16::from_le_bytes,
-                false => u16::from_be_bytes,
-            };
-
-            let mut u16_bytes: Vec<u16> = vec![];
-            let mut chunk_iter = lrc_bytes.chunks_exact(2);
-            chunk_iter.next();
-
-            for chunk in chunk_iter {
-                u16_bytes.push(convert_fn([chunk[0], chunk[1]]));
-            }
-            if let Ok(lrc_str) = String::from_utf16(&u16_bytes) {
-                return Some(lrc_str);
-            }
-        } else if let Ok(lrc_str) = String::from_utf8(lrc_bytes.clone()) {
-            return Some(lrc_str);
-        }
-    }
-
-    None
+    return _get_lyric_from_lrc_file(&path).ok();
 }
 
 /// for Flutter  
@@ -501,18 +523,18 @@ pub fn build_index_from_folders(
 ) -> Result<(), io::Error> {
     let mut audio_folders_json: Vec<serde_json::Value> = vec![];
     for item in &folders {
-        sink.add(IndexActionState {
+        let _ = sink.add(IndexActionState {
             progress: audio_folders_json.len() as f64 / folders.len() as f64,
             message: String::from("正在扫描 ") + item,
-        })
-        .unwrap();
+        });
         let folder_path = Path::new(item);
-        audio_folders_json.push(AudioFolder::read_from_folder(folder_path)?.to_json_value());
-        sink.add(IndexActionState {
-            progress: audio_folders_json.len() as f64 / folders.len() as f64,
-            message: String::new(),
-        })
-        .unwrap();
+        if let Ok(folder) = AudioFolder::read_from_folder(folder_path) {
+            audio_folders_json.push(folder.to_json_value());
+            let _ = sink.add(IndexActionState {
+                progress: audio_folders_json.len() as f64 / folders.len() as f64,
+                message: String::new(),
+            });
+        }
     }
     fs::File::create(index_path)?.write_all(
         serde_json::json!({
@@ -539,14 +561,14 @@ pub fn build_index_from_folders_recursively(
     let mut scaned_folders: HashSet<String> = HashSet::new();
 
     for item in &folders {
-        AudioFolder::read_from_folder_recursively(
+        let _ = AudioFolder::read_from_folder_recursively(
             Path::new(item),
             &mut audio_folders,
             &mut scaned,
             &mut total,
             &mut scaned_folders,
             &sink,
-        )?;
+        );
     }
 
     let mut audio_folders_json: Vec<serde_json::Value> = vec![];
@@ -574,18 +596,18 @@ fn _update_index_below_1_1_0(
     let folders = index.as_array().unwrap();
     for item in folders {
         let path = item["path"].as_str().unwrap();
-        sink.add(IndexActionState {
+        let _ = sink.add(IndexActionState {
             progress: audio_folders_json.len() as f64 / folders.len() as f64,
             message: String::from("正在扫描 ") + path,
-        })
-        .unwrap();
+        });
         let folder_path = Path::new(path);
-        audio_folders_json.push(AudioFolder::read_from_folder(folder_path)?.to_json_value());
-        sink.add(IndexActionState {
-            progress: audio_folders_json.len() as f64 / folders.len() as f64,
-            message: String::new(),
-        })
-        .unwrap();
+        if let Ok(audio_folder) = AudioFolder::read_from_folder(folder_path) {
+            audio_folders_json.push(audio_folder.to_json_value());
+            let _ = sink.add(IndexActionState {
+                progress: audio_folders_json.len() as f64 / folders.len() as f64,
+                message: String::new(),
+            });
+        }
     }
     fs::File::create(index_path)?.write_all(
         serde_json::json!({
@@ -612,18 +634,15 @@ fn _update_index_below_1_1_0(
 /// 1. 遍历该文件夹索引，判断文件是否存在，不存在则删除记录
 /// 2. 遍历该文件夹索引，如果文件被修改（再次读取到的 modified > 记录的 modified），重新读取标签；没有则跳过它
 /// 3. 遍历该文件夹，添加新增（读取到的 created > 记录的 latest）的音乐文件
-pub fn update_index(
-    index_path: String,
-    sink: StreamSink<IndexActionState>,
-) -> Result<(), io::Error> {
+pub fn update_index(index_path: String, sink: StreamSink<IndexActionState>) -> anyhow::Result<()> {
     let mut index_path = PathBuf::from(index_path);
     index_path.push("index.json");
     let index = fs::read(&index_path)?;
-    let mut index: serde_json::Value = serde_json::from_slice(&index).unwrap();
+    let mut index: serde_json::Value = serde_json::from_slice(&index)?;
 
     let version = index["version"].as_u64();
     if version.is_none() {
-        return _update_index_below_1_1_0(&index, &index_path, &sink);
+        return Ok(_update_index_below_1_1_0(&index, &index_path, &sink)?);
     }
 
     let folders = index["folders"].as_array_mut().unwrap();
@@ -642,22 +661,27 @@ pub fn update_index(
         let latest = folder_item["latest"].as_u64().unwrap();
         let old_folder_modified = folder_item["modified"].as_u64().unwrap();
 
-        let new_folder_modified = fs::metadata(&folder_path)?
-            .modified()?
-            .duration_since(UNIX_EPOCH)
-            .unwrap_or(Duration::ZERO)
-            .as_secs();
+        let new_folder_modified = match fs::metadata(&folder_path) {
+            Ok(value) => match value.modified() {
+                Ok(value) => value
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap_or(Duration::ZERO)
+                    .as_secs(),
+                Err(_) => continue,
+            },
+            Err(_) => continue,
+        };
+
         // 跳过没有被修改的文件夹
         if new_folder_modified <= old_folder_modified {
             updated += 1;
             continue;
         }
 
-        sink.add(IndexActionState {
+        let _ = sink.add(IndexActionState {
             progress: updated as f64 / total as f64,
             message: String::from("正在更新 ") + &folder_path,
-        })
-        .unwrap();
+        });
 
         folder_item["modified"] = serde_json::json!(new_folder_modified);
 
@@ -672,11 +696,16 @@ pub fn update_index(
         for audio_item in &mut *audios {
             let old_audio_modified = audio_item["modified"].as_u64().unwrap();
             let audio_path = audio_item["path"].as_str().unwrap();
-            let new_audio_modified = fs::metadata(audio_path)?
-                .modified()?
-                .duration_since(UNIX_EPOCH)
-                .unwrap_or(Duration::ZERO)
-                .as_secs();
+            let new_audio_modified = match fs::metadata(&audio_path) {
+                Ok(value) => match value.modified() {
+                    Ok(value) => value
+                        .duration_since(UNIX_EPOCH)
+                        .unwrap_or(Duration::ZERO)
+                        .as_secs(),
+                    Err(_) => continue,
+                },
+                Err(_) => continue,
+            };
             // 跳过没有被修改的文件
             if new_audio_modified <= old_audio_modified {
                 continue;
@@ -690,19 +719,33 @@ pub fn update_index(
 
         // 添加新增的音乐文件
         let mut new_latest: u64 = latest;
-        let dir = fs::read_dir(folder_path)?;
+        let dir = match fs::read_dir(folder_path) {
+            Ok(value) => value,
+            Err(_) => continue,
+        };
         for entry in dir {
-            let entry = entry?;
-            if entry.file_type()?.is_dir() {
+            let entry = match entry {
+                Ok(value) => value,
+                Err(_) => continue,
+            };
+            let file_type = match entry.file_type() {
+                Ok(value) => value,
+                Err(_) => continue,
+            };
+            if file_type.is_dir() {
                 continue;
             }
 
-            let entry_created = entry
-                .metadata()?
-                .created()?
-                .duration_since(UNIX_EPOCH)
-                .unwrap_or(Duration::ZERO)
-                .as_secs();
+            let entry_created = match entry.metadata() {
+                Ok(value) => match value.created() {
+                    Ok(value) => value
+                        .duration_since(UNIX_EPOCH)
+                        .unwrap_or(Duration::ZERO)
+                        .as_secs(),
+                    Err(_) => continue,
+                },
+                Err(_) => continue,
+            };
             if entry_created > latest {
                 if let Some(new_audio) = Audio::read_from_path(entry.path()) {
                     if entry_created > new_latest {
@@ -717,11 +760,10 @@ pub fn update_index(
         folder_item["latest"] = serde_json::json!(new_latest);
 
         updated += 1;
-        sink.add(IndexActionState {
+        let _ = sink.add(IndexActionState {
             progress: updated as f64 / total as f64,
             message: String::new(),
-        })
-        .unwrap();
+        });
     }
 
     fs::File::create(index_path)?.write_all(index.to_string().as_bytes())?;

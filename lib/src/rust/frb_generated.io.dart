@@ -53,10 +53,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       dynamic raw);
 
   @protected
-  RustStreamSink<SystemTheme> dco_decode_StreamSink_system_theme_Sse(
-      dynamic raw);
-
-  @protected
   String dco_decode_String(dynamic raw);
 
   @protected
@@ -140,10 +136,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   RustStreamSink<SMTCControlEvent> sse_decode_StreamSink_smtc_control_event_Sse(
-      SseDeserializer deserializer);
-
-  @protected
-  RustStreamSink<SystemTheme> sse_decode_StreamSink_system_theme_Sse(
       SseDeserializer deserializer);
 
   @protected
@@ -235,10 +227,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_StreamSink_smtc_control_event_Sse(
       RustStreamSink<SMTCControlEvent> self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_StreamSink_system_theme_Sse(
-      RustStreamSink<SystemTheme> self, SseSerializer serializer);
 
   @protected
   void sse_encode_String(String self, SseSerializer serializer);
