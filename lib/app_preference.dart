@@ -139,37 +139,44 @@ class AppPreference {
   }
 
   static Future<void> read() async {
-    final supportPath = (await getAppDataDir()).path;
-    final appPreferencePath = "$supportPath\\app_preference.json";
+    try {
+      final supportPath = (await getAppDataDir()).path;
+      final appPreferencePath = "$supportPath\\app_preference.json";
 
-    final prefJson = await File(appPreferencePath).readAsString();
-    final Map prefMap = json.decode(prefJson);
+      final prefJson = await File(appPreferencePath).readAsString();
+      final Map prefMap = json.decode(prefJson);
 
-    instance.audiosPagePref = PagePreference.fromMap(prefMap["audiosPagePref"]);
-    instance.artistsPagePref =
-        PagePreference.fromMap(prefMap["artistsPagePref"]);
-    instance.artistDetailPagePref = PagePreference.fromMap(
-      prefMap["artistDetailPagePref"],
-    );
-    instance.albumsPagePref = PagePreference.fromMap(prefMap["albumsPagePref"]);
-    instance.albumDetailPagePref = PagePreference.fromMap(
-      prefMap["albumDetailPagePref"],
-    );
-    instance.foldersPagePref =
-        PagePreference.fromMap(prefMap["foldersPagePref"]);
-    instance.folderDetailPagePref = PagePreference.fromMap(
-      prefMap["folderDetailPagePref"],
-    );
-    instance.playlistsPagePref = PagePreference.fromMap(
-      prefMap["playlistsPagePref"],
-    );
-    instance.playlistDetailPagePref = PagePreference.fromMap(
-      prefMap["playlistDetailPagePref"],
-    );
-    instance.startPage = prefMap["startPage"];
-    instance.playbackPref = PlaybackPreference.fromMap(prefMap["playbackPref"]);
-    instance.nowPlayingPagePref =
-        NowPlayingPagePreference.fromMap(prefMap["nowPlayingPagePref"]);
+      instance.audiosPagePref =
+          PagePreference.fromMap(prefMap["audiosPagePref"]);
+      instance.artistsPagePref =
+          PagePreference.fromMap(prefMap["artistsPagePref"]);
+      instance.artistDetailPagePref = PagePreference.fromMap(
+        prefMap["artistDetailPagePref"],
+      );
+      instance.albumsPagePref =
+          PagePreference.fromMap(prefMap["albumsPagePref"]);
+      instance.albumDetailPagePref = PagePreference.fromMap(
+        prefMap["albumDetailPagePref"],
+      );
+      instance.foldersPagePref =
+          PagePreference.fromMap(prefMap["foldersPagePref"]);
+      instance.folderDetailPagePref = PagePreference.fromMap(
+        prefMap["folderDetailPagePref"],
+      );
+      instance.playlistsPagePref = PagePreference.fromMap(
+        prefMap["playlistsPagePref"],
+      );
+      instance.playlistDetailPagePref = PagePreference.fromMap(
+        prefMap["playlistDetailPagePref"],
+      );
+      instance.startPage = prefMap["startPage"];
+      instance.playbackPref =
+          PlaybackPreference.fromMap(prefMap["playbackPref"]);
+      instance.nowPlayingPagePref =
+          NowPlayingPagePreference.fromMap(prefMap["nowPlayingPagePref"]);
+    } catch (err, trace) {
+      LOGGER.e(err, stackTrace: trace);
+    }
   }
 
   static final AppPreference instance = AppPreference();

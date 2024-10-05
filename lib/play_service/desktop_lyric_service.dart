@@ -87,7 +87,7 @@ class DesktopLyricService extends ChangeNotifier {
             }
           }
         } catch (err) {
-          LOGGER.e(err);
+          LOGGER.e("[desktop lyric] $err");
         }
       },
     );

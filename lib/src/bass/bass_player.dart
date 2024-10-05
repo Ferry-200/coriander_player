@@ -252,7 +252,7 @@ class BassPlayer {
       }
       return true;
     } catch (err) {
-      LOGGER.e(err);
+      LOGGER.e("[use exclusive mode] $err");
       showTextOnSnackBar(err.toString());
     }
     wasapiExclusive = prevState;
