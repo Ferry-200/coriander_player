@@ -377,16 +377,19 @@ impl AudioFolder {
             }
 
             if !audios.is_empty() {
-                result.push(AudioFolder {
-                    path: folder.to_string_lossy().to_string(),
-                    modified: fs::metadata(folder)?
-                        .modified()?
-                        .duration_since(UNIX_EPOCH)
-                        .unwrap_or(Duration::ZERO)
-                        .as_secs(),
-                    latest,
-                    audios,
-                });
+                if let Ok(metadata) = fs::metadata(folder) {
+                    if let Ok(modified) = metadata.modified() {
+                        result.push(AudioFolder {
+                            path: folder.to_string_lossy().to_string(),
+                            modified: modified
+                                .duration_since(UNIX_EPOCH)
+                                .unwrap_or(Duration::ZERO)
+                                .as_secs(),
+                            latest,
+                            audios,
+                        });
+                    }
+                }
             }
 
             *scaned_count += 1;
