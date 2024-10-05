@@ -18,6 +18,7 @@ import 'package:coriander_player/page/updating_page.dart';
 import 'package:coriander_player/page/welcoming_page.dart';
 import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/theme_provider.dart';
+import 'package:coriander_player/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -98,6 +99,7 @@ class Entry extends StatelessWidget {
       builder: (context, _) {
         final theme = Provider.of<ThemeProvider>(context);
         return MaterialApp.router(
+          scaffoldMessengerKey: SCAFFOLD_MESSAGER,
           debugShowCheckedModeBanner: false,
           theme: fromSchemeAndFontFamily(
             fontFamily: theme.fontFamily,

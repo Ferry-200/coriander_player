@@ -1,7 +1,8 @@
 // ignore_for_file: unnecessary_this
 
-import 'dart:ui';
-
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:pinyin/pinyin.dart';
 
 extension StringHMMSS on Duration {
@@ -86,3 +87,18 @@ extension PinyinCompare on String {
     return thisCmpStr.compareTo(otherCmpStr);
   }
 }
+
+final SCAFFOLD_MESSAGER = GlobalKey<ScaffoldMessengerState>();
+void showTextOnSnackBar(String text) {
+  SCAFFOLD_MESSAGER.currentState?.showSnackBar(SnackBar(content: Text(text)));
+}
+
+final LOGGER_MEMORY = MemoryOutput(
+  secondOutput: kDebugMode ? ConsoleOutput() : null,
+);
+final LOGGER = Logger(
+  filter: ProductionFilter(),
+  printer: SimplePrinter(colors: false),
+  output: LOGGER_MEMORY,
+  level: Level.all,
+);

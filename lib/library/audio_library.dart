@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:ui';
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/src/rust/api/tag_reader.dart';
+import 'package:coriander_player/utils.dart';
 import 'package:flutter/painting.dart';
 
 /// from index.json
@@ -43,28 +44,32 @@ class AudioLibrary {
   /// }
   /// ```
   static Future<void> initFromIndex() async {
-    final supportPath = (await getAppDataDir()).path;
-    final indexPath = "$supportPath\\index.json";
+    try {
+      final supportPath = (await getAppDataDir()).path;
+      final indexPath = "$supportPath\\index.json";
 
-    final indexStr = File(indexPath).readAsStringSync();
-    final Map indexJson = json.decode(indexStr);
-    final List foldersJson = indexJson["folders"];
-    final List<AudioFolder> folders = [];
+      final indexStr = File(indexPath).readAsStringSync();
+      final Map indexJson = json.decode(indexStr);
+      final List foldersJson = indexJson["folders"];
+      final List<AudioFolder> folders = [];
 
-    for (Map folderMap in foldersJson) {
-      final List audiosJson = folderMap["audios"];
-      final List<Audio> audios = [];
-      for (Map audioMap in audiosJson) {
-        audios.add(Audio.fromMap(audioMap));
+      for (Map folderMap in foldersJson) {
+        final List audiosJson = folderMap["audios"];
+        final List<Audio> audios = [];
+        for (Map audioMap in audiosJson) {
+          audios.add(Audio.fromMap(audioMap));
+        }
+        folders.add(AudioFolder.fromMap(folderMap, audios));
       }
-      folders.add(AudioFolder.fromMap(folderMap, audios));
+
+      _instance = AudioLibrary._(folders);
+
+      instance.artistCollection.clear();
+      instance.albumCollection.clear();
+      instance._buildCollections();
+    } catch (err, trace) {
+      LOGGER.e(err, stackTrace: trace);
     }
-
-    _instance = AudioLibrary._(folders);
-
-    instance.artistCollection.clear();
-    instance.albumCollection.clear();
-    instance._buildCollections();
   }
 
   void _buildCollections() {

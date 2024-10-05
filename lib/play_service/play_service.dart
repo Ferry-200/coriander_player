@@ -17,5 +17,6 @@ class PlayService {
 
   void close() {
     desktopLyricService.killDesktopLyric();
+    playbackService.close();
   }
 }

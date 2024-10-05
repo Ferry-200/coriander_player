@@ -36,6 +36,7 @@ dependencies:
       ref: c6f3e0abd9c6295b3678ce10d30bc09debda9abe
   pinyin: ^3.3.0
   hotkey_manager: ^0.2.3
+  logger: ^2.4.0
 
 dev_dependencies:
   flutter_test:

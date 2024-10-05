@@ -2,11 +2,15 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:coriander_player/src/rust/api/tag_reader.dart';
+import 'package:coriander_player/utils.dart';
 import 'package:flutter/material.dart';
 
 class BuildIndexStateView extends StatefulWidget {
   const BuildIndexStateView(
-      {super.key, required this.indexPath, required this.folders, required this.whenIndexBuilt});
+      {super.key,
+      required this.indexPath,
+      required this.folders,
+      required this.whenIndexBuilt});
 
   final Directory indexPath;
   final List<String> folders;
@@ -17,7 +21,7 @@ class BuildIndexStateView extends StatefulWidget {
 }
 
 class _BuildIndexStateViewState extends State<BuildIndexStateView> {
-  late final Stream buildIndexStream;
+  late final Stream<IndexActionState> buildIndexStream;
   StreamSubscription? _subscription;
 
   @override
@@ -28,10 +32,15 @@ class _BuildIndexStateViewState extends State<BuildIndexStateView> {
       indexPath: widget.indexPath.path,
     ).asBroadcastStream();
 
-    _subscription = buildIndexStream.listen(null, onDone: (){
-      widget.whenIndexBuilt();
-      _subscription?.cancel();
-    });
+    _subscription = buildIndexStream.listen(
+      (action) {
+        LOGGER.i("[build index] ${action.progress}: ${action.message}");
+      },
+      onDone: () {
+        widget.whenIndexBuilt();
+        _subscription?.cancel();
+      },
+    );
   }
 
   @override

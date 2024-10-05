@@ -6,6 +6,7 @@ import 'package:coriander_player/lyric/krc.dart';
 import 'package:coriander_player/lyric/lrc.dart';
 import 'package:coriander_player/lyric/lyric.dart';
 import 'package:coriander_player/lyric/qrc.dart';
+import 'package:coriander_player/utils.dart';
 import 'package:music_api/music_api.dart';
 
 enum ResultSource { qq, kugou, netease }
@@ -123,41 +124,46 @@ class SongSearchResult {
 }
 
 Future<List<SongSearchResult>> uniSearch(Audio audio) async {
-  final query = audio.title;
-  List<SongSearchResult> result = [];
+  try {
+    final query = audio.title;
+    List<SongSearchResult> result = [];
 
-  final Map kugouAnswer = (await KuGou.searchSong(keyword: query)).data;
-  final List kugouResultList = kugouAnswer["data"]["info"];
-  for (int j = 0; j < kugouResultList.length; j++) {
-    if (j >= 5) break;
-    result.add(SongSearchResult.fromKugouSearchResult(
-      kugouResultList[j],
-      audio,
-    ));
+    final Map kugouAnswer = (await KuGou.searchSong(keyword: query)).data;
+    final List kugouResultList = kugouAnswer["data"]["info"];
+    for (int j = 0; j < kugouResultList.length; j++) {
+      if (j >= 5) break;
+      result.add(SongSearchResult.fromKugouSearchResult(
+        kugouResultList[j],
+        audio,
+      ));
+    }
+
+    final Map neteaseAnswer = (await Netease.search(keyWord: query)).data;
+    final List neteaseResultList = neteaseAnswer["result"]["songs"];
+    for (int k = 0; k < neteaseResultList.length; k++) {
+      if (k >= 5) break;
+      result.add(SongSearchResult.fromNeteaseSearchResult(
+        neteaseResultList[k],
+        audio,
+      ));
+    }
+
+    final Map qqAnswer = (await QQ.search(keyWord: query)).data;
+    final List qqResultList = qqAnswer["req"]["data"]["body"]["item_song"];
+    for (int i = 0; i < qqResultList.length; i++) {
+      if (i >= 5) break;
+      result.add(SongSearchResult.fromQQSearchResult(
+        qqResultList[i],
+        audio,
+      ));
+    }
+
+    result.sort((a, b) => b.score.compareTo(a.score));
+    return result;
+  } catch (err, trace) {
+    LOGGER.e(err, stackTrace: trace);
   }
-
-  final Map neteaseAnswer = (await Netease.search(keyWord: query)).data;
-  final List neteaseResultList = neteaseAnswer["result"]["songs"];
-  for (int k = 0; k < neteaseResultList.length; k++) {
-    if (k >= 5) break;
-    result.add(SongSearchResult.fromNeteaseSearchResult(
-      neteaseResultList[k],
-      audio,
-    ));
-  }
-
-  final Map qqAnswer = (await QQ.search(keyWord: query)).data;
-  final List qqResultList = qqAnswer["req"]["data"]["body"]["item_song"];
-  for (int i = 0; i < qqResultList.length; i++) {
-    if (i >= 5) break;
-    result.add(SongSearchResult.fromQQSearchResult(
-      qqResultList[i],
-      audio,
-    ));
-  }
-
-  result.sort((a, b) => b.score.compareTo(a.score));
-  return result;
+  return Future.value([]);
 }
 
 Future<Lrc?> _getNeteaseUnsyncLyric(String neteaseSongId) async {
@@ -172,8 +178,8 @@ Future<Lrc?> _getNeteaseUnsyncLyric(String neteaseSongId) async {
         separator: "┃",
       );
     }
-  } catch (err) {
-    // print(err);
+  } catch (err, trace) {
+    LOGGER.e(err, stackTrace: trace);
   }
 
   return null;
@@ -190,8 +196,8 @@ Future<Qrc?> _getQQSyncLyric(int qqSongId) async {
       }
       return Qrc.fromQrcText(qrcText);
     }
-  } catch (err) {
-    // print(err);
+  } catch (err, trace) {
+    LOGGER.e(err, stackTrace: trace);
   }
 
   return null;
@@ -204,8 +210,8 @@ Future<Krc?> _getKugouSyncLyric(String kugouSongHash) async {
     if (krcText is String) {
       return Krc.fromKrcText(krcText);
     }
-  } catch (err) {
-    // print(err);
+  } catch (err, trace) {
+    LOGGER.e(err, stackTrace: trace);
   }
 
   return null;
@@ -231,20 +237,13 @@ Future<Lyric?> getMostMatchedLyric(Audio audio) async {
   final unisearchResult = await uniSearch(audio);
   if (unisearchResult.isEmpty) return null;
 
-  Lyric? lyric;
-
   final mostMatch = unisearchResult.first;
-  switch (mostMatch.source) {
-    case ResultSource.qq:
-      lyric = await getOnlineLyric(qqSongId: mostMatch.qqSongId);
-      break;
-    case ResultSource.kugou:
-      lyric = await getOnlineLyric(kugouSongHash: mostMatch.kugouSongHash);
-      break;
-    case ResultSource.netease:
-      lyric = await getOnlineLyric(neteaseSongId: mostMatch.neteaseSongId);
-      break;
-  }
 
-  return lyric;
+  return switch (mostMatch.source) {
+    ResultSource.qq => getOnlineLyric(qqSongId: mostMatch.qqSongId),
+    ResultSource.kugou =>
+      getOnlineLyric(kugouSongHash: mostMatch.kugouSongHash),
+    ResultSource.netease =>
+      getOnlineLyric(neteaseSongId: mostMatch.neteaseSongId),
+  };
 }

@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/src/bass/bass_wasapi.dart' as BASS;
+import 'package:coriander_player/utils.dart';
 import 'package:ffi/ffi.dart' as ffi;
 import 'package:path/path.dart' as path;
 import 'package:coriander_player/src/bass/bass.dart' as BASS;
@@ -122,8 +123,7 @@ class BassPlayer {
     return Timer.periodic(
       const Duration(milliseconds: 33),
       (timer) {
-        final p = position;
-        _positionStreamController.add(p);
+        _positionStreamController.add(position);
 
         /// check if the channel has completed
         if (playerState == PlayerState.stopped) {
@@ -159,7 +159,8 @@ class BassPlayer {
         case BASS.BASS_ERROR_MEM:
           throw const FormatException("There is insufficient memory.");
         case BASS.BASS_ERROR_UNKNOWN:
-          throw const FormatException("Some other mystery problem!");
+          throw const FormatException(
+              "Some other mystery problem! Maybe Something else has exclusive use of the device.");
       }
     }
   }
@@ -168,8 +169,9 @@ class BassPlayer {
     if (_bass.BASS_Start() == BASS.FALSE) {
       switch (_bass.BASS_ErrorGetCode()) {
         case BASS.BASS_ERROR_INIT:
-          throw const FormatException(
-              "BASS_Init has not been successfully called.");
+          _bassInit();
+          _startDevice();
+          break;
         case BASS.BASS_ERROR_BUSY:
           throw const FormatException(
               "The app's audio has been interrupted and cannot be resumed yet. (iOS only)");
@@ -177,7 +179,8 @@ class BassPlayer {
           throw const FormatException(
               "The device is currently being reinitialized or needs to be.");
         case BASS.BASS_ERROR_UNKNOWN:
-          throw const FormatException("Some other mystery problem!");
+          throw const FormatException(
+              "Some other mystery problem! Maybe Something else has exclusive use of the device.");
       }
     }
   }
@@ -202,8 +205,6 @@ class BassPlayer {
     _bassWasapiLib = ffi.DynamicLibrary.open(bassWasapiLibPath);
     _bassWasapi = BASS.BassWasapi(_bassWasapiLib);
 
-    _bassInit();
-
     // load add-ons to avoid using os codec or support more format
     for (final plugin in BASS_PLUGINS) {
       final pluginPathP = plugin.toNativeUtf16() as ffi.Pointer<ffi.Char>;
@@ -225,21 +226,37 @@ class BassPlayer {
         }
       }
     }
+
+    try {
+      _bassInit();
+    } catch (err) {
+      LOGGER.e("[bass init] $err");
+    }
   }
 
-  void useExclusiveMode(bool exclusive) {
-    final lastPos = position;
-    if (wasapiExclusive) {
-      _bassWasapi.BASS_WASAPI_Free();
-      _bassInit();
+  /// true: 操作成功；false: 操作失败
+  bool useExclusiveMode(bool exclusive) {
+    final prevState = wasapiExclusive;
+    try {
+      final lastPos = position;
+      if (prevState) {
+        _bassWasapi.BASS_WASAPI_Free();
+        _bassInit();
+      }
+      wasapiExclusive = exclusive;
+      if (_fstream != null && _fPath != null) {
+        setSource(_fPath!);
+        setVolumeDsp(AppPreference.instance.playbackPref.volumeDsp);
+        seek(lastPos);
+        start();
+      }
+      return true;
+    } catch (err) {
+      LOGGER.e(err);
+      showTextOnSnackBar(err.toString());
     }
-    wasapiExclusive = exclusive;
-    if (_fstream != null && _fPath != null) {
-      setSource(_fPath!);
-      setVolumeDsp(AppPreference.instance.playbackPref.volumeDsp);
-      seek(lastPos);
-      start();
-    }
+    wasapiExclusive = prevState;
+    return false;
   }
 
   /// if setSource has been called once,
@@ -252,24 +269,28 @@ class BassPlayer {
     final pathPointer = path.toNativeUtf16() as ffi.Pointer<ffi.Void>;
 
     /// 设置 flags 为 BASS_UNICODE 才可以找到文件。
+    const flags =
+        BASS.BASS_UNICODE | BASS.BASS_SAMPLE_FLOAT | BASS.BASS_ASYNCFILE;
+    const exclusiveFlags = flags | BASS.BASS_STREAM_DECODE;
     final handle = _bass.BASS_StreamCreateFile(
       BASS.FALSE,
       pathPointer,
       0,
       0,
-      wasapiExclusive
-          ? BASS.BASS_UNICODE |
-              BASS.BASS_SAMPLE_FLOAT |
-              BASS.BASS_ASYNCFILE |
-              BASS.BASS_STREAM_DECODE
-          : BASS.BASS_UNICODE | BASS.BASS_SAMPLE_FLOAT | BASS.BASS_ASYNCFILE,
+      wasapiExclusive ? exclusiveFlags : flags,
     );
 
-    if (_fstream == 0) {
+    if (handle != 0) {
+      _fstream = handle;
+      _fPath = path;
+    } else {
+      _fstream = null;
+      _fPath = null;
       switch (_bass.BASS_ErrorGetCode()) {
         case BASS.BASS_ERROR_INIT:
-          throw const FormatException(
-              "BASS_Init has not been successfully called.");
+          _bassInit();
+          setSource(path);
+          break;
         case BASS.BASS_ERROR_NOTAVAIL:
           throw const FormatException(
               "The BASS_STREAM_AUTOFREE flag cannot be combined with the BASS_STREAM_DECODE flag.");
@@ -300,9 +321,6 @@ class BassPlayer {
           throw const FormatException("Some other mystery problem!");
       }
     }
-
-    _fstream = handle;
-    _fPath = path;
   }
 
   /// [BASS_ATTRIB_VOLDSP] attribute does have direct effect on decoding/recording channels.
@@ -326,8 +344,7 @@ class BassPlayer {
     }
   }
 
-  void _start_wasapiExclusive() {
-    _bassWasapi.BASS_WASAPI_Free();
+  void _bassWasapiInit() {
     if (_bassWasapi.BASS_WASAPI_Init(
           -1,
           0,
@@ -345,8 +362,9 @@ class BassPlayer {
         case BASS.BASS_ERROR_DEVICE:
           throw const FormatException("device is invalid.");
         case BASS.BASS_ERROR_ALREADY:
-          throw const FormatException(
-              "The device has already been initialized. BASS_WASAPI_Free must be called before it can be initialized again.");
+          _bassWasapi.BASS_WASAPI_Free();
+          _bassWasapiInit();
+          break;
         case BASS.BASS_ERROR_NOTAVAIL:
           throw const FormatException(
               "Exclusive mode and/or event-driven buffering is unavailable on the device, or WASAPIPROC_PUSH is unavailable on input devices and when using event-driven buffering.");
@@ -362,7 +380,9 @@ class BassPlayer {
           throw const FormatException(
               "The device is already in use, eg. another process may have initialized it in exclusive mode.");
         case BASS.BASS_ERROR_INIT:
-          throw const FormatException("BASS has not been initialized.");
+          _bassInit();
+          _bassWasapiInit();
+          break;
         case BASS.BASS_ERROR_WASAPI_BUFFER:
           throw const FormatException(
               "buffer is too large or small (exclusive mode only).");
@@ -376,12 +396,17 @@ class BassPlayer {
           throw const FormatException("Some other mystery problem!");
       }
     }
+  }
+
+  void _start_wasapiExclusive() {
+    _bassWasapiInit();
 
     if (_bassWasapi.BASS_WASAPI_Start() == BASS.FALSE) {
       switch (_bass.BASS_ErrorGetCode()) {
         case BASS.BASS_ERROR_INIT:
-          throw const FormatException(
-              "BASS_WASAPI_Init has not been successfully called.");
+          _bassWasapiInit();
+          _start_wasapiExclusive();
+          break;
         case BASS.BASS_ERROR_UNKNOWN:
           throw const FormatException("Some other mystery problem!");
       }
@@ -408,6 +433,7 @@ class BassPlayer {
               "handle is a decoding channel, so cannot be played.");
         case BASS.BASS_ERROR_START:
           _startDevice();
+          start();
           break;
       }
     }
@@ -489,7 +515,8 @@ class BassPlayer {
     if (_bass.BASS_StreamFree(_fstream!) == 0) {
       switch (_bass.BASS_ErrorGetCode()) {
         case BASS.BASS_ERROR_HANDLE:
-          throw const FormatException("handle is not valid.");
+          LOGGER.w("StreamFree is called on a invalid handle.");
+          break;
         case BASS.BASS_ERROR_NOTAVAIL:
           throw const FormatException(
               "Device streams (STREAMPROC_DEVICE) cannot be freed.");
@@ -508,8 +535,8 @@ class BassPlayer {
     if (_bass.BASS_Free() == 0) {
       switch (_bass.BASS_ErrorGetCode()) {
         case BASS.BASS_ERROR_INIT:
-          throw const FormatException(
-              "BASS_Init has not been successfully called.");
+          LOGGER.w("BASS_Free is called before BASS_Init complete normally.");
+          break;
         case BASS.BASS_ERROR_BUSY:
           throw const FormatException(
               "The device is currently being reinitialized.");

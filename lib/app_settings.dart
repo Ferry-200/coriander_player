@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:coriander_player/src/rust/api/system_theme.dart';
+import 'package:coriander_player/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:github/github.dart';
 import 'package:path/path.dart' as path;
@@ -190,26 +191,30 @@ class AppSettings {
   }
 
   Future<void> saveSettings() async {
-    final currSize = await windowManager.getSize();
-    final settingsMap = {
-      "Version": version,
-      "ThemeMode": themeMode == ThemeMode.dark,
-      "DynamicTheme": dynamicTheme,
-      "UseSystemTheme": useSystemTheme,
-      "UseSystemThemeMode": useSystemThemeMode,
-      "DefaultTheme": defaultTheme,
-      "ArtistSeparator": artistSeparator,
-      "LocalLyricFirst": localLyricFirst,
-      "WindowSize":
-          "${currSize.width.toStringAsFixed(1)},${currSize.height.toStringAsFixed(1)}",
-      "FontFamily": fontFamily,
-      "FontPath": fontPath,
-    };
+    try {
+      final currSize = await windowManager.getSize();
+      final settingsMap = {
+        "Version": version,
+        "ThemeMode": themeMode == ThemeMode.dark,
+        "DynamicTheme": dynamicTheme,
+        "UseSystemTheme": useSystemTheme,
+        "UseSystemThemeMode": useSystemThemeMode,
+        "DefaultTheme": defaultTheme,
+        "ArtistSeparator": artistSeparator,
+        "LocalLyricFirst": localLyricFirst,
+        "WindowSize":
+            "${currSize.width.toStringAsFixed(1)},${currSize.height.toStringAsFixed(1)}",
+        "FontFamily": fontFamily,
+        "FontPath": fontPath,
+      };
 
-    final settingsStr = json.encode(settingsMap);
-    final supportPath = (await getAppDataDir()).path;
-    final settingsPath = "$supportPath\\settings.json";
-    (await File(settingsPath).create(recursive: true))
-        .writeAsStringSync(settingsStr);
+      final settingsStr = json.encode(settingsMap);
+      final supportPath = (await getAppDataDir()).path;
+      final settingsPath = "$supportPath\\settings.json";
+      final output = await File(settingsPath).create(recursive: true);
+      output.writeAsStringSync(settingsStr);
+    } catch (err, trace) {
+      LOGGER.e(err, stackTrace: trace);
+    }
   }
 }
