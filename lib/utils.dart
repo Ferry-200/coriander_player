@@ -88,6 +88,8 @@ extension PinyinCompare on String {
   }
 }
 
+final GlobalKey<NavigatorState> ROUTER_KEY = GlobalKey();
+
 final SCAFFOLD_MESSAGER = GlobalKey<ScaffoldMessengerState>();
 void showTextOnSnackBar(String text) {
   SCAFFOLD_MESSAGER.currentState?.showSnackBar(SnackBar(content: Text(text)));

@@ -76,7 +76,11 @@ class _FolderSelectorViewState extends State<FolderSelectorView> {
             : FutureBuilder(
                 future: applicationSupportDirectory,
                 builder: (context, snapshot) {
-                  if (snapshot.data == null) return const SizedBox.shrink();
+                  if (snapshot.data == null) {
+                    return const Center(
+                      child: Text("Fail to get app data dir."),
+                    );
+                  }
 
                   return BuildIndexStateView(
                     indexPath: snapshot.data!,

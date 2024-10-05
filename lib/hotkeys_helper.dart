@@ -1,6 +1,6 @@
-import 'package:coriander_player/entry.dart';
 import 'package:coriander_player/play_service/play_service.dart';
 import 'package:coriander_player/src/bass/bass_player.dart';
+import 'package:coriander_player/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';

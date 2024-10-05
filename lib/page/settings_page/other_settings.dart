@@ -143,7 +143,9 @@ class _AudioLibraryEditorDialogState extends State<AudioLibraryEditorDialog> {
                           future: applicationSupportDirectory,
                           builder: (context, snapshot) {
                             if (snapshot.data == null) {
-                              return const SizedBox.shrink();
+                              return const Center(
+                                child: Text("Fail to get app data dir."),
+                              );
                             }
 
                             return Center(

@@ -54,7 +54,8 @@ class _CheckForUpdateState extends State<CheckForUpdate> {
                       showTextOnSnackBar("无新版本");
                     }
                   }
-                } catch (err) {
+                } catch (err, trace) {
+                  LOGGER.e(err, stackTrace: trace);
                   if (context.mounted) {
                     showTextOnSnackBar("网络异常");
                   }

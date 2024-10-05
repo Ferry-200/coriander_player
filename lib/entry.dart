@@ -58,8 +58,6 @@ class SlideTransitionPage<T> extends CustomTransitionPage<T> {
   }
 }
 
-final GlobalKey<NavigatorState> ROUTER_KEY = GlobalKey();
-
 class Entry extends StatelessWidget {
   Entry({super.key, required this.welcome});
   final bool welcome;
