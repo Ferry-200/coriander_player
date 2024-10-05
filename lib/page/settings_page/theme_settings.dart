@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:coriander_player/src/rust/api/installed_font.dart';
+import 'package:coriander_player/utils.dart';
 import 'package:flutter/services.dart';
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/component/settings_tile.dart';
@@ -198,9 +199,7 @@ class SelectFontCombobox extends StatelessWidget {
                         } catch (err) {
                           ThemeProvider.instance.changeFontFamily(null);
                           if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(err.toString())),
-                            );
+                            showTextOnSnackBar(err.toString());
                           }
                         }
                       },

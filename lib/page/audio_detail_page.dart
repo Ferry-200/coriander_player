@@ -124,9 +124,7 @@ class AudioDetailPage extends StatelessWidget {
                     final result = await showInExplorer(path: audio.path);
 
                     if (!result && context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("打开失败")),
-                      );
+                      showTextOnSnackBar("打开失败");
                     }
                   },
                   child: const Text("在文件资源管理器中显示"),

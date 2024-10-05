@@ -2,6 +2,7 @@ import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/page/uni_page.dart';
 import 'package:coriander_player/play_service/play_service.dart';
+import 'package:coriander_player/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -173,11 +174,9 @@ class AddAllToPlaylist extends StatelessWidget {
                 PLAYLISTS[i].audios[item.path] = item;
               }
             }
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(
-                "成功将${multiSelectController.selected.length}首添加到歌单“${PLAYLISTS[i].name}”",
-              ),
-            ));
+            showTextOnSnackBar(
+              "成功将${multiSelectController.selected.length}首添加到歌单“${PLAYLISTS[i].name}”",
+            );
           },
           child: Text(PLAYLISTS[i].name),
         ),
