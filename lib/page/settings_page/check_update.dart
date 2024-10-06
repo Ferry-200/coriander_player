@@ -1,5 +1,6 @@
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/src/rust/api/utils.dart';
+import 'package:coriander_player/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:github/github.dart';
@@ -50,16 +51,13 @@ class _CheckForUpdateState extends State<CheckForUpdate> {
                     }
                   } else {
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text("无新版本"),
-                      ));
+                      showTextOnSnackBar("无新版本");
                     }
                   }
-                } catch (err) {
+                } catch (err, trace) {
+                  LOGGER.e(err, stackTrace: trace);
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text("网络异常"),
-                    ));
+                    showTextOnSnackBar("网络异常");
                   }
                   setState(() {
                     isChecking = false;

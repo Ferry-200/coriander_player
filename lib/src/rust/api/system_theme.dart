@@ -23,9 +23,6 @@ class SystemTheme {
   static SystemTheme getSystemTheme() =>
       RustLib.instance.api.crateApiSystemThemeSystemThemeGetSystemTheme();
 
-  static Stream<SystemTheme> onSystemThemeChanged() =>
-      RustLib.instance.api.crateApiSystemThemeSystemThemeOnSystemThemeChanged();
-
   @override
   int get hashCode => fore.hashCode ^ accent.hashCode;
 

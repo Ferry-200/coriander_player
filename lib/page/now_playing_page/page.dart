@@ -4,7 +4,7 @@ import 'dart:ui';
 
 import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/component/title_bar.dart';
-import 'package:coriander_player/extensions.dart';
+import 'package:coriander_player/utils.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/responsive_builder.dart';
 import 'package:coriander_player/page/now_playing_page/component/current_playlist_view.dart';

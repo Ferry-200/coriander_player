@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:coriander_player/app_settings.dart';
+import 'package:coriander_player/utils.dart';
 
 enum LyricSourceType {
   qq("qq"),
@@ -52,28 +53,36 @@ class LyricSource {
 Map<String, LyricSource> LYRIC_SOURCES = {};
 
 Future<void> readLyricSources() async {
-  final supportPath = (await getAppDataDir()).path;
-  final lyricSourcePath = "$supportPath\\lyric_source.json";
+  try {
+    final supportPath = (await getAppDataDir()).path;
+    final lyricSourcePath = "$supportPath\\lyric_source.json";
 
-  final lyricSourceStr = File(lyricSourcePath).readAsStringSync();
-  final Map lyricSourceJson = json.decode(lyricSourceStr);
+    final lyricSourceStr = File(lyricSourcePath).readAsStringSync();
+    final Map lyricSourceJson = json.decode(lyricSourceStr);
 
-  for (final item in lyricSourceJson.entries) {
-    if (File(item.key).existsSync() == false) continue;
-    LYRIC_SOURCES[item.key] = LyricSource.fromMap(item.value);
+    for (final item in lyricSourceJson.entries) {
+      if (File(item.key).existsSync() == false) continue;
+      LYRIC_SOURCES[item.key] = LyricSource.fromMap(item.value);
+    }
+  } catch (err, trace) {
+    LOGGER.e(err, stackTrace: trace);
   }
 }
 
 Future<void> saveLyricSources() async {
-  final supportPath = (await getAppDataDir()).path;
-  final lyricSourcePath = "$supportPath\\lyric_source.json";
+  try {
+    final supportPath = (await getAppDataDir()).path;
+    final lyricSourcePath = "$supportPath\\lyric_source.json";
 
-  Map<String, Map> lyricSourceMaps = {};
-  for (final item in LYRIC_SOURCES.entries) {
-    lyricSourceMaps[item.key] = item.value.toMap();
+    Map<String, Map> lyricSourceMaps = {};
+    for (final item in LYRIC_SOURCES.entries) {
+      lyricSourceMaps[item.key] = item.value.toMap();
+    }
+
+    final lyricSourceJson = json.encode(lyricSourceMaps);
+    final output = await File(lyricSourcePath).create(recursive: true);
+    await output.writeAsString(lyricSourceJson);
+  } catch (err, trace) {
+    LOGGER.e(err, stackTrace: trace);
   }
-
-  final lyricSourceJson = json.encode(lyricSourceMaps);
-  final output = await File(lyricSourcePath).create(recursive: true);
-  await output.writeAsString(lyricSourceJson);
 }

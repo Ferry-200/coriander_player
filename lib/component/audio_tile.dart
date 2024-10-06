@@ -1,5 +1,5 @@
 import 'package:coriander_player/component/scroll_aware_future_builder.dart';
-import 'package:coriander_player/extensions.dart';
+import 'package:coriander_player/utils.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/page/uni_page.dart';
 import 'package:coriander_player/library/playlist.dart';
@@ -97,18 +97,14 @@ class AudioTile extends StatelessWidget {
               onPressed: () {
                 final added = PLAYLISTS[i].audios.containsKey(audio.path);
                 if (added) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text("歌曲“${audio.title}”已存在"),
-                  ));
+                  showTextOnSnackBar("歌曲“${audio.title}”已存在");
                   return;
                 }
 
                 PLAYLISTS[i].audios[audio.path] = audio;
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(
-                    "成功将“${audio.title}”添加到歌单“${PLAYLISTS[i].name}”",
-                  ),
-                ));
+                showTextOnSnackBar(
+                  "成功将“${audio.title}”添加到歌单“${PLAYLISTS[i].name}”",
+                );
               },
               leadingIcon: const Icon(Symbols.queue_music),
               child: Text(PLAYLISTS[i].name),
@@ -155,14 +151,7 @@ class AudioTile extends StatelessWidget {
 
               if (multiSelectController == null ||
                   !multiSelectController!.enableMultiSelectView) {
-                try {
-                  PlayService.instance.playbackService
-                      .play(audioIndex, playlist);
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(e.toString())),
-                  );
-                }
+                PlayService.instance.playbackService.play(audioIndex, playlist);
               } else {
                 if (multiSelectController!.selected.contains(audio)) {
                   multiSelectController!.unselect(audio);
@@ -174,7 +163,8 @@ class AudioTile extends StatelessWidget {
             onSecondaryTapDown: (details) {
               if (multiSelectController?.enableMultiSelectView == true) return;
 
-              controller.open(position: details.localPosition.translate(0, -240));
+              controller.open(
+                  position: details.localPosition.translate(0, -240));
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),

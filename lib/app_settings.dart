@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:coriander_player/src/rust/api/system_theme.dart';
+import 'package:coriander_player/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:github/github.dart';
 import 'package:path/path.dart' as path;
@@ -27,7 +28,9 @@ Future<void> migrateAppData() async {
         oldDataFile.deleteSync();
       }
     }
-  } catch (_) {}
+  } catch (err, trace) {
+    LOGGER.e(err, stackTrace: trace);
+  }
 }
 
 Future<Directory> getAppDataDir() async {
@@ -129,87 +132,95 @@ class AppSettings {
   }
 
   static Future<void> readFromJson() async {
-    final supportPath = (await getAppDataDir()).path;
-    final settingsPath = "$supportPath\\settings.json";
+    try {
+      final supportPath = (await getAppDataDir()).path;
+      final settingsPath = "$supportPath\\settings.json";
 
-    final settingsStr = File(settingsPath).readAsStringSync();
-    Map settingsMap = json.decode(settingsStr);
+      final settingsStr = File(settingsPath).readAsStringSync();
+      Map settingsMap = json.decode(settingsStr);
 
-    if (settingsMap["Version"] == null) {
-      return _readFromJson_old(settingsMap);
-    }
+      if (settingsMap["Version"] == null) {
+        return _readFromJson_old(settingsMap);
+      }
 
-    final ust = settingsMap["UseSystemTheme"];
-    if (ust != null) {
-      _instance.useSystemTheme = ust;
-    }
+      final ust = settingsMap["UseSystemTheme"];
+      if (ust != null) {
+        _instance.useSystemTheme = ust;
+      }
 
-    final ustm = settingsMap["UseSystemThemeMode"];
-    if (ustm != null) {
-      _instance.useSystemThemeMode = ustm;
-    }
+      final ustm = settingsMap["UseSystemThemeMode"];
+      if (ustm != null) {
+        _instance.useSystemThemeMode = ustm;
+      }
 
-    if (!_instance.useSystemTheme) {
-      _instance.defaultTheme = settingsMap["DefaultTheme"];
-    }
-    if (!_instance.useSystemThemeMode) {
-      _instance.themeMode = (settingsMap["ThemeMode"] ?? false)
-          ? ThemeMode.dark
-          : ThemeMode.light;
-    }
+      if (!_instance.useSystemTheme) {
+        _instance.defaultTheme = settingsMap["DefaultTheme"];
+      }
+      if (!_instance.useSystemThemeMode) {
+        _instance.themeMode = (settingsMap["ThemeMode"] ?? false)
+            ? ThemeMode.dark
+            : ThemeMode.light;
+      }
 
-    final dt = settingsMap["DynamicTheme"];
-    if (dt != null) {
-      _instance.dynamicTheme = dt;
-    }
+      final dt = settingsMap["DynamicTheme"];
+      if (dt != null) {
+        _instance.dynamicTheme = dt;
+      }
 
-    final as = settingsMap["ArtistSeparator"];
-    if (as != null) {
-      _instance.artistSeparator = as;
-      _instance.artistSplitPattern = _instance.artistSeparator.join("|");
-    }
+      final as = settingsMap["ArtistSeparator"];
+      if (as != null) {
+        _instance.artistSeparator = as;
+        _instance.artistSplitPattern = _instance.artistSeparator.join("|");
+      }
 
-    final llf = settingsMap["LocalLyricFirst"];
-    if (llf != null) {
-      _instance.localLyricFirst = llf;
-    }
+      final llf = settingsMap["LocalLyricFirst"];
+      if (llf != null) {
+        _instance.localLyricFirst = llf;
+      }
 
-    final sizeStr = settingsMap["WindowSize"];
-    if (sizeStr != null) {
-      final sizeStrs = (sizeStr as String).split(",");
-      _instance.windowSize = Size(double.tryParse(sizeStrs[0]) ?? 1280,
-          double.tryParse(sizeStrs[1]) ?? 756);
-    }
+      final sizeStr = settingsMap["WindowSize"];
+      if (sizeStr != null) {
+        final sizeStrs = (sizeStr as String).split(",");
+        _instance.windowSize = Size(double.tryParse(sizeStrs[0]) ?? 1280,
+            double.tryParse(sizeStrs[1]) ?? 756);
+      }
 
-    final ff = settingsMap["FontFamily"];
-    final fp = settingsMap["FontPath"];
-    if (ff != null) {
-      _instance.fontFamily = ff;
-      _instance.fontPath = fp;
+      final ff = settingsMap["FontFamily"];
+      final fp = settingsMap["FontPath"];
+      if (ff != null) {
+        _instance.fontFamily = ff;
+        _instance.fontPath = fp;
+      }
+    } catch (err, trace) {
+      LOGGER.e(err, stackTrace: trace);
     }
   }
 
   Future<void> saveSettings() async {
-    final currSize = await windowManager.getSize();
-    final settingsMap = {
-      "Version": version,
-      "ThemeMode": themeMode == ThemeMode.dark,
-      "DynamicTheme": dynamicTheme,
-      "UseSystemTheme": useSystemTheme,
-      "UseSystemThemeMode": useSystemThemeMode,
-      "DefaultTheme": defaultTheme,
-      "ArtistSeparator": artistSeparator,
-      "LocalLyricFirst": localLyricFirst,
-      "WindowSize":
-          "${currSize.width.toStringAsFixed(1)},${currSize.height.toStringAsFixed(1)}",
-      "FontFamily": fontFamily,
-      "FontPath": fontPath,
-    };
+    try {
+      final currSize = await windowManager.getSize();
+      final settingsMap = {
+        "Version": version,
+        "ThemeMode": themeMode == ThemeMode.dark,
+        "DynamicTheme": dynamicTheme,
+        "UseSystemTheme": useSystemTheme,
+        "UseSystemThemeMode": useSystemThemeMode,
+        "DefaultTheme": defaultTheme,
+        "ArtistSeparator": artistSeparator,
+        "LocalLyricFirst": localLyricFirst,
+        "WindowSize":
+            "${currSize.width.toStringAsFixed(1)},${currSize.height.toStringAsFixed(1)}",
+        "FontFamily": fontFamily,
+        "FontPath": fontPath,
+      };
 
-    final settingsStr = json.encode(settingsMap);
-    final supportPath = (await getAppDataDir()).path;
-    final settingsPath = "$supportPath\\settings.json";
-    (await File(settingsPath).create(recursive: true))
-        .writeAsStringSync(settingsStr);
+      final settingsStr = json.encode(settingsMap);
+      final supportPath = (await getAppDataDir()).path;
+      final settingsPath = "$supportPath\\settings.json";
+      final output = await File(settingsPath).create(recursive: true);
+      output.writeAsStringSync(settingsStr);
+    } catch (err, trace) {
+      LOGGER.e(err, stackTrace: trace);
+    }
   }
 }

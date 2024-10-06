@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:coriander_player/src/rust/api/installed_font.dart';
+import 'package:coriander_player/utils.dart';
 import 'package:flutter/services.dart';
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/component/settings_tile.dart';
@@ -165,55 +166,46 @@ class SelectFontCombobox extends StatelessWidget {
   Widget build(BuildContext context) {
     return SettingsTile(
       description: "自定义字体",
-      action: FutureBuilder(
-        future: getInstalledFonts(),
-        builder: (context, snapshot) {
-          return switch (snapshot.connectionState) {
-            ConnectionState.done => FilledButton.icon(
-                onPressed: snapshot.data == null
-                    ? null
-                    : () async {
-                        final selectedFont = await showDialog<InstalledFont>(
-                          context: context,
-                          builder: (context) =>
-                              _FontSelector(installedFont: snapshot.data!),
-                        );
-                        if (selectedFont == null) return;
+      action: FilledButton.icon(
+        onPressed: () async {
+          final installedFont = await getInstalledFonts();
+          if (installedFont == null || installedFont.isEmpty) {
+            showTextOnSnackBar("无法获取字体");
+            return;
+          }
 
-                        try {
-                          final fontLoader = FontLoader(selectedFont.fullName);
-                          fontLoader.addFont(
-                            File(selectedFont.path).readAsBytes().then((value) {
-                              return ByteData.sublistView(value);
-                            }),
-                          );
-                          await fontLoader.load();
-                          ThemeProvider.instance
-                              .changeFontFamily(selectedFont.fullName);
+          if (context.mounted) {
+            final selectedFont = await showDialog<InstalledFont>(
+              context: context,
+              builder: (context) => _FontSelector(installedFont: installedFont),
+            );
+            if (selectedFont == null) return;
 
-                          final settings = AppSettings.instance;
-                          settings.fontFamily = selectedFont.fullName;
-                          settings.fontPath = selectedFont.path;
-                          await settings.saveSettings();
-                        } catch (err) {
-                          ThemeProvider.instance.changeFontFamily(null);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(err.toString())),
-                            );
-                          }
-                        }
-                      },
-                label: const Text("选择字体"),
-                icon: const Icon(Symbols.text_fields),
-              ),
-            _ => const SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(),
-              ),
-          };
+            try {
+              final fontLoader = FontLoader(selectedFont.fullName);
+              fontLoader.addFont(
+                File(selectedFont.path).readAsBytes().then((value) {
+                  return ByteData.sublistView(value);
+                }),
+              );
+              await fontLoader.load();
+              ThemeProvider.instance.changeFontFamily(selectedFont.fullName);
+
+              final settings = AppSettings.instance;
+              settings.fontFamily = selectedFont.fullName;
+              settings.fontPath = selectedFont.path;
+              await settings.saveSettings();
+            } catch (err) {
+              ThemeProvider.instance.changeFontFamily(null);
+              LOGGER.e("[select font] $err");
+              if (context.mounted) {
+                showTextOnSnackBar(err.toString());
+              }
+            }
+          }
         },
+        label: const Text("选择字体"),
+        icon: const Icon(Symbols.text_fields),
       ),
     );
   }

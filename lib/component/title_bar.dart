@@ -283,12 +283,10 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
           onPressed: () async {
             PlayService.instance.close();
 
-            try {
-              await savePlaylists();
-              await saveLyricSources();
-              await AppSettings.instance.saveSettings();
-              await AppPreference.instance.save();
-            } catch (_) {}
+            await savePlaylists();
+            await saveLyricSources();
+            await AppSettings.instance.saveSettings();
+            await AppPreference.instance.save();
 
             await HotkeysHelper.unregisterAll();
             windowManager.close();

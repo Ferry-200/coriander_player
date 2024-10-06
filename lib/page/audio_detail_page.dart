@@ -1,4 +1,4 @@
-import 'package:coriander_player/extensions.dart';
+import 'package:coriander_player/utils.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/component/album_tile.dart';
 import 'package:coriander_player/component/artist_tile.dart';
@@ -124,9 +124,7 @@ class AudioDetailPage extends StatelessWidget {
                     final result = await showInExplorer(path: audio.path);
 
                     if (!result && context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("打开失败")),
-                      );
+                      showTextOnSnackBar("打开失败");
                     }
                   },
                   child: const Text("在文件资源管理器中显示"),

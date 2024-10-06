@@ -1,9 +1,6 @@
-import 'dart:async';
-
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/play_service/play_service.dart';
-import 'package:coriander_player/src/rust/api/system_theme.dart';
 import 'package:flutter/material.dart';
 
 class ThemeProvider extends ChangeNotifier {
@@ -26,27 +23,7 @@ class ThemeProvider extends ChangeNotifier {
 
   static ThemeProvider? _instance;
 
-  late StreamSubscription<SystemTheme> _systemThemeChangedStreamSub;
-  ThemeProvider._() {
-    _systemThemeChangedStreamSub = SystemTheme.onSystemThemeChanged().listen(
-      (event) {
-        final isDarkMode =
-            (((5 * event.fore.$3) + (2 * event.fore.$2) + event.fore.$4) >
-                (8 * 128));
-        final themeMode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
-        final seed = Color.fromARGB(
-          event.accent.$1,
-          event.accent.$2,
-          event.accent.$3,
-          event.accent.$4,
-        );
-
-        applyTheme(seedColor: seed);
-        applyThemeMode(themeMode);
-        notifyListeners();
-      },
-    );
-  }
+  ThemeProvider._();
 
   static ThemeProvider get instance {
     _instance ??= ThemeProvider._();
@@ -141,12 +118,6 @@ class ThemeProvider extends ChangeNotifier {
   void changeFontFamily(String? fontFamily) {
     this.fontFamily = fontFamily;
     notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _systemThemeChangedStreamSub.cancel();
   }
 
   // ButtonStyle get primaryButtonStyle => ButtonStyle(

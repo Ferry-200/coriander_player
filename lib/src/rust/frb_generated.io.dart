@@ -4,6 +4,7 @@
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
 import 'api/installed_font.dart';
+import 'api/logger.dart';
 import 'api/smtc_flutter.dart';
 import 'api/system_theme.dart';
 import 'api/tag_reader.dart';
@@ -45,15 +46,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
           dynamic raw);
 
   @protected
+  RustStreamSink<String> dco_decode_StreamSink_String_Sse(dynamic raw);
+
+  @protected
   RustStreamSink<IndexActionState> dco_decode_StreamSink_index_action_state_Sse(
       dynamic raw);
 
   @protected
   RustStreamSink<SMTCControlEvent> dco_decode_StreamSink_smtc_control_event_Sse(
-      dynamic raw);
-
-  @protected
-  RustStreamSink<SystemTheme> dco_decode_StreamSink_system_theme_Sse(
       dynamic raw);
 
   @protected
@@ -135,15 +135,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
           SseDeserializer deserializer);
 
   @protected
+  RustStreamSink<String> sse_decode_StreamSink_String_Sse(
+      SseDeserializer deserializer);
+
+  @protected
   RustStreamSink<IndexActionState> sse_decode_StreamSink_index_action_state_Sse(
       SseDeserializer deserializer);
 
   @protected
   RustStreamSink<SMTCControlEvent> sse_decode_StreamSink_smtc_control_event_Sse(
-      SseDeserializer deserializer);
-
-  @protected
-  RustStreamSink<SystemTheme> sse_decode_StreamSink_system_theme_Sse(
       SseDeserializer deserializer);
 
   @protected
@@ -229,16 +229,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
           SmtcFlutter self, SseSerializer serializer);
 
   @protected
+  void sse_encode_StreamSink_String_Sse(
+      RustStreamSink<String> self, SseSerializer serializer);
+
+  @protected
   void sse_encode_StreamSink_index_action_state_Sse(
       RustStreamSink<IndexActionState> self, SseSerializer serializer);
 
   @protected
   void sse_encode_StreamSink_smtc_control_event_Sse(
       RustStreamSink<SMTCControlEvent> self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_StreamSink_system_theme_Sse(
-      RustStreamSink<SystemTheme> self, SseSerializer serializer);
 
   @protected
   void sse_encode_String(String self, SseSerializer serializer);

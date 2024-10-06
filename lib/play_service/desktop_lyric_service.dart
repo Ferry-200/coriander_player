@@ -8,6 +8,7 @@ import 'package:coriander_player/play_service/play_service.dart';
 import 'package:coriander_player/play_service/playback_service.dart';
 import 'package:coriander_player/src/bass/bass_player.dart';
 import 'package:coriander_player/theme_provider.dart';
+import 'package:coriander_player/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
 
@@ -50,14 +51,13 @@ class DesktopLyricService extends ChangeNotifier {
     final process = await desktopLyric;
 
     process?.stderr.transform(utf8.decoder).listen((event) {
-      print(event);
+      LOGGER.e("[desktop lyric] $event");
     });
 
     _desktopLyricSubscription = process?.stdout.transform(utf8.decoder).listen(
       (event) {
         try {
           final Map messageMap = json.decode(event);
-          print(messageMap);
           final String messageType = messageMap["type"];
           final messageContent = messageMap["message"] as Map<String, dynamic>;
           if (messageType ==
@@ -86,9 +86,8 @@ class DesktopLyricService extends ChangeNotifier {
                 break;
             }
           }
-        } catch (err, stack) {
-          print(err);
-          print(stack);
+        } catch (err) {
+          LOGGER.e("[desktop lyric] $err");
         }
       },
     );
@@ -103,6 +102,8 @@ class DesktopLyricService extends ChangeNotifier {
   void sendMessage(msg.Message message) {
     desktopLyric.then((value) {
       value?.stdin.write(message.buildMessageJson());
+    }).catchError((err, trace) {
+      LOGGER.e(err, stackTrace: trace);
     });
   }
 
@@ -115,6 +116,8 @@ class DesktopLyricService extends ChangeNotifier {
       _desktopLyricSubscription = null;
 
       notifyListeners();
+    }).catchError((err, trace) {
+      LOGGER.e(err, stackTrace: trace);
     });
   }
 

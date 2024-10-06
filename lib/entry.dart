@@ -13,11 +13,13 @@ import 'package:coriander_player/page/playlist_detail_page.dart';
 import 'package:coriander_player/page/playlists_page.dart';
 import 'package:coriander_player/page/search_page/search_page.dart';
 import 'package:coriander_player/page/search_page/search_result_page.dart';
+import 'package:coriander_player/page/settings_page/create_issue.dart';
 import 'package:coriander_player/page/settings_page/page.dart';
 import 'package:coriander_player/page/updating_page.dart';
 import 'package:coriander_player/page/welcoming_page.dart';
 import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/theme_provider.dart';
+import 'package:coriander_player/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -56,8 +58,6 @@ class SlideTransitionPage<T> extends CustomTransitionPage<T> {
     );
   }
 }
-
-final GlobalKey<NavigatorState> ROUTER_KEY = GlobalKey();
 
 class Entry extends StatelessWidget {
   Entry({super.key, required this.welcome});
@@ -98,6 +98,7 @@ class Entry extends StatelessWidget {
       builder: (context, _) {
         final theme = Provider.of<ThemeProvider>(context);
         return MaterialApp.router(
+          scaffoldMessengerKey: SCAFFOLD_MESSAGER,
           debugShowCheckedModeBanner: false,
           theme: fromSchemeAndFontFamily(
             fontFamily: theme.fontFamily,
@@ -236,11 +237,18 @@ class Entry extends StatelessWidget {
 
           /// settings page
           GoRoute(
-            path: app_paths.SETTINGS_PAGE,
-            pageBuilder: (context, state) => const SlideTransitionPage(
-              child: SettingsPage(),
-            ),
-          ),
+              path: app_paths.SETTINGS_PAGE,
+              pageBuilder: (context, state) => const SlideTransitionPage(
+                    child: SettingsPage(),
+                  ),
+              routes: [
+                GoRoute(
+                  path: "issue",
+                  pageBuilder: (context, state) => const SlideTransitionPage(
+                    child: SettingsIssuePage(),
+                  ),
+                )
+              ]),
         ],
       ),
 

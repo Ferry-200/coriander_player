@@ -5,33 +5,42 @@ import 'dart:io';
 
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/library/audio_library.dart';
+import 'package:coriander_player/utils.dart';
 
 List<Playlist> PLAYLISTS = [];
 
 Future<void> readPlaylists() async {
-  final supportPath = (await getAppDataDir()).path;
-  final playlistsPath = "$supportPath\\playlists.json";
+  try {
+    final supportPath = (await getAppDataDir()).path;
+    final playlistsPath = "$supportPath\\playlists.json";
 
-  final playlistsStr = File(playlistsPath).readAsStringSync();
-  final List playlistsJson = json.decode(playlistsStr);
+    final playlistsStr = File(playlistsPath).readAsStringSync();
+    final List playlistsJson = json.decode(playlistsStr);
 
-  for (Map item in playlistsJson) {
-    PLAYLISTS.add(Playlist.fromMap(item));
+    for (Map item in playlistsJson) {
+      PLAYLISTS.add(Playlist.fromMap(item));
+    }
+  } catch (err, trace) {
+    LOGGER.e(err, stackTrace: trace);
   }
 }
 
 Future<void> savePlaylists() async {
-  final supportPath = (await getAppDataDir()).path;
-  final playlistsPath = "$supportPath\\playlists.json";
+  try {
+    final supportPath = (await getAppDataDir()).path;
+    final playlistsPath = "$supportPath\\playlists.json";
 
-  List<Map> playlistMaps = [];
-  for (final item in PLAYLISTS) {
-    playlistMaps.add(item.toMap());
+    List<Map> playlistMaps = [];
+    for (final item in PLAYLISTS) {
+      playlistMaps.add(item.toMap());
+    }
+
+    final playlistsJson = json.encode(playlistMaps);
+    final output = await File(playlistsPath).create(recursive: true);
+    await output.writeAsString(playlistsJson);
+  } catch (err, trace) {
+    LOGGER.e(err, stackTrace: trace);
   }
-
-  final playlistsJson = json.encode(playlistMaps);
-  final output = await File(playlistsPath).create(recursive: true);
-  await output.writeAsString(playlistsJson);
 }
 
 class Playlist {

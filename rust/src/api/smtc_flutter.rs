@@ -12,6 +12,8 @@ use windows::{
 
 use crate::frb_generated::StreamSink;
 
+use super::logger::log_to_dart;
+
 pub struct SMTCFlutter {
     _smtc: SystemMediaTransportControls,
     _player: MediaPlayer,
@@ -59,17 +61,20 @@ impl SMTCFlutter {
     }
 
     pub fn update_state(&self, state: SMTCState) {
-        self._update_state(state).unwrap();
+        if let Err(err) = self._update_state(state) {
+            log_to_dart(format!("fail to update state: {}", err));
+        }
     }
 
     pub fn update_display(&self, title: String, artist: String, album: String, path: String) {
-        self._update_display(
+        if let Err(err) = self._update_display(
             HSTRING::from(title),
             HSTRING::from(artist),
             HSTRING::from(album),
             HSTRING::from(path),
-        )
-        .unwrap();
+        ) {
+            log_to_dart(format!("fail to update display: {}", err));
+        }
     }
 
     pub fn close(self) {

@@ -21,6 +21,7 @@ const String SEARCH_RESULT_PAGE = "/search/result";
 const String NOW_PLAYING_PAGE = "/nowplaying";
 
 const String SETTINGS_PAGE = "/settings";
+const String SETTINGS_ISSUE_PAGE = "/settings/issue";
 
 const String WELCOMING_PAGE = "/welcoming";
 
