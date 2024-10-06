@@ -65,8 +65,8 @@ body:
   - type: textarea
     id: additional_context
     attributes:
-      label: 其他信息
+      label: 软件日志和其他信息
       description: 添加任何有关此问题的其他上下文
-      placeholder: 输入任何其他信息
+      placeholder: 建议附带软件日志（设置 -> 创建问题 -> 复制最底下的输入框里的文字）。因为软件不会持久保存日志，所以在退出后日志就会丢失。因此不强求你附带。你也可以输入其他任何相关的信息
     validations:
       required: false
