@@ -4,6 +4,8 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use super::logger::log_to_dart;
+
 pub struct InstalledFont {
     pub path: String,
     pub full_name: String,
@@ -17,11 +19,23 @@ pub fn get_installed_fonts() -> Option<Vec<InstalledFont>> {
 }
 
 fn _read_fonts_in_folder(path: &Path, result: &mut Vec<InstalledFont>) -> anyhow::Result<()> {
-    let dir = read_dir(path)?;
+    log_to_dart(format!("read fonts in: {}", path.to_string_lossy()));
+
+    let dir = match read_dir(path) {
+        Ok(val) => val,
+        Err(err) => {
+            log_to_dart(err.to_string());
+            return Err(err.into());
+        }
+    };
+
     for entry_result in dir {
         let entry = match entry_result {
             Ok(value) => value,
-            Err(_) => continue,
+            Err(err) => {
+                log_to_dart(err.to_string());
+                continue;
+            }
         };
         let path = entry.path();
         let extension = match path.extension() {
@@ -35,11 +49,17 @@ fn _read_fonts_in_folder(path: &Path, result: &mut Vec<InstalledFont>) -> anyhow
             "ttf" | "ttc" | "otf" => {
                 let font = match fs::read(path) {
                     Ok(value) => value,
-                    Err(_) => continue,
+                    Err(err) => {
+                        log_to_dart(err.to_string());
+                        continue;
+                    }
                 };
                 let face = match ttf_parser::Face::parse(&font, 0) {
                     Ok(value) => value,
-                    Err(_) => continue,
+                    Err(err) => {
+                        log_to_dart(err.to_string());
+                        continue;
+                    }
                 };
                 for name in face.names() {
                     if name.name_id == ttf_parser::name_id::FULL_NAME {

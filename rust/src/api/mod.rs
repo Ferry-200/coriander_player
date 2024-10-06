@@ -7,3 +7,4 @@ pub mod smtc_flutter;
 pub mod utils;
 pub mod system_theme;
 pub mod installed_font;
+pub mod logger;

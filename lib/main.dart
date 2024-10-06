@@ -4,6 +4,7 @@ import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/entry.dart';
 import 'package:coriander_player/hotkeys_helper.dart';
+import 'package:coriander_player/src/rust/api/logger.dart';
 import 'package:coriander_player/src/rust/frb_generated.dart';
 import 'package:coriander_player/theme_provider.dart';
 import 'package:coriander_player/utils.dart';
@@ -50,6 +51,10 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await RustLib.init();
+
+  initRustLogger().listen((msg) {
+    LOGGER.i("[rs]: $msg");
+  });
 
   // For hot reload, `unregisterAll()` needs to be called.
   await HotkeysHelper.unregisterAll();
