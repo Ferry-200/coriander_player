@@ -304,14 +304,9 @@ class PlaybackService extends ChangeNotifier {
   }
 
   void close() {
-    _player.free();
-    _smtc.close();
-  }
-
-  @override
-  void dispose() {
     _playerStateStreamSub.cancel();
     _smtcEventStreamSub.cancel();
-    super.dispose();
+    _player.free();
+    _smtc.close();
   }
 }
