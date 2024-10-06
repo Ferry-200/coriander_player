@@ -28,7 +28,9 @@ Future<void> migrateAppData() async {
         oldDataFile.deleteSync();
       }
     }
-  } catch (_) {}
+  } catch (err, trace) {
+    LOGGER.e(err, stackTrace: trace);
+  }
 }
 
 Future<Directory> getAppDataDir() async {
