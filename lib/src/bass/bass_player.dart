@@ -60,9 +60,6 @@ class BassPlayer {
   final _playerStateStreamController =
       StreamController<PlayerState>.broadcast();
 
-  /// store the plugin handle and we can free it when exit
-  List<int> pluginHandles = [];
-
   /// audio's length in seconds
   double get length => _fstream == null
       ? 1.0
@@ -210,9 +207,7 @@ class BassPlayer {
       final pluginPathP = plugin.toNativeUtf16() as ffi.Pointer<ffi.Char>;
       final hplugin = _bass.BASS_PluginLoad(pluginPathP, BASS.BASS_UNICODE);
 
-      if (hplugin != 0) {
-        pluginHandles.add(hplugin);
-      } else {
+      if (hplugin == 0) {
         switch (_bass.BASS_ErrorGetCode()) {
           case BASS.BASS_ERROR_FILEOPEN:
             throw const FormatException("The file could not be opened.");
@@ -529,9 +524,10 @@ class BassPlayer {
   ///
   /// Also free the bass.dll.
   void free() {
-    for (var hplugin in pluginHandles) {
-      _bass.BASS_PluginFree(hplugin);
+    if (wasapiExclusive) {
+      _bassWasapi.BASS_WASAPI_Free();
     }
+
     if (_bass.BASS_Free() == 0) {
       switch (_bass.BASS_ErrorGetCode()) {
         case BASS.BASS_ERROR_INIT:
@@ -543,12 +539,11 @@ class BassPlayer {
       }
     }
 
-    _bassWasapi.BASS_WASAPI_Free();
-
-    _bassLib.close();
     _bassWasapiLib.close();
+    _bassLib.close();
+
+    _positionUpdater?.cancel();
     _playerStateStreamController.close();
     _positionStreamController.close();
-    _positionUpdater?.cancel();
   }
 }
