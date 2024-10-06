@@ -124,8 +124,8 @@ class SongSearchResult {
 }
 
 Future<List<SongSearchResult>> uniSearch(Audio audio) async {
+  final query = audio.title;
   try {
-    final query = audio.title;
     List<SongSearchResult> result = [];
 
     final Map kugouAnswer = (await KuGou.searchSong(keyword: query)).data;
@@ -161,6 +161,7 @@ Future<List<SongSearchResult>> uniSearch(Audio audio) async {
     result.sort((a, b) => b.score.compareTo(a.score));
     return result;
   } catch (err, trace) {
+    LOGGER.e("query: $query");
     LOGGER.e(err, stackTrace: trace);
   }
   return Future.value([]);
