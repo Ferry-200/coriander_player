@@ -25,7 +25,6 @@ Future<void> migrateAppData() async {
         oldDataFile.copySync(
           path.join(newAppDataDir.path, path.basename(item.path)),
         );
-        oldDataFile.deleteSync();
       }
     }
   } catch (err, trace) {
