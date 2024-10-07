@@ -49,11 +49,15 @@ class NowPlayingPage extends StatefulWidget {
 
 class _NowPlayingPageState extends State<NowPlayingPage> {
   final playbackService = PlayService.instance.playbackService;
-  Future<ImageProvider<Object>?>? nowPlayingCover;
+  ImageProvider<Object>? nowPlayingCover;
 
   void updateCover() {
-    setState(() {
-      nowPlayingCover = playbackService.nowPlaying?.cover;
+    playbackService.nowPlaying?.cover.then((cover) {
+      if (mounted) {
+        setState(() {
+          nowPlayingCover = cover;
+        });
+      }
     });
   }
 
@@ -61,7 +65,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
   void initState() {
     super.initState();
     playbackService.addListener(updateCover);
-    nowPlayingCover = playbackService.nowPlaying?.cover;
+    updateCover();
   }
 
   @override
@@ -95,26 +99,21 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
         fit: StackFit.expand,
         alignment: AlignmentDirectional.center,
         children: [
-          FutureBuilder(
-            future: nowPlayingCover,
-            builder: (context, snapshot) {
-              if (snapshot.data == null) return const SizedBox.shrink();
-
-              return Image(
-                image: snapshot.data!,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-              );
+          if (nowPlayingCover != null) ...[
+            Image(
+              image: nowPlayingCover!,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+            ),
+            switch (brightness) {
+              Brightness.dark => const ColoredBox(color: Colors.black45),
+              Brightness.light => const ColoredBox(color: Colors.white54),
             },
-          ),
-          switch (brightness) {
-            Brightness.dark => const ColoredBox(color: Colors.black45),
-            Brightness.light => const ColoredBox(color: Colors.white54),
-          },
-          BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 250, sigmaY: 250),
-            child: const ColoredBox(color: Colors.transparent),
-          ),
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 250, sigmaY: 250),
+              child: const ColoredBox(color: Colors.transparent),
+            ),
+          ],
           ChangeNotifierProvider.value(
             value: PlayService.instance.playbackService,
             builder: (context, _) {
