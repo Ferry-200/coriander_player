@@ -51,8 +51,16 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
       subtitle: "${PLAYLISTS.length} 个歌单",
       contentList: PLAYLISTS,
       contentBuilder: (context, item, i, multiSelectController) => ListTile(
-        title: Text(PLAYLISTS[i].name),
-        subtitle: Text("${PLAYLISTS[i].audios.length}首乐曲"),
+        title: Text(
+          PLAYLISTS[i].name,
+          softWrap: false,
+          maxLines: 1,
+        ),
+        subtitle: Text(
+          "${PLAYLISTS[i].audios.length}首乐曲",
+          softWrap: false,
+          maxLines: 1,
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

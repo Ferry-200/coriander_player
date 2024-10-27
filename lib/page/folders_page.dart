@@ -81,17 +81,26 @@ class AudioFolderTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(audioFolder.path),
-      subtitle: Text(
-        "修改日期：${DateTime.fromMillisecondsSinceEpoch(audioFolder.modified * 1000).toString()}",
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      onTap: () => context.push(
-        app_paths.FOLDER_DETAIL_PAGE,
-        extra: audioFolder,
+    return Tooltip(
+      message: audioFolder.path,
+      child: ListTile(
+        title: Text(
+          audioFolder.path,
+          softWrap: false,
+          maxLines: 1,
+        ),
+        subtitle: Text(
+          "修改日期：${DateTime.fromMillisecondsSinceEpoch(audioFolder.modified * 1000).toString()}",
+          softWrap: false,
+          maxLines: 1,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        onTap: () => context.push(
+          app_paths.FOLDER_DETAIL_PAGE,
+          extra: audioFolder,
+        ),
       ),
     );
   }
