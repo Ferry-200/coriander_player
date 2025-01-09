@@ -1,11 +1,14 @@
+use std::time::Duration;
+
 use flutter_rust_bridge::frb;
 use windows::{
     core::HSTRING,
-    Foundation::TypedEventHandler,
+    Foundation::{TimeSpan, TypedEventHandler},
     Media::{
         MediaPlaybackStatus, MediaPlaybackType, Playback::MediaPlayer,
         SystemMediaTransportControls, SystemMediaTransportControlsButton,
         SystemMediaTransportControlsButtonPressedEventArgs,
+        SystemMediaTransportControlsTimelineProperties,
     },
     Storage::{FileProperties::ThumbnailMode, StorageFile, Streams::RandomAccessStreamReference},
 };
@@ -66,11 +69,19 @@ impl SMTCFlutter {
         }
     }
 
-    pub fn update_display(&self, title: String, artist: String, album: String, path: String) {
+    /// progress, duration: ms
+    pub fn update_time_properties(&self, progress: u32) {
+        if let Err(err) = self._update_time_properties(progress) {
+            log_to_dart(format!("fail to update state: {}", err));
+        }
+    }
+
+    pub fn update_display(&self, title: String, artist: String, album: String, duration: u32, path: String) {
         if let Err(err) = self._update_display(
             HSTRING::from(title),
             HSTRING::from(artist),
             HSTRING::from(album),
+            duration,
             HSTRING::from(path),
         ) {
             log_to_dart(format!("fail to update display: {}", err));
@@ -116,15 +127,32 @@ impl SMTCFlutter {
         Ok(())
     }
 
+    /// progress, duration: ms
+    fn _update_time_properties(&self, progress: u32) -> Result<(), windows::core::Error> {
+        let time_properties = SystemMediaTransportControlsTimelineProperties::new()?;
+        time_properties.SetPosition(TimeSpan::from(Duration::from_millis(progress.into())))?;
+        self._smtc.UpdateTimelineProperties(&time_properties)?;
+
+        Ok(())
+    }
+
     fn _update_display(
         &self,
         title: HSTRING,
         artist: HSTRING,
         album: HSTRING,
+        duration: u32,
         path: HSTRING,
     ) -> Result<(), windows::core::Error> {
         let updater = self._smtc.DisplayUpdater()?;
         updater.SetType(MediaPlaybackType::Music)?;
+
+        let time_properties = SystemMediaTransportControlsTimelineProperties::new()?;
+        time_properties.SetStartTime(TimeSpan { Duration: 0 })?;
+        time_properties.SetEndTime(TimeSpan::from(Duration::from_millis(duration.into())))?;
+        time_properties.SetMinSeekTime(TimeSpan { Duration: 0 })?;
+        time_properties.SetMaxSeekTime(TimeSpan::from(Duration::from_millis(duration.into())))?;
+        self._smtc.UpdateTimelineProperties(&time_properties)?;
 
         let music_properties = updater.MusicProperties()?;
         music_properties.SetTitle(&title)?;

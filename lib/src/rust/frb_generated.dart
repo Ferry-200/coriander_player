@@ -71,7 +71,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.4.0';
 
   @override
-  int get rustContentHash => -1244789812;
+  int get rustContentHash => -1148029228;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -99,10 +99,14 @@ abstract class RustLibApi extends BaseApi {
       required String title,
       required String artist,
       required String album,
+      required int duration,
       required String path});
 
   Future<void> crateApiSmtcFlutterSmtcFlutterUpdateState(
       {required SmtcFlutter that, required SMTCState state});
+
+  Future<void> crateApiSmtcFlutterSmtcFlutterUpdateTimeProperties(
+      {required SmtcFlutter that, required int progress});
 
   SystemTheme crateApiSystemThemeSystemThemeGetSystemTheme();
 
@@ -281,6 +285,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       required String title,
       required String artist,
       required String album,
+      required int duration,
       required String path}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
@@ -290,6 +295,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(title, serializer);
         sse_encode_String(artist, serializer);
         sse_encode_String(album, serializer);
+        sse_encode_u_32(duration, serializer);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 6, port: port_);
@@ -299,7 +305,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData: null,
       ),
       constMeta: kCrateApiSmtcFlutterSmtcFlutterUpdateDisplayConstMeta,
-      argValues: [that, title, artist, album, path],
+      argValues: [that, title, artist, album, duration, path],
       apiImpl: this,
     ));
   }
@@ -307,7 +313,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiSmtcFlutterSmtcFlutterUpdateDisplayConstMeta =>
       const TaskConstMeta(
         debugName: "SmtcFlutter_update_display",
-        argNames: ["that", "title", "artist", "album", "path"],
+        argNames: ["that", "title", "artist", "album", "duration", "path"],
       );
 
   @override
@@ -339,11 +345,40 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<void> crateApiSmtcFlutterSmtcFlutterUpdateTimeProperties(
+      {required SmtcFlutter that, required int progress}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSMTCFlutter(
+            that, serializer);
+        sse_encode_u_32(progress, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 8, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_unit,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiSmtcFlutterSmtcFlutterUpdateTimePropertiesConstMeta,
+      argValues: [that, progress],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta
+      get kCrateApiSmtcFlutterSmtcFlutterUpdateTimePropertiesConstMeta =>
+          const TaskConstMeta(
+            debugName: "SmtcFlutter_update_time_properties",
+            argNames: ["that", "progress"],
+          );
+
+  @override
   SystemTheme crateApiSystemThemeSystemThemeGetSystemTheme() {
     return handler.executeSync(SyncTask(
       callFfi: () {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 8)!;
+        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 9)!;
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_system_theme,
@@ -372,7 +407,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(indexPath, serializer);
         sse_encode_StreamSink_index_action_state_Sse(sink, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 9, port: port_);
+            funcId: 10, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -399,7 +434,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 10, port: port_);
+            funcId: 11, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_opt_String,
@@ -427,7 +462,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_u_32(width, serializer);
         sse_encode_u_32(height, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 11, port: port_);
+            funcId: 12, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_opt_list_prim_u_8_strict,
@@ -455,7 +490,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(indexPath, serializer);
         sse_encode_StreamSink_index_action_state_Sse(sink, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 12, port: port_);
+            funcId: 13, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -481,7 +516,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(uri, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 13, port: port_);
+            funcId: 14, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_bool,
@@ -505,7 +540,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 14, port: port_);
+            funcId: 15, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_opt_String,
@@ -530,7 +565,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 15, port: port_);
+            funcId: 16, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_bool,
@@ -1233,11 +1268,23 @@ class SmtcFlutterImpl extends RustOpaque implements SmtcFlutter {
           {required String title,
           required String artist,
           required String album,
+          required int duration,
           required String path}) =>
       RustLib.instance.api.crateApiSmtcFlutterSmtcFlutterUpdateDisplay(
-          that: this, title: title, artist: artist, album: album, path: path);
+          that: this,
+          title: title,
+          artist: artist,
+          album: album,
+          duration: duration,
+          path: path);
 
   /// Apis for Flutter
   Future<void> updateState({required SMTCState state}) => RustLib.instance.api
       .crateApiSmtcFlutterSmtcFlutterUpdateState(that: this, state: state);
+
+  /// progress, duration: ms
+  /// Apis for Flutter
+  Future<void> updateTimeProperties({required int progress}) =>
+      RustLib.instance.api.crateApiSmtcFlutterSmtcFlutterUpdateTimeProperties(
+          that: this, progress: progress);
 }

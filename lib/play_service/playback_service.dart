@@ -58,6 +58,10 @@ class PlaybackService extends ChangeNotifier {
         case SMTCControlEvent.unknown:
       }
     });
+
+    positionStream.listen((progress) {
+      _smtc.updateTimeProperties(progress: (progress * 1000).floor());
+    });
   }
 
   final _player = BassPlayer();
@@ -136,6 +140,7 @@ class PlaybackService extends ChangeNotifier {
         title: nowPlaying!.title,
         artist: nowPlaying!.artist,
         album: nowPlaying!.album,
+        duration: (length * 1000).floor(),
         path: nowPlaying!.path,
       );
 

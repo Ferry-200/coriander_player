@@ -6,7 +6,7 @@
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `_init_controls`, `_new`, `_update_display`, `_update_state`
+// These functions are ignored because they are not marked as `pub`: `_init_controls`, `_new`, `_update_display`, `_update_state`, `_update_time_properties`
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<SMTCFlutter>>
 abstract class SmtcFlutter implements RustOpaqueInterface {
@@ -25,10 +25,15 @@ abstract class SmtcFlutter implements RustOpaqueInterface {
       {required String title,
       required String artist,
       required String album,
+      required int duration,
       required String path});
 
   /// Apis for Flutter
   Future<void> updateState({required SMTCState state});
+
+  /// progress, duration: ms
+  /// Apis for Flutter
+  Future<void> updateTimeProperties({required int progress});
 }
 
 enum SMTCControlEvent {
