@@ -181,14 +181,11 @@ impl Audio {
             .primary_tag()
             .or_else(|| tagged_file.first_tag())
         {
-            let artists: Vec<String> = tag
-                .get_strings(&ItemKey::TrackArtist)
-                .map(std::string::ToString::to_string)
-                .collect();
-            let artist = if artists.is_empty() {
+            let artist_strs: Vec<_> = tag.get_strings(&ItemKey::TrackArtist).collect();
+            let artist = if artist_strs.is_empty() {
                 UNKNOWN_COW.to_string()
             } else {
-                artists.join(";")
+                artist_strs.join("/")
             };
 
             return Some(Audio {
