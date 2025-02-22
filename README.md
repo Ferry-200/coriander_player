@@ -8,6 +8,13 @@
 ## 安装
 1. 下载 [Release](https://github.com/Ferry-200/coriander_player/releases/latest) 里文件安装
 2. **（已过时，现在的体验版已经落后于正式版）** 你也可以到 [Action 构建版本（体验版）介绍](https://github.com/Ferry-200/coriander_player/issues/49) 下载体验版 :)
+3. 通过 scoop 安装，使用此 [bucket](https://github.com/jinzhongjia/scoop-bucket)
+```sh
+# 添加 bucket
+scoop bucket add jin https://github.com/jinzhongjia/scoop-bucket
+# 安装
+scoop install jin/coriander_player
+```
 
 ## 软件内快捷键
 页面中有文本框且处于输入状态时会自动忽略快捷键操作。如果要使用快捷键，可以点击输入框以外的地方，然后再次使用。
