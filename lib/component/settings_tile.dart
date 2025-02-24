@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class SettingsTile extends StatelessWidget {
-  const SettingsTile({super.key, required this.description, required this.action});
+  const SettingsTile(
+      {super.key, required this.description, required this.action});
 
   final String description;
   final Widget action;

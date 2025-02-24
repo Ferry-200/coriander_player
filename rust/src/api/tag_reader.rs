@@ -22,11 +22,6 @@ use crate::frb_generated::StreamSink;
 
 use super::logger::log_to_dart;
 
-const UNKNOWN_COW: std::borrow::Cow<'_, str> = std::borrow::Cow::Borrowed("UNKNOWN");
-const UNKNOWN_STR: &str = "UNKNOWN";
-/// 索引的最低版本。低于该版本或没有版本号的索引将被完全重建。现在是 1.1.0
-const LOWEST_VERSION: u64 = 110;
-
 /// K: extension, V: can read tags by using Lofty
 static SUPPORT_FORMAT: phf::Map<&'static str, bool> = phf::phf_map! {
     "mp3" => true, "mp2" => false, "mp1" => false,
@@ -83,8 +78,8 @@ impl Audio {
         let path = path.as_ref();
         Some(Audio {
             title: path.file_name()?.to_string_lossy().to_string(),
-            artist: UNKNOWN_STR.to_string(),
-            album: UNKNOWN_STR.to_string(),
+            artist: "UNKNOWN".to_string(),
+            album: "UNKNOWN".to_string(),
             track: None,
             duration: 0,
             bitrate: None,
@@ -183,7 +178,7 @@ impl Audio {
         {
             let artist_strs: Vec<_> = tag.get_strings(&ItemKey::TrackArtist).collect();
             let artist = if artist_strs.is_empty() {
-                UNKNOWN_COW.to_string()
+                std::borrow::Cow::Borrowed("UNKNOWN").to_string()
             } else {
                 artist_strs.join("/")
             };
@@ -194,7 +189,10 @@ impl Audio {
                     .unwrap_or(path.file_name()?.to_string_lossy())
                     .to_string(),
                 artist,
-                album: tag.album().unwrap_or(UNKNOWN_COW).to_string(),
+                album: tag
+                    .album()
+                    .unwrap_or(std::borrow::Cow::Borrowed("UNKNOWN"))
+                    .to_string(),
                 track: tag.track(),
                 duration: properties.duration().as_secs(),
                 bitrate: properties.audio_bitrate(),
@@ -208,8 +206,8 @@ impl Audio {
 
         return Some(Audio {
             title: path.file_name()?.to_string_lossy().to_string(),
-            artist: UNKNOWN_COW.to_string(),
-            album: UNKNOWN_COW.to_string(),
+            artist: std::borrow::Cow::Borrowed("UNKNOWN").to_string(),
+            album: std::borrow::Cow::Borrowed("UNKNOWN").to_string(),
             track: None,
             duration: properties.duration().as_secs(),
             bitrate: properties.audio_bitrate(),
@@ -246,18 +244,18 @@ impl Audio {
 
         let mut artist = music_properties
             .Artist()
-            .unwrap_or(HSTRING::from(UNKNOWN_STR))
+            .unwrap_or(HSTRING::from("UNKNOWN"))
             .to_string();
         if artist.is_empty() {
-            artist = UNKNOWN_STR.to_string();
+            artist = "UNKNOWN".to_string();
         }
 
         let mut album = music_properties
             .Album()
-            .unwrap_or(HSTRING::from(UNKNOWN_STR))
+            .unwrap_or(HSTRING::from("UNKNOWN"))
             .to_string();
         if album.is_empty() {
-            album = UNKNOWN_STR.to_string();
+            album = "UNKNOWN".to_string();
         }
 
         Ok(Audio {
@@ -605,7 +603,7 @@ pub fn build_index_from_folders_recursively(
         audio_folders_json.push(item.to_json_value());
     }
     let json_value = serde_json::json!({
-        "version": LOWEST_VERSION,
+        "version": 110,
         "folders": audio_folders_json,
     });
 
@@ -640,7 +638,7 @@ fn _update_index_below_1_1_0(
     }
     fs::File::create(index_path)?.write_all(
         serde_json::json!({
-            "version": LOWEST_VERSION,
+            "version": 110,
             "folders": audio_folders_json,
         })
         .to_string()

@@ -31,7 +31,8 @@ class Krc extends Lyric {
     }
 
     if (languageFrame != null) {
-      final Map languageMap = json.decode(utf8.decode(base64.decode(languageFrame)));
+      final Map languageMap =
+          json.decode(utf8.decode(base64.decode(languageFrame)));
       List trans = [];
       for (var item in languageMap["content"]) {
         if (item["type"] == 1) {

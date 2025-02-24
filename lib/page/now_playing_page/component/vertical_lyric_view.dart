@@ -181,7 +181,6 @@ class _VerticalLyricScrollViewState extends State<_VerticalLyricScrollView> {
     );
   }
 
-
   void _updateNextLyricLine(int lyricLine) {
     lyricTiles = _generateLyricTiles(lyricLine);
     setState(() {});

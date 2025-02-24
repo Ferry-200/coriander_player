@@ -19,7 +19,8 @@ class FoldersPage extends StatelessWidget {
       title: "文件夹",
       subtitle: "${contentList.length} 个文件夹",
       contentList: contentList,
-      contentBuilder: (context, item, i, multiSelectController) => AudioFolderTile(audioFolder: item),
+      contentBuilder: (context, item, i, multiSelectController) =>
+          AudioFolderTile(audioFolder: item),
       enableShufflePlay: false,
       enableSortMethod: true,
       enableSortOrder: true,

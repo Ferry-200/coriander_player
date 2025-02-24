@@ -104,8 +104,7 @@ enum _SearchResultFilter {
 }
 
 class _SearchResultPageBody extends StatelessWidget {
-  const _SearchResultPageBody(
-      {required this.result, required this.filter});
+  const _SearchResultPageBody({required this.result, required this.filter});
 
   final UnionSearchResult result;
   final _SearchResultFilter filter;

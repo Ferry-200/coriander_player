@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class LargeFilledIconButtonStyle extends ButtonStyle {
-  const LargeFilledIconButtonStyle({required this.primary, required this.scheme})
+  const LargeFilledIconButtonStyle(
+      {required this.primary, required this.scheme})
       : super(
           animationDuration: kThemeChangeDuration,
           enableFeedback: true,

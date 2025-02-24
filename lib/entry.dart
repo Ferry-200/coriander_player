@@ -84,10 +84,10 @@ class Entry extends StatelessWidget {
       scaffoldBackgroundColor: colorScheme.surface,
       cardColor: colorScheme.surface,
       dividerColor: colorScheme.onSurface.withOpacity(0.12),
-      dialogBackgroundColor: colorScheme.surface,
       indicatorColor: onPrimarySurfaceColor,
       applyElevationOverlayColor: isDark,
       useMaterial3: true,
+      dialogTheme: DialogThemeData(backgroundColor: colorScheme.surface),
     );
   }
 

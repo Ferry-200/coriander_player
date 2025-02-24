@@ -13,9 +13,9 @@ dependencies:
   material_color_utilities: ^0.11.1
   window_manager: ^0.3.8
   provider: ^6.1.1
-  rust_builder:
-    path: rust_builder
-  flutter_rust_bridge: ^2.4.0
+  # rust_builder:
+  #   path: rust_builder
+  # flutter_rust_bridge: ^2.8.0
   path_provider: ^2.0.15
   flutter_localizations:
     sdk: flutter
@@ -37,6 +37,9 @@ dependencies:
   pinyin: ^3.3.0
   hotkey_manager: ^0.2.3
   logger: ^2.4.0
+  flutter_rust_bridge: 2.8.0
+  rust_lib_coriander_player:
+    path: rust_builder
 
 dev_dependencies:
   flutter_test:

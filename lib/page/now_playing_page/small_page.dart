@@ -116,8 +116,7 @@ class _NowPlayingPage_SmallState extends State<_NowPlayingPage_Small> {
 }
 
 class _NowPlayingSmallViewSwitch extends StatefulWidget {
-  const _NowPlayingSmallViewSwitch(
-      {required this.onTap, required this.icon});
+  const _NowPlayingSmallViewSwitch({required this.onTap, required this.icon});
 
   final void Function() onTap;
   final IconData icon;
