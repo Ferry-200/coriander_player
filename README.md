@@ -16,12 +16,6 @@ scoop bucket add jin https://github.com/jinzhongjia/scoop-bucket
 scoop install jin/coriander_player
 ```
 
-## 支持
-<div style="display:flex">
-  <image style="height: 300px" src="https://github.com/user-attachments/assets/1565d416-d453-4e7a-bdaa-29af2f802024"></image>
-  <image style="height: 300px" src="https://github.com/user-attachments/assets/cd3a624c-99f7-4f56-811c-36a15f50ba35"></image>
-</div>
-
 ## 软件内快捷键
 页面中有文本框且处于输入状态时会自动忽略快捷键操作。如果要使用快捷键，可以点击输入框以外的地方，然后再次使用。
 - Esc：返回上一级
