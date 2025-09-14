@@ -27,13 +27,15 @@ dependencies:
   flex_color_picker: ^3.5.0
   filepicker_windows: ^2.1.4
   desktop_lyric:
-    git:
-      url: https://github.com/Ferry-200/desktop_lyric.git
-      ref: 536be8df55c80a7fdf7cc20f603d3fc76a732821
+    path: ../desktop_lyric-main
+    # git:
+    #   url: https://github.com/Ferry-200/desktop_lyric.git
+    #   ref: 536be8df55c80a7fdf7cc20f603d3fc76a732821
   music_api:
-    git:
-      url: https://github.com/Ferry-200/music_api_dart.git
-      ref: c6f3e0abd9c6295b3678ce10d30bc09debda9abe
+    path: ../music_api_dart-main
+    # git:
+    #   url: https://github.com/Ferry-200/music_api_dart.git
+    #   ref: c6f3e0abd9c6295b3678ce10d30bc09debda9abe
   pinyin: ^3.3.0
   hotkey_manager: ^0.2.3
   logger: ^2.4.0

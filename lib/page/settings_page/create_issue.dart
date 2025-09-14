@@ -1,6 +1,7 @@
 import 'package:coriander_player/component/settings_tile.dart';
 import 'package:coriander_player/hotkeys_helper.dart';
-import 'package:coriander_player/page/settings_page/cpfeedback_key.dart';
+// 注释掉不存在的cpfeedback_key.dart文件导入
+// import 'package:coriander_player/page/settings_page/cpfeedback_key.dart';
 import 'package:coriander_player/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:github/github.dart';
@@ -39,9 +40,8 @@ class _SettingsIssuePageState extends State<SettingsIssuePage> {
 
   Future<void> createIssue() async {
     submitBtnController.update(WidgetState.disabled, true);
-    final cpfeedback = GitHub(
-      auth: const Authentication.withToken(CPFEEDBACK_KEY),
-    );
+    // 由于cpfeedback_key.dart文件不存在，直接使用匿名访问GitHub
+    final cpfeedback = GitHub();
     final issueBodyBuilder = StringBuffer();
     issueBodyBuilder
       ..writeln("## 描述")

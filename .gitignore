@@ -5,9 +5,11 @@
 *.swp
 .DS_Store
 .atom/
+.build/
 .buildlog/
 .history
 .svn/
+.swiftpm/
 migrate_working_dir/
 
 # IntelliJ related
@@ -44,3 +46,6 @@ app.*.map.json
 /android/app/release
 /.fvm
 lib/page/settings_page/cpfeedback_key.dart
+
+# 测试相关
+test/

@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/src/bass/bass_wasapi.dart' as BASS;
 import 'package:coriander_player/utils.dart';
+import 'package:coriander_player/platform_helper.dart';
 import 'package:ffi/ffi.dart' as ffi;
 import 'package:path/path.dart' as path;
 import 'package:coriander_player/src/bass/bass.dart' as BASS;
@@ -34,14 +35,27 @@ enum PlayerState {
   unknown,
 }
 
-const BASS_PLUGINS = [
-  "BASS\\bassape.dll",
-  "BASS\\bassdsd.dll",
-  "BASS\\bassflac.dll",
-  "BASS\\bassmidi.dll",
-  "BASS\\bassopus.dll",
-  "BASS\\basswv.dll"
-];
+List<String> get _bassPlugins {
+  if (Platform.isMacOS) {
+    return [
+      "BASS/bassape.dylib",
+      "BASS/bassdsd.dylib",
+      "BASS/bassflac.dylib",
+      "BASS/bassmidi.dylib",
+      "BASS/bassopus.dylib",
+      "BASS/basswv.dylib"
+    ];
+  } else {
+    return [
+      "BASS\\bassape.dll",
+      "BASS\\bassdsd.dll",
+      "BASS\\bassflac.dll",
+      "BASS\\bassmidi.dll",
+      "BASS\\bassopus.dll",
+      "BASS\\basswv.dll"
+    ];
+  }
+}
 
 class BassPlayer {
   late final ffi.DynamicLibrary _bassLib;
@@ -182,55 +196,96 @@ class BassPlayer {
     }
   }
 
-  /// load bass.dll from the exe's path\\BASS
-  /// ensure that there's bass.dll at path of .exe\\BASS
-  /// leave the device's output freq as it is
+  /// load BASS library based on platform
   BassPlayer() {
-    final bassLibPath = path.join(
-      path.dirname(Platform.resolvedExecutable),
-      "BASS",
-      "bass.dll",
-    );
-    _bassLib = ffi.DynamicLibrary.open(bassLibPath);
-    _bass = BASS.Bass(_bassLib);
+    try {
+      final libPath = PlatformHelper.bassLibraryPath;
+      _bassLib = ffi.DynamicLibrary.open(libPath);
+      _bass = BASS.Bass(_bassLib);
 
-    final bassWasapiLibPath = path.join(
-      path.dirname(Platform.resolvedExecutable),
-      "BASS",
-      "basswasapi.dll",
-    );
-    _bassWasapiLib = ffi.DynamicLibrary.open(bassWasapiLibPath);
-    _bassWasapi = BASS.BassWasapi(_bassWasapiLib);
-
-    // load add-ons to avoid using os codec or support more format
-    for (final plugin in BASS_PLUGINS) {
-      final pluginPathP = plugin.toNativeUtf16() as ffi.Pointer<ffi.Char>;
-      final hplugin = _bass.BASS_PluginLoad(pluginPathP, BASS.BASS_UNICODE);
-
-      if (hplugin == 0) {
-        switch (_bass.BASS_ErrorGetCode()) {
-          case BASS.BASS_ERROR_FILEOPEN:
-            throw const FormatException("The file could not be opened.");
-          case BASS.BASS_ERROR_FILEFORM:
-            throw const FormatException("The file is not a plugin.");
-          case BASS.BASS_ERROR_VERSION:
-            throw const FormatException(
-                "The plugin requires a different BASS version.");
-          case BASS.BASS_ERROR_ALREADY:
-            throw const FormatException("The plugin is already loaded.");
+      // WASAPI is Windows-only
+      if (PlatformHelper.supportsWasapi()) {
+        final wasapiLibPath = PlatformHelper.bassWasapiLibraryPath;
+        if (wasapiLibPath.isNotEmpty) {
+          try {
+            _bassWasapiLib = ffi.DynamicLibrary.open(wasapiLibPath);
+            _bassWasapi = BASS.BassWasapi(_bassWasapiLib);
+          } catch (e) {
+            LOGGER.w("Failed to load BASS WASAPI library: $e");
+          }
         }
       }
-    }
 
-    try {
-      _bassInit();
-    } catch (err) {
-      LOGGER.e("[bass init] $err");
+      // load add-ons to avoid using os codec or support more format
+      for (final plugin in _bassPlugins) {
+        try {
+          final pluginPath = PlatformHelper.joinPaths([
+            path.dirname(Platform.resolvedExecutable),
+            plugin,
+          ]);
+          final pluginPathP =
+              pluginPath.toNativeUtf16() as ffi.Pointer<ffi.Char>;
+          final hplugin = _bass.BASS_PluginLoad(pluginPathP, BASS.BASS_UNICODE);
+
+          if (hplugin == 0) {
+            switch (_bass.BASS_ErrorGetCode()) {
+              case BASS.BASS_ERROR_FILEOPEN:
+                LOGGER.w("[BASS Plugin] Could not open plugin: $plugin");
+                break;
+              case BASS.BASS_ERROR_FILEFORM:
+                LOGGER.w("[BASS Plugin] $plugin is not a valid plugin");
+                break;
+              case BASS.BASS_ERROR_VERSION:
+                LOGGER.w(
+                    "[BASS Plugin] $plugin requires a different BASS version");
+                break;
+              case BASS.BASS_ERROR_ALREADY:
+                // Plugin already loaded, continue
+                break;
+              default:
+                LOGGER.w("[BASS Plugin] Failed to load $plugin");
+            }
+          }
+        } catch (e) {
+          LOGGER.w("[BASS Plugin] Exception loading $plugin: $e");
+        }
+      }
+
+      try {
+        _bassInit();
+      } catch (err) {
+        LOGGER.e("[bass init] $err");
+      }
+    } catch (e) {
+      LOGGER.e("Failed to initialize BASS library: $e");
+      // 创建一个模拟的Bass实例，避免应用程序崩溃
+      _createMockBassInstance();
     }
+  }
+
+  /// 创建一个模拟的Bass实例，当无法加载真实的BASS库时使用
+  void _createMockBassInstance() {
+    // 使用正确类型的泛型函数创建模拟的Bass实例
+    _bass = BASS.Bass.fromLookup(<T extends ffi.NativeType>(String symbolName) {
+      throw UnsupportedError('BASS library is not available');
+    });
   }
 
   /// true: 操作成功；false: 操作失败
   bool useExclusiveMode(bool exclusive) {
+    // WASAPI exclusive mode is only supported on Windows
+    if (Platform.isMacOS) {
+      if (exclusive) {
+        showTextOnSnackBar("WASAPI独占模式仅在Windows平台可用");
+      }
+      return !exclusive; // Always return false if trying to enable, true if disabling
+    }
+
+    // Original Windows implementation
+    if (!PlatformHelper.supportsWasapi()) {
+      return false;
+    }
+
     final prevState = wasapiExclusive;
     try {
       final lastPos = position;
@@ -256,12 +311,14 @@ class BassPlayer {
 
   /// if setSource has been called once,
   /// it will pause current channel and free current stream.
-  void setSource(String path) {
+  void setSource(String filePath) {
     if (_fstream != null) {
       _positionUpdater?.cancel();
       freeFStream();
     }
-    final pathPointer = path.toNativeUtf16() as ffi.Pointer<ffi.Void>;
+    // Ensure path uses platform-appropriate separators
+    final normalizedPath = PlatformHelper.normalizePath(filePath);
+    final pathPointer = normalizedPath.toNativeUtf16() as ffi.Pointer<ffi.Void>;
 
     /// 设置 flags 为 BASS_UNICODE 才可以找到文件。
     const flags =
@@ -277,14 +334,14 @@ class BassPlayer {
 
     if (handle != 0) {
       _fstream = handle;
-      _fPath = path;
+      _fPath = normalizedPath;
     } else {
       _fstream = null;
       _fPath = null;
       switch (_bass.BASS_ErrorGetCode()) {
         case BASS.BASS_ERROR_INIT:
           _bassInit();
-          setSource(path);
+          setSource(normalizedPath);
           break;
         case BASS.BASS_ERROR_NOTAVAIL:
           throw const FormatException(

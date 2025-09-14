@@ -9,6 +9,7 @@ import 'package:coriander_player/play_service/playback_service.dart';
 import 'package:coriander_player/src/bass/bass_player.dart';
 import 'package:coriander_player/theme_provider.dart';
 import 'package:coriander_player/utils.dart';
+import 'package:coriander_player/platform_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
 
@@ -26,15 +27,19 @@ class DesktopLyricService extends ChangeNotifier {
   bool isLocked = false;
 
   Future<void> startDesktopLyric() async {
-    final desktopLyricPath = path.join(
-      path.dirname(Platform.resolvedExecutable),
-      "desktop_lyric",
-      'desktop_lyric.exe',
-    );
+    // 在macOS上，可能没有桌面歌词功能或实现方式不同
+    if (Platform.isMacOS) {
+      // 显示提示信息，说明macOS平台暂不支持桌面歌词
+      showTextOnSnackBar("macOS平台暂不支持桌面歌词功能");
+      return;
+    }
+
+    final desktopLyricPath = PlatformHelper.getDesktopLyricPath();
 
     final nowPlaying = _playbackService.nowPlaying;
     final currScheme = ThemeProvider.instance.currScheme;
     final isDarkMode = ThemeProvider.instance.themeMode == ThemeMode.dark;
+
     desktopLyric = Process.start(desktopLyricPath, [
       json.encode(msg.InitArgsMessage(
         _playbackService.playerState == PlayerState.playing,

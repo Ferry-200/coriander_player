@@ -73,7 +73,18 @@ scoop install jin/coriander_player
 1. 开发 flutter 需要的环境
 2. 需要编译 Coriander Player（本仓库） 软件本体和 desktop_lyric。[desktop_lyric](https://github.com/Ferry-200/desktop_lyric.git) 也是 Flutter 应用，直接编译即可
 3. 要把得到的 desktop_lyric 产物放在软件目录的 `desktop_lyric/` 目录下
-4. 编译后要把 BASS 库的 64 位的 `bass.dll`, `bassape.dll`, `bassdsd.dll`, `bassflac.dll`, `bassmidi.dll`, `bassopus.dll`, `basswv.dll`, `basswasapi.dll` 放在软件目录的 `BASS` 文件夹下
+4. 编译后需要根据不同平台放置 BASS 库文件：
+   - **Windows平台**：把 BASS 库的 64 位的 `bass.dll`, `bassape.dll`, `bassdsd.dll`, `bassflac.dll`, `bassmidi.dll`, `bassopus.dll`, `basswv.dll`, `basswasapi.dll` 放在软件目录的 `BASS` 文件夹下
+   - **macOS平台**：把 BASS 库的 macOS 版本 `libbass.dylib`, `libbassape.dylib`, `libbassdsd.dylib`, `libbassflac.dylib`, `libbassmidi.dylib`, `libbassopus.dylib`, `libbasswv.dylib` 放在应用程序包的 `Contents/Frameworks` 目录下
+
+   > 从源码构建时，macOS平台的BASS库文件会自动从`macos/bass`目录复制到应用程序包中，无需手动操作。
+
+   > 注意：WASAPI 是 Windows 特有的 API，macOS 平台不需要 `basswasapi.dll`/`libbasswasapi.dylib` 文件
+
+5. 获取 BASS 库文件：
+   - 可以从 [官方网站](https://www.un4seen.com/bass.html) 下载最新版本的 BASS 库
+   - Windows 平台需要下载 Windows 版本的 BASS 库
+   - macOS 平台需要下载 macOS 版本的 BASS 库
 
 ## 歌词特性解释
 1. lrc歌词的间奏识别   

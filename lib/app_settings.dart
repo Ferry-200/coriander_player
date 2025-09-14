@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:coriander_player/src/rust/api/system_theme.dart';
 import 'package:coriander_player/utils.dart';
+import 'package:coriander_player/platform_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:github/github.dart';
 import 'package:path/path.dart' as path;
@@ -73,6 +74,11 @@ class AppSettings {
   static AppSettings get instance => _instance;
 
   static ThemeMode getWindowsThemeMode() {
+    if (Platform.isMacOS) {
+      // macOS平台使用平台助手提供的方法获取系统主题模式
+      return PlatformHelper.getSystemThemeMode();
+    }
+
     final systemTheme = SystemTheme.getSystemTheme();
 
     final isDarkMode = (((5 * systemTheme.fore.$3) +
@@ -83,6 +89,11 @@ class AppSettings {
   }
 
   static int getWindowsTheme() {
+    if (Platform.isMacOS) {
+      // macOS平台使用平台助手提供的默认主题色
+      return PlatformHelper.getDefaultSystemThemeColor();
+    }
+
     final systemTheme = SystemTheme.getSystemTheme();
     return Color.fromARGB(
       systemTheme.accent.$1,
@@ -133,7 +144,8 @@ class AppSettings {
   static Future<void> readFromJson() async {
     try {
       final supportPath = (await getAppDataDir()).path;
-      final settingsPath = "$supportPath\\settings.json";
+      final settingsPath =
+          PlatformHelper.joinPaths([supportPath, "settings.json"]);
 
       final settingsStr = File(settingsPath).readAsStringSync();
       Map settingsMap = json.decode(settingsStr);
@@ -215,7 +227,8 @@ class AppSettings {
 
       final settingsStr = json.encode(settingsMap);
       final supportPath = (await getAppDataDir()).path;
-      final settingsPath = "$supportPath\\settings.json";
+      final settingsPath =
+          PlatformHelper.joinPaths([supportPath, "settings.json"]);
       final output = await File(settingsPath).create(recursive: true);
       output.writeAsStringSync(settingsStr);
     } catch (err, trace) {

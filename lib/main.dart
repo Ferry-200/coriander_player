@@ -4,6 +4,7 @@ import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/entry.dart';
 import 'package:coriander_player/hotkeys_helper.dart';
+import 'package:coriander_player/platform_helper.dart';
 import 'package:coriander_player/src/rust/api/logger.dart';
 import 'package:coriander_player/src/rust/frb_generated.dart';
 import 'package:coriander_player/theme_provider.dart';
@@ -14,17 +15,28 @@ import 'package:window_manager/window_manager.dart';
 
 Future<void> initWindow() async {
   await windowManager.ensureInitialized();
-  WindowOptions windowOptions = WindowOptions(
+
+  // macOS平台的窗口设置
+  final windowOptions = WindowOptions(
     minimumSize: const Size(507, 507),
     size: AppSettings.instance.windowSize,
     center: true,
     backgroundColor: Colors.transparent,
     skipTaskbar: false,
-    titleBarStyle: TitleBarStyle.hidden,
+    titleBarStyle:
+        Platform.isMacOS ? TitleBarStyle.normal : TitleBarStyle.hidden,
   );
+
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();
     await windowManager.focus();
+
+    // macOS平台特有的设置
+    if (Platform.isMacOS) {
+      // 启用macOS上的窗口全尺寸内容视图
+      // 注释掉不存在的方法调用
+      // await windowManager.setFullSizeContentView(true);
+    }
   });
 }
 
@@ -63,14 +75,17 @@ Future<void> main() async {
   await migrateAppData();
 
   final supportPath = (await getAppDataDir()).path;
-  if (File("$supportPath\\settings.json").existsSync()) {
+  if (File(PlatformHelper.joinPaths([supportPath, "settings.json"]))
+      .existsSync()) {
     await AppSettings.readFromJson();
     await loadPrefFont();
   }
-  if (File("$supportPath\\app_preference.json").existsSync()) {
+  if (File(PlatformHelper.joinPaths([supportPath, "app_preference.json"]))
+      .existsSync()) {
     await AppPreference.read();
   }
-  final welcome = !File("$supportPath\\index.json").existsSync();
+  final welcome =
+      !File(PlatformHelper.joinPaths([supportPath, "index.json"])).existsSync();
 
   await initWindow();
 
