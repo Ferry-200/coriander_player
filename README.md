@@ -17,8 +17,8 @@ scoop install jin/coriander_player
 ```
 
 ## 其他平台支持
-- [https://github.com/marscey/coriander_player/tree/macos-platform](https://github.com/marscey/coriander_player/tree/macos-platform)
-- [https://github.com/Sh12uku/coriander_player_linux]()
+- MacOS: [https://github.com/marscey/coriander_player/tree/macos-platform](https://github.com/marscey/coriander_player/tree/macos-platform)
+- Linux: [https://github.com/Sh12uku/coriander_player_linux]()
 
 ## 软件内快捷键
 页面中有文本框且处于输入状态时会自动忽略快捷键操作。如果要使用快捷键，可以点击输入框以外的地方，然后再次使用。
