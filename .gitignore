@@ -48,3 +48,4 @@ lib/page/settings_page/cpfeedback_key.dart
 # Claude Code related
 .claude/
 .temp/
+CLAUDE.md
