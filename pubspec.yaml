@@ -37,7 +37,7 @@ dependencies:
   pinyin: ^3.3.0
   hotkey_manager: ^0.2.3
   logger: ^2.4.0
-  flutter_rust_bridge: 2.8.0
+  flutter_rust_bridge: 2.11.1
   rust_lib_coriander_player:
     path: rust_builder
 
