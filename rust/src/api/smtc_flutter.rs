@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use flutter_rust_bridge::frb;
 use windows::{
-    core::{Interface, HSTRING},
+    core::HSTRING,
     Foundation::{TimeSpan, TypedEventHandler},
     Media::{
         MediaPlaybackStatus, MediaPlaybackType, Playback::MediaPlayer,
