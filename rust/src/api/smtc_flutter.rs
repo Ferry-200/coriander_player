@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use flutter_rust_bridge::frb;
 use windows::{
-    core::HSTRING,
+    core::{Interface, HSTRING},
     Foundation::{TimeSpan, TypedEventHandler},
     Media::{
         MediaPlaybackStatus, MediaPlaybackType, Playback::MediaPlayer,
@@ -10,12 +10,16 @@ use windows::{
         SystemMediaTransportControlsButtonPressedEventArgs,
         SystemMediaTransportControlsTimelineProperties,
     },
-    Storage::{FileProperties::ThumbnailMode, StorageFile, Streams::RandomAccessStreamReference},
+    Storage::{
+        FileProperties::ThumbnailMode,
+        StorageFile,
+        Streams::{DataWriter, InMemoryRandomAccessStream, RandomAccessStreamReference},
+    },
 };
 
 use crate::frb_generated::StreamSink;
 
-use super::logger::log_to_dart;
+use super::{logger::log_to_dart, tag_reader};
 
 pub struct SMTCFlutter {
     _smtc: SystemMediaTransportControls,
@@ -76,7 +80,14 @@ impl SMTCFlutter {
         }
     }
 
-    pub fn update_display(&self, title: String, artist: String, album: String, duration: u32, path: String) {
+    pub fn update_display(
+        &self,
+        title: String,
+        artist: String,
+        album: String,
+        duration: u32,
+        path: String,
+    ) {
         if let Err(err) = self._update_display(
             HSTRING::from(title),
             HSTRING::from(artist),
@@ -136,6 +147,25 @@ impl SMTCFlutter {
         Ok(())
     }
 
+    fn _ras_ref_from_pic_data(
+        picture_data: &[u8],
+    ) -> Result<RandomAccessStreamReference, windows::core::Error> {
+        let stream = InMemoryRandomAccessStream::new()?;
+
+        let writer = DataWriter::CreateDataWriter(&stream)?;
+        writer.WriteBytes(picture_data)?;
+        writer.StoreAsync()?.get()?;
+
+        // 调用 DetachStream() 的意义在于“把流从 DataWriter 脱附”，
+        // 这样可以安全地释放/关闭 DataWriter 而不影响流的生命周期。
+        // stream 不会因为 writer drop 而被销毁
+        writer.DetachStream()?;
+
+        stream.Seek(0)?;
+
+        Ok(RandomAccessStreamReference::CreateFromStream(&stream)?)
+    }
+
     fn _update_display(
         &self,
         title: HSTRING,
@@ -159,11 +189,22 @@ impl SMTCFlutter {
         music_properties.SetArtist(&artist)?;
         music_properties.SetAlbumTitle(&album)?;
 
-        let file = StorageFile::GetFileFromPathAsync(&path)?.get()?;
-        let thumbnail = file
-            .GetThumbnailAsyncOverloadDefaultSizeDefaultOptions(ThumbnailMode::MusicView)?
-            .get()?;
-        updater.SetThumbnail(&RandomAccessStreamReference::CreateFromStream(&thumbnail)?)?;
+        let pic_stream_ref =
+            if let Some(pic_data) = tag_reader::get_picture_from_path(path.to_string(), 256, 256) {
+                Self::_ras_ref_from_pic_data(&pic_data)?
+            } else {
+                log_to_dart(format!(
+                    "no embedded picture found for file: {}",
+                    path.to_string()
+                ));
+                let file = StorageFile::GetFileFromPathAsync(&path)?.get()?;
+                let thumbnail = file
+                    .GetThumbnailAsyncOverloadDefaultSizeDefaultOptions(ThumbnailMode::MusicView)?
+                    .get()?;
+                RandomAccessStreamReference::CreateFromStream(&thumbnail)?
+            };
+
+        updater.SetThumbnail(&pic_stream_ref)?;
 
         updater.Update()?;
 
