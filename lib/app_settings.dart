@@ -62,6 +62,7 @@ class AppSettings {
   /// 歌词来源：true，本地优先；false，在线优先
   bool localLyricFirst = true;
   Size windowSize = const Size(1280, 756);
+  bool isWindowMaximized = false;
 
   String? fontFamily;
   String? fontPath;
@@ -128,6 +129,11 @@ class AppSettings {
       _instance.windowSize = Size(double.tryParse(sizeStrs[0]) ?? 1280,
           double.tryParse(sizeStrs[1]) ?? 756);
     }
+
+    final isMaximized = settingsMap["IsWindowMaximized"];
+    if (isMaximized != null) {
+      _instance.isWindowMaximized = isMaximized == 1 ? true : false;
+    }
   }
 
   static Future<void> readFromJson() async {
@@ -184,6 +190,11 @@ class AppSettings {
             double.tryParse(sizeStrs[1]) ?? 756);
       }
 
+      final isMaximized = settingsMap["IsWindowMaximized"];
+      if (isMaximized != null) {
+        _instance.isWindowMaximized = isMaximized;
+      }
+
       final ff = settingsMap["FontFamily"];
       final fp = settingsMap["FontPath"];
       if (ff != null) {
@@ -197,7 +208,8 @@ class AppSettings {
 
   Future<void> saveSettings() async {
     try {
-      final currSize = await windowManager.getSize();
+      final isMaximized = await windowManager.isMaximized();
+      final isFullScreen = await windowManager.isFullScreen();
       final settingsMap = {
         "Version": version,
         "ThemeMode": themeMode == ThemeMode.dark,
@@ -207,11 +219,22 @@ class AppSettings {
         "DefaultTheme": defaultTheme,
         "ArtistSeparator": artistSeparator,
         "LocalLyricFirst": localLyricFirst,
-        "WindowSize":
-            "${currSize.width.toStringAsFixed(1)},${currSize.height.toStringAsFixed(1)}",
+        "IsWindowMaximized": isMaximized,
         "FontFamily": fontFamily,
         "FontPath": fontPath,
       };
+
+      // 只有在窗口不是最大化且不是全屏时才保存窗口尺寸
+      // 这样windowSize始终保存的是窗口化时的尺寸
+      if (!isMaximized && !isFullScreen) {
+        final currSize = await windowManager.getSize();
+        settingsMap["WindowSize"] =
+            "${currSize.width.toStringAsFixed(1)},${currSize.height.toStringAsFixed(1)}";
+      } else {
+        // 如果窗口最大化或全屏，保持现有的windowSize不变
+        settingsMap["WindowSize"] =
+            "${windowSize.width.toStringAsFixed(1)},${windowSize.height.toStringAsFixed(1)}";
+      }
 
       final settingsStr = json.encode(settingsMap);
       final supportPath = (await getAppDataDir()).path;

@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:screen_retriever/screen_retriever.dart';
 
 class TitleBar extends StatelessWidget {
   const TitleBar({super.key});
@@ -197,10 +198,83 @@ class WindowControlls extends StatefulWidget {
 }
 
 class _WindowControllsState extends State<WindowControlls> with WindowListener {
+  bool _isFullScreen = false;
+  bool _isMaximized = false;
+  bool _isProcessing = false;
+
+  // 用于保存退出全屏时的窗口状态
+  bool _wasFrameless = false;
+  Size? _previousWindowSize;
+  Offset? _previousWindowPosition;
+
   @override
   void initState() {
     super.initState();
     windowManager.addListener(this);
+    _updateWindowStates();
+  }
+
+  Future<void> _updateWindowStates() async {
+    final isFullScreen = await windowManager.isFullScreen();
+    final isMaximized = await windowManager.isMaximized();
+    if (mounted) {
+      setState(() {
+        _isFullScreen = isFullScreen;
+        _isMaximized = isMaximized;
+        _isProcessing = false;
+      });
+    }
+  }
+
+  void _logScreenInfo(dynamic screen) {
+    try {
+      print("=== 屏幕信息调试 ===");
+      print("screen 类型: ${screen.runtimeType}");
+      if (screen.size != null) {
+        print("screen.size: ${screen.size}");
+      }
+      if (screen.visibleSize != null) {
+        print("screen.visibleSize: ${screen.visibleSize}");
+      }
+      if (screen.visiblePosition != null) {
+        print("screen.visiblePosition: ${screen.visiblePosition}");
+      }
+      print("==================");
+    } catch (e) {
+      print("记录屏幕信息时出错: $e");
+    }
+  }
+
+  Size _getFullScreenSize(dynamic screen) {
+    try {
+      // 使用整个屏幕大小（包含任务栏区域）
+      final size = screen.size;
+      if (size != null) {
+        print("使用整个屏幕大小: $size");
+        return Size(size.width, size.height);
+      }
+    } catch (e) {
+      print("获取屏幕大小时出错: $e");
+    }
+    // 默认返回一个合理的大小
+    print("使用默认屏幕大小: 1920x1080");
+    return const Size(1920, 1080);
+  }
+
+  Future<void> _toggleFullScreen() async {
+    if (_isProcessing) return;
+
+    setState(() {
+      _isProcessing = true;
+    });
+
+    try {
+      await windowManager.setFullScreen(!_isFullScreen);
+    } finally {
+      if (mounted) {
+        await _updateWindowStates();
+      }
+    }
   }
 
   @override
@@ -211,29 +285,39 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
 
   @override
   void onWindowMaximize() {
-    setState(() {});
+    _updateWindowStates();
+    // 窗口最大化时保存设置
+    AppSettings.instance.saveSettings();
   }
 
   @override
   void onWindowUnmaximize() {
-    setState(() {});
+    _updateWindowStates();
+    // 窗口还原时保存设置
+    AppSettings.instance.saveSettings();
   }
 
   @override
   void onWindowRestore() {
-    setState(() {});
+    _updateWindowStates();
+    // 窗口从最小化恢复时保存设置
+    AppSettings.instance.saveSettings();
   }
 
   @override
   void onWindowEnterFullScreen() {
     super.onWindowEnterFullScreen();
-    setState(() {});
+    _updateWindowStates();
+    // 进入全屏时保存设置
+    AppSettings.instance.saveSettings();
   }
 
   @override
   void onWindowLeaveFullScreen() {
     super.onWindowLeaveFullScreen();
-    setState(() {});
+    _updateWindowStates();
+    // 退出全屏时保存设置
+    AppSettings.instance.saveSettings();
   }
 
   @override
@@ -241,42 +325,44 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
     return Wrap(
       spacing: 8.0,
       children: [
-        FutureBuilder(
-          future: windowManager.isFullScreen(),
-          builder: (context, snapshot) {
-            final isFullScreen = snapshot.data ?? true;
-            return IconButton(
-              tooltip: isFullScreen ? "退出全屏" : "全屏",
-              onPressed: () async {
-                await windowManager.hide();
-                await windowManager.setFullScreen(!isFullScreen);
-                await windowManager.show();
-              },
-              icon: Icon(
-                isFullScreen ? Symbols.close_fullscreen : Symbols.open_in_full,
-              ),
-            );
-          },
+        IconButton(
+          tooltip: _isFullScreen ? "退出全屏" : "全屏",
+          onPressed: _isProcessing ? null : _toggleFullScreen,
+          icon: Icon(
+            _isFullScreen ? Symbols.close_fullscreen : Symbols.open_in_full,
+          ),
         ),
         IconButton(
           tooltip: "最小化",
           onPressed: windowManager.minimize,
           icon: const Icon(Symbols.remove),
         ),
-        FutureBuilder(
-          future: windowManager.isMaximized(),
-          builder: (context, snapshot) {
-            final isMaximized = snapshot.data ?? true;
-            return IconButton(
-              tooltip: isMaximized ? "还原" : "最大化",
-              onPressed: isMaximized
-                  ? windowManager.unmaximize
-                  : windowManager.maximize,
-              icon: Icon(
-                isMaximized ? Symbols.fullscreen_exit : Symbols.fullscreen,
-              ),
-            );
-          },
+        IconButton(
+          tooltip: _isFullScreen ? "全屏模式下不可用" : (_isMaximized ? "还原" : "最大化"),
+          onPressed: _isFullScreen || _isProcessing
+              ? null
+              : () async {
+                  if (_isProcessing) return;
+                  setState(() {
+                    _isProcessing = true;
+                  });
+                  try {
+                    if (_isMaximized) {
+                      await windowManager.unmaximize();
+                    } else {
+                      await windowManager.maximize();
+                    }
+                  } finally {
+                    if (mounted) {
+                      setState(() {
+                        _isProcessing = false;
+                      });
+                    }
+                  }
+                },
+          icon: Icon(
+            _isMaximized ? Symbols.fullscreen_exit : Symbols.fullscreen,
+          ),
         ),
         IconButton(
           tooltip: "退出",

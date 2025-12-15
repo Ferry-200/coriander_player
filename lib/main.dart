@@ -25,6 +25,12 @@ Future<void> initWindow() async {
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();
     await windowManager.focus();
+
+    // 注释：不再根据isWindowMaximized恢复最大化状态
+    // 总是使用窗口化状态，使用保存的windowSize
+    // if (AppSettings.instance.isWindowMaximized) {
+    //   await windowManager.maximize();
+    // }
   });
 }
 
