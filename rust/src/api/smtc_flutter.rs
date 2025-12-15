@@ -156,8 +156,11 @@ impl SMTCFlutter {
         writer.WriteBytes(picture_data)?;
         writer.StoreAsync()?.get()?;
 
-        let stream = writer.DetachStream()?;
-        let stream = stream.cast::<InMemoryRandomAccessStream>()?;
+        // 调用 DetachStream() 的意义在于“把流从 DataWriter 脱附”，
+        // 这样可以安全地释放/关闭 DataWriter 而不影响流的生命周期。
+        // stream 不会因为 writer drop 而被销毁
+        writer.DetachStream()?;
+
         stream.Seek(0)?;
 
         Ok(RandomAccessStreamReference::CreateFromStream(&stream)?)
