@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use flutter_rust_bridge::frb;
 use windows::{
-    core::{HSTRING, Interface},
+    core::{Interface, HSTRING},
     Foundation::{TimeSpan, TypedEventHandler},
     Media::{
         MediaPlaybackStatus, MediaPlaybackType, Playback::MediaPlayer,
@@ -13,7 +13,7 @@ use windows::{
     Storage::{
         FileProperties::ThumbnailMode,
         StorageFile,
-        Streams::{DataWriter, InMemoryRandomAccessStream, RandomAccessStreamReference, IRandomAccessStream}
+        Streams::{DataWriter, InMemoryRandomAccessStream, RandomAccessStreamReference},
     },
 };
 
@@ -80,7 +80,14 @@ impl SMTCFlutter {
         }
     }
 
-    pub fn update_display(&self, title: String, artist: String, album: String, duration: u32, path: String) {
+    pub fn update_display(
+        &self,
+        title: String,
+        artist: String,
+        album: String,
+        duration: u32,
+        path: String,
+    ) {
         if let Err(err) = self._update_display(
             HSTRING::from(title),
             HSTRING::from(artist),
@@ -140,54 +147,20 @@ impl SMTCFlutter {
         Ok(())
     }
 
-    /// 将图片数据转换为 Windows 缩略图流
-    fn _create_thumbnail_from_picture_data(picture_data: &[u8]) -> Result<InMemoryRandomAccessStream, windows::core::Error> {
-        log_to_dart(format!("Creating thumbnail stream from {} bytes of picture data...", picture_data.len()));
-
+    fn _ras_ref_from_pic_data(
+        picture_data: &[u8],
+    ) -> Result<RandomAccessStreamReference, windows::core::Error> {
         let stream = InMemoryRandomAccessStream::new()?;
-        log_to_dart(format!("Stream created, initial size: {:?}", stream.Size()));
 
         let writer = DataWriter::CreateDataWriter(&stream)?;
-        log_to_dart("DataWriter created".to_string());
+        writer.WriteBytes(picture_data)?;
+        writer.StoreAsync()?.get()?;
 
-        if let Err(err) = writer.WriteBytes(picture_data) {
-            log_to_dart(format!("WriteBytes failed: {}", err));
-            return Err(err);
-        }
-        log_to_dart("WriteBytes succeeded".to_string());
+        let stream = writer.DetachStream()?;
+        let stream = stream.cast::<InMemoryRandomAccessStream>()?;
+        stream.Seek(0)?;
 
-        if let Err(err) = writer.StoreAsync()?.get() {
-            log_to_dart(format!("StoreAsync failed: {}", err));
-            return Err(err);
-        }
-        log_to_dart("StoreAsync succeeded".to_string());
-
-        if let Err(err) = writer.FlushAsync()?.get() {
-            log_to_dart(format!("FlushAsync failed: {}", err));
-            return Err(err);
-        }
-        log_to_dart("FlushAsync succeeded".to_string());
-
-        // 关键：在丢弃writer之前尝试DetachStream，防止流被关闭
-        log_to_dart("Attempting to detach stream from writer...".to_string());
-        match writer.DetachStream() {
-            Ok(detached_stream) => {
-                log_to_dart("Stream detached successfully".to_string());
-                drop(writer);
-
-                let random_access_stream: IRandomAccessStream = detached_stream.cast::<IRandomAccessStream>()?;
-                random_access_stream.Seek(0)?;
-
-                let final_stream = random_access_stream.cast::<InMemoryRandomAccessStream>()?;
-                let final_size = final_stream.Size()?;
-                log_to_dart(format!("Final stream size: {} bytes", final_size));
-                Ok(final_stream)
-            }
-            Err(err) => {
-                log_to_dart(format!("Failed to detach stream: {}. The stream will be closed.", err));
-                Err(err)
-            }
-        }
+        Ok(RandomAccessStreamReference::CreateFromStream(&stream)?)
     }
 
     fn _update_display(
@@ -213,47 +186,27 @@ impl SMTCFlutter {
         music_properties.SetArtist(&artist)?;
         music_properties.SetAlbumTitle(&album)?;
 
-        // 优先从音频标签获取封面（与软件内部一致）
-        let mut thumbnail_set = false;
+        let pic_stream_ref =
+            if let Some(pic_data) = tag_reader::get_picture_from_path(path.to_string(), 256, 256) {
+                Self::_ras_ref_from_pic_data(&pic_data)?
+            } else {
+                log_to_dart(format!(
+                    "no embedded picture found for file: {}",
+                    path.to_string()
+                ));
+                let file = StorageFile::GetFileFromPathAsync(&path)?.get()?;
+                let thumbnail = file
+                    .GetThumbnailAsyncOverloadDefaultSizeDefaultOptions(ThumbnailMode::MusicView)?
+                    .get()?;
+                RandomAccessStreamReference::CreateFromStream(&thumbnail)?
+            };
 
-        if let Some(picture_data) = tag_reader::get_picture_from_path(path.to_string(), 256, 256) {
-            log_to_dart(format!("Audio tag picture data size: {} bytes", picture_data.len()));
-            let result: Result<(), windows::core::Error> = (|| {
-                let stream = Self::_create_thumbnail_from_picture_data(&picture_data)?;
-                log_to_dart("Created thumbnail stream from audio tag".to_string());
-                let stream_ref = RandomAccessStreamReference::CreateFromStream(&stream)?;
-                updater.SetThumbnail(&stream_ref)?;
-                Ok(())
-            })();
+        updater.SetThumbnail(&pic_stream_ref)?;
 
-            if result.is_ok() {
-                thumbnail_set = true;
-                log_to_dart("SMTC thumbnail set from audio tag".to_string());
-            } else if let Err(err) = result {
-                log_to_dart(format!("Failed to set thumbnail from audio tag: {}", err));
-            }
-        } else {
-            log_to_dart("No picture data from audio tag".to_string());
-        }
-
-        // 如果从标签获取失败，回退到 Windows 系统缩略图
-        if !thumbnail_set {
-            let file = StorageFile::GetFileFromPathAsync(&path)?.get()?;
-            let thumbnail = file
-                .GetThumbnailAsyncOverloadDefaultSizeDefaultOptions(ThumbnailMode::MusicView)?
-                .get()?;
-            updater.SetThumbnail(&RandomAccessStreamReference::CreateFromStream(&thumbnail)?)?;
-            log_to_dart("SMTC thumbnail set from Windows system thumbnail".to_string());
-        }
-
-        log_to_dart("Calling updater.Update()...".to_string());
         updater.Update()?;
-        log_to_dart("updater.Update() succeeded".to_string());
 
         if !(self._smtc.IsEnabled()?) {
-            log_to_dart("SMTC not enabled, enabling...".to_string());
             self._smtc.SetIsEnabled(true)?;
-            log_to_dart("SMTC enabled".to_string());
         }
 
         Ok(())
