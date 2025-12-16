@@ -226,40 +226,7 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
     }
   }
 
-  void _logScreenInfo(dynamic screen) {
-    try {
-      print("=== 屏幕信息调试 ===");
-      print("screen 类型: ${screen.runtimeType}");
-      if (screen.size != null) {
-        print("screen.size: ${screen.size}");
-      }
-      if (screen.visibleSize != null) {
-        print("screen.visibleSize: ${screen.visibleSize}");
-      }
-      if (screen.visiblePosition != null) {
-        print("screen.visiblePosition: ${screen.visiblePosition}");
-      }
-      print("==================");
-    } catch (e) {
-      print("记录屏幕信息时出错: $e");
-    }
-  }
 
-  Size _getFullScreenSize(dynamic screen) {
-    try {
-      // 使用整个屏幕大小（包含任务栏区域）
-      final size = screen.size;
-      if (size != null) {
-        print("使用整个屏幕大小: $size");
-        return Size(size.width, size.height);
-      }
-    } catch (e) {
-      print("获取屏幕大小时出错: $e");
-    }
-    // 默认返回一个合理的大小
-    print("使用默认屏幕大小: 1920x1080");
-    return const Size(1920, 1080);
-  }
 
   Future<void> _toggleFullScreen() async {
     if (_isProcessing) return;
@@ -270,9 +237,12 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
 
     try {
       await windowManager.setFullScreen(!_isFullScreen);
-    } finally {
+    } catch (e) {
+      // 如果发生错误，重置处理状态
       if (mounted) {
-        await _updateWindowStates();
+        setState(() {
+          _isProcessing = false;
+        });
       }
     }
   }
@@ -352,7 +322,8 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
                     } else {
                       await windowManager.maximize();
                     }
-                  } finally {
+                  } catch (e) {
+                    // 如果发生错误，重置处理状态
                     if (mounted) {
                       setState(() {
                         _isProcessing = false;

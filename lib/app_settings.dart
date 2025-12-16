@@ -132,7 +132,7 @@ class AppSettings {
 
     final isMaximized = settingsMap["IsWindowMaximized"];
     if (isMaximized != null) {
-      _instance.isWindowMaximized = isMaximized == 1 ? true : false;
+      _instance.isWindowMaximized = isMaximized == 1;
     }
   }
 
@@ -226,15 +226,12 @@ class AppSettings {
 
       // 只有在窗口不是最大化且不是全屏时才保存窗口尺寸
       // 这样windowSize始终保存的是窗口化时的尺寸
+      Size sizeToSave = windowSize;
       if (!isMaximized && !isFullScreen) {
-        final currSize = await windowManager.getSize();
-        settingsMap["WindowSize"] =
-            "${currSize.width.toStringAsFixed(1)},${currSize.height.toStringAsFixed(1)}";
-      } else {
-        // 如果窗口最大化或全屏，保持现有的windowSize不变
-        settingsMap["WindowSize"] =
-            "${windowSize.width.toStringAsFixed(1)},${windowSize.height.toStringAsFixed(1)}";
+        sizeToSave = await windowManager.getSize();
       }
+      settingsMap["WindowSize"] =
+          "${sizeToSave.width.toStringAsFixed(1)},${sizeToSave.height.toStringAsFixed(1)}";
 
       final settingsStr = json.encode(settingsMap);
       final supportPath = (await getAppDataDir()).path;
