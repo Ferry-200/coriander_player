@@ -197,10 +197,71 @@ class WindowControlls extends StatefulWidget {
 }
 
 class _WindowControllsState extends State<WindowControlls> with WindowListener {
+  bool _isFullScreen = false;
+  bool _isMaximized = false;
+  bool _isProcessing = false;
+
   @override
   void initState() {
     super.initState();
     windowManager.addListener(this);
+    _updateWindowStates();
+  }
+
+  Future<void> _updateWindowStates() async {
+    final isFullScreen = await windowManager.isFullScreen();
+    final isMaximized = await windowManager.isMaximized();
+    if (mounted) {
+      setState(() {
+        _isFullScreen = isFullScreen;
+        _isMaximized = isMaximized;
+        _isProcessing = false;
+      });
+    }
+  }
+
+  Future<void> _toggleFullScreen() async {
+    if (_isProcessing) return;
+
+    setState(() {
+      _isProcessing = true;
+    });
+
+    try {
+      await windowManager.setFullScreen(!_isFullScreen);
+    } catch (e) {
+      rethrow;
+    } finally {
+      // 无论成功还是失败，最终都重置处理状态
+      // 调用_updateWindowStates()确保状态同步，即使监听器没有触发
+      if (mounted) {
+        await _updateWindowStates();
+      }
+    }
+  }
+
+  Future<void> _toggleMaximized() async {
+    if (_isProcessing) return;
+
+    setState(() {
+      _isProcessing = true;
+    });
+
+    try {
+      if (_isMaximized) {
+        await windowManager.unmaximize();
+      } else {
+        await windowManager.maximize();
+      }
+    } catch (e) {
+      rethrow;
+    } finally {
+      // 无论成功还是失败，最终都重置处理状态
+      // 调用_updateWindowStates()确保状态同步，即使监听器没有触发
+      if (mounted) {
+        await _updateWindowStates();
+      }
+    }
   }
 
   @override
@@ -211,29 +272,39 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
 
   @override
   void onWindowMaximize() {
-    setState(() {});
+    _updateWindowStates();
+    // 窗口最大化时保存设置
+    AppSettings.instance.saveSettings();
   }
 
   @override
   void onWindowUnmaximize() {
-    setState(() {});
+    _updateWindowStates();
+    // 窗口还原时保存设置
+    AppSettings.instance.saveSettings();
   }
 
   @override
   void onWindowRestore() {
-    setState(() {});
+    _updateWindowStates();
+    // 窗口从最小化恢复时保存设置
+    AppSettings.instance.saveSettings();
   }
 
   @override
   void onWindowEnterFullScreen() {
     super.onWindowEnterFullScreen();
-    setState(() {});
+    _updateWindowStates();
+    // 进入全屏时保存设置
+    AppSettings.instance.saveSettings();
   }
 
   @override
   void onWindowLeaveFullScreen() {
     super.onWindowLeaveFullScreen();
-    setState(() {});
+    _updateWindowStates();
+    // 退出全屏时保存设置
+    AppSettings.instance.saveSettings();
   }
 
   @override
@@ -241,42 +312,24 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
     return Wrap(
       spacing: 8.0,
       children: [
-        FutureBuilder(
-          future: windowManager.isFullScreen(),
-          builder: (context, snapshot) {
-            final isFullScreen = snapshot.data ?? true;
-            return IconButton(
-              tooltip: isFullScreen ? "退出全屏" : "全屏",
-              onPressed: () async {
-                await windowManager.hide();
-                await windowManager.setFullScreen(!isFullScreen);
-                await windowManager.show();
-              },
-              icon: Icon(
-                isFullScreen ? Symbols.close_fullscreen : Symbols.open_in_full,
-              ),
-            );
-          },
+        IconButton(
+          tooltip: _isFullScreen ? "退出全屏" : "全屏",
+          onPressed: _isProcessing ? null : _toggleFullScreen,
+          icon: Icon(
+            _isFullScreen ? Symbols.close_fullscreen : Symbols.open_in_full,
+          ),
         ),
         IconButton(
           tooltip: "最小化",
           onPressed: windowManager.minimize,
           icon: const Icon(Symbols.remove),
         ),
-        FutureBuilder(
-          future: windowManager.isMaximized(),
-          builder: (context, snapshot) {
-            final isMaximized = snapshot.data ?? true;
-            return IconButton(
-              tooltip: isMaximized ? "还原" : "最大化",
-              onPressed: isMaximized
-                  ? windowManager.unmaximize
-                  : windowManager.maximize,
-              icon: Icon(
-                isMaximized ? Symbols.fullscreen_exit : Symbols.fullscreen,
-              ),
-            );
-          },
+        IconButton(
+          tooltip: _isFullScreen ? "全屏模式下不可用" : (_isMaximized ? "还原" : "最大化"),
+          onPressed: _isFullScreen || _isProcessing ? null : _toggleMaximized,
+          icon: Icon(
+            _isMaximized ? Symbols.fullscreen_exit : Symbols.fullscreen,
+          ),
         ),
         IconButton(
           tooltip: "退出",
