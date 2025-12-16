@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:screen_retriever/screen_retriever.dart';
 
 class TitleBar extends StatelessWidget {
   const TitleBar({super.key});
@@ -202,11 +201,6 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
   bool _isMaximized = false;
   bool _isProcessing = false;
 
-  // 用于保存退出全屏时的窗口状态
-  bool _wasFrameless = false;
-  Size? _previousWindowSize;
-  Offset? _previousWindowPosition;
-
   @override
   void initState() {
     super.initState();
@@ -226,8 +220,6 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
     }
   }
 
-
-
   Future<void> _toggleFullScreen() async {
     if (_isProcessing) return;
 
@@ -237,6 +229,30 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
 
     try {
       await windowManager.setFullScreen(!_isFullScreen);
+    } catch (e) {
+      rethrow;
+    } finally {
+      // 无论成功还是失败，最终都重置处理状态
+      // 调用_updateWindowStates()确保状态同步，即使监听器没有触发
+      if (mounted) {
+        await _updateWindowStates();
+      }
+    }
+  }
+
+  Future<void> _toggleMaximized() async {
+    if (_isProcessing) return;
+
+    setState(() {
+      _isProcessing = true;
+    });
+
+    try {
+      if (_isMaximized) {
+        await windowManager.unmaximize();
+      } else {
+        await windowManager.maximize();
+      }
     } catch (e) {
       rethrow;
     } finally {
@@ -310,29 +326,7 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
         ),
         IconButton(
           tooltip: _isFullScreen ? "全屏模式下不可用" : (_isMaximized ? "还原" : "最大化"),
-          onPressed: _isFullScreen || _isProcessing
-              ? null
-              : () async {
-                  if (_isProcessing) return;
-                  setState(() {
-                    _isProcessing = true;
-                  });
-                  try {
-                    if (_isMaximized) {
-                      await windowManager.unmaximize();
-                    } else {
-                      await windowManager.maximize();
-                    }
-                  } catch (e) {
-                    rethrow;
-                  } finally {
-                    // 无论成功还是失败，最终都重置处理状态
-                    // 调用_updateWindowStates()确保状态同步，即使监听器没有触发
-                    if (mounted) {
-                      await _updateWindowStates();
-                    }
-                  }
-                },
+          onPressed: _isFullScreen || _isProcessing ? null : _toggleMaximized,
           icon: Icon(
             _isMaximized ? Symbols.fullscreen_exit : Symbols.fullscreen,
           ),

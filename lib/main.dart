@@ -25,7 +25,6 @@ Future<void> initWindow() async {
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();
     await windowManager.focus();
-
   });
 }
 
