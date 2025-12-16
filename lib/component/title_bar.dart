@@ -238,11 +238,12 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
     try {
       await windowManager.setFullScreen(!_isFullScreen);
     } catch (e) {
-      // 如果发生错误，重置处理状态
+      rethrow;
+    } finally {
+      // 无论成功还是失败，最终都重置处理状态
+      // 调用_updateWindowStates()确保状态同步，即使监听器没有触发
       if (mounted) {
-        setState(() {
-          _isProcessing = false;
-        });
+        await _updateWindowStates();
       }
     }
   }
@@ -323,11 +324,12 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
                       await windowManager.maximize();
                     }
                   } catch (e) {
-                    // 如果发生错误，重置处理状态
+                    rethrow;
+                  } finally {
+                    // 无论成功还是失败，最终都重置处理状态
+                    // 调用_updateWindowStates()确保状态同步，即使监听器没有触发
                     if (mounted) {
-                      setState(() {
-                        _isProcessing = false;
-                      });
+                      await _updateWindowStates();
                     }
                   }
                 },
