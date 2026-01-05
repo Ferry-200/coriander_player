@@ -44,3 +44,6 @@ app.*.map.json
 /android/app/release
 /.fvm
 lib/page/settings_page/cpfeedback_key.dart
+/.claude
+/.temp
+CLAUDE.md

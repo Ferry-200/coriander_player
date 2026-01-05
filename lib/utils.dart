@@ -1,9 +1,12 @@
 // ignore_for_file: unnecessary_this
 
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:pinyin/pinyin.dart';
+import 'package:coriander_player/src/rust/api/tag_reader.dart' as rust;
 
 extension StringHMMSS on Duration {
   /// Returns a string with hours, minutes, seconds,
@@ -104,3 +107,14 @@ final LOGGER = Logger(
   output: LOGGER_MEMORY,
   level: Level.all,
 );
+
+/// 清理单个音频文件的残留备份文件
+/// 在写入歌词前调用，确保没有遗留的备份文件
+Future<void> cleanupFileBackup(String filePath) async {
+  try {
+    await rust.cleanupResidualBackupFiles(path: filePath);
+    LOGGER.i('已清理文件备份: $filePath');
+  } catch (e, trace) {
+    LOGGER.e('清理文件备份失败: $filePath', error: e, stackTrace: trace);
+  }
+}
