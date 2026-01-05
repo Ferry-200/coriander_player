@@ -5,6 +5,15 @@ import 'qrc.dart';
 
 /// 歌词转换工具类，用于将Dart端的Lyric对象转换为LRC格式文本
 class LyricConverter {
+  /// 格式化时间戳为LRC格式 [mm:ss.ms]
+  static String _formatTimestamp(Duration startTime) {
+    final minutes = startTime.inMinutes;
+    final seconds = startTime.inSeconds % 60;
+    final milliseconds = startTime.inMilliseconds % 1000;
+
+    return '[${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}.${milliseconds.toString().padLeft(3, '0')}]';
+  }
+
   /// 从Lyric对象生成LRC格式文本
   ///
   /// 用于writeLyricsToFile的lrcText参数
@@ -34,31 +43,15 @@ class LyricConverter {
       // 跳过空内容的行
       if (lineContent.trim().isEmpty) continue;
 
-      // LRC格式：[mm:ss.ms]歌词文本
-      final minutes = startTime.inMinutes;
-      final seconds = startTime.inSeconds % 60;
-      final milliseconds = startTime.inMilliseconds % 1000;
-
-      // 格式化时间标签：[mm:ss.ms]
-      buffer.write('[');
-      buffer.write(minutes.toString().padLeft(2, '0'));
-      buffer.write(':');
-      buffer.write(seconds.toString().padLeft(2, '0'));
-      buffer.write('.');
-      buffer.write(milliseconds.toString().padLeft(3, '0'));
-      buffer.write(']');
+      // 格式化时间标签并写入歌词
+      final timestamp = _formatTimestamp(startTime);
+      buffer.write(timestamp);
       buffer.write(lineContent);
       buffer.writeln();
 
       // 如果有翻译，添加独立的翻译行
       if (translation != null && translation.trim().isNotEmpty) {
-        buffer.write('[');
-        buffer.write(minutes.toString().padLeft(2, '0'));
-        buffer.write(':');
-        buffer.write(seconds.toString().padLeft(2, '0'));
-        buffer.write('.');
-        buffer.write(milliseconds.toString().padLeft(3, '0'));
-        buffer.write(']');
+        buffer.write(timestamp);
         buffer.write(translation);
         buffer.writeln();
       }

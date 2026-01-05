@@ -822,6 +822,7 @@ pub fn can_write_lyrics_to_file(path: String) -> bool {
 
 /// 备份音频文件
 fn backup_audio_file(path: &Path) -> Result<PathBuf, String> {
+    use std::ffi::OsStr;
     use std::time::{SystemTime, UNIX_EPOCH};
 
     let timestamp = SystemTime::now()
@@ -829,7 +830,12 @@ fn backup_audio_file(path: &Path) -> Result<PathBuf, String> {
         .map_err(|e| format!("获取时间戳失败: {}", e))?
         .as_millis();
 
-    let backup_path = PathBuf::from(format!("{}.lyricbackup.{}", path.to_str().unwrap(), timestamp));
+    let mut backup_filename = path.file_name()
+        .ok_or_else(|| "无法获取文件名".to_string())?
+        .to_owned();
+    backup_filename.push(OsStr::new(&format!(".lyricbackup.{}", timestamp)));
+
+    let backup_path = path.with_file_name(backup_filename);
 
     fs::copy(path, &backup_path)
         .map_err(|e| format!("创建备份失败: {}", e))?;

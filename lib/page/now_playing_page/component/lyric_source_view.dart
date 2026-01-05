@@ -67,17 +67,20 @@ class _SetLyricSourceBtn extends StatelessWidget {
     // 检查文件是否支持歌词写入
     try {
       final canWrite = await rust.canWriteLyricsToFile(path: nowPlaying.path);
+      if (!context.mounted) return;
       if (!canWrite) {
         _showSnackBar(context, '当前音频文件不支持歌词写入（仅支持MP3格式）', isError: true);
         return;
       }
     } catch (e) {
+      if (!context.mounted) return;
       _showSnackBar(context, '检查文件支持时出错: $e', isError: true);
       return;
     }
 
     // 获取当前歌词
     final lyric = await lyricService.currLyricFuture;
+    if (!context.mounted) return;
     if (lyric == null) {
       _showSnackBar(context, '没有可用的歌词', isError: true);
       return;
@@ -88,15 +91,13 @@ class _SetLyricSourceBtn extends StatelessWidget {
 
     // 调用Rust API写入歌词（只写入USLT帧）
     try {
-      // 写入前先清理可能残留的备份文件
-      await cleanupFileBackup(nowPlaying.path);
-
       await rust.writeLyricsToFile(
         path: nowPlaying.path,
         lrcText: lrcText,
         language: 'zho', // 中文
         description: 'Coriander Player',
       );
+      if (!context.mounted) return;
 
       // 保存成功后，自动切换到本地歌词源
       LYRIC_SOURCES[nowPlaying.path] = LyricSource(LyricSourceType.local);
@@ -105,6 +106,7 @@ class _SetLyricSourceBtn extends StatelessWidget {
 
       _showSnackBar(context, '歌词保存成功，已切换到本地歌词');
     } catch (e) {
+      if (!context.mounted) return;
       _showSnackBar(context, '歌词保存失败: $e', isError: true);
     }
   }
