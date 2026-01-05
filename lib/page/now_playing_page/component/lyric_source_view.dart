@@ -97,7 +97,13 @@ class _SetLyricSourceBtn extends StatelessWidget {
         language: 'zho', // 中文
         description: 'Coriander Player',
       );
-      _showSnackBar(context, '歌词保存成功');
+
+      // 保存成功后，自动切换到本地歌词源
+      LYRIC_SOURCES[nowPlaying.path] = LyricSource(LyricSourceType.local);
+      await saveLyricSources();
+      lyricService.useLocalLyric();
+
+      _showSnackBar(context, '歌词保存成功，已切换到本地歌词');
     } catch (e) {
       _showSnackBar(context, '歌词保存失败: $e', isError: true);
     }
