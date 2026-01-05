@@ -14,38 +14,34 @@ class LyricConverter {
     final buffer = StringBuffer();
 
     for (final line in lyric.lines) {
+      final Duration startTime;
+      final String lineContent;
+
       if (line is UnsyncLyricLine) {
-        // LRC格式：[mm:ss.ms]歌词文本
-        final minutes = line.start.inMinutes;
-        final seconds = line.start.inSeconds % 60;
-        final milliseconds = line.start.inMilliseconds % 1000;
-
-        // 格式化时间标签：[mm:ss.ms]
-        buffer.write('[');
-        buffer.write(minutes.toString().padLeft(2, '0'));
-        buffer.write(':');
-        buffer.write(seconds.toString().padLeft(2, '0'));
-        buffer.write('.');
-        buffer.write(milliseconds.toString().padLeft(3, '0'));
-        buffer.write(']');
-        buffer.write(line.content);
-        buffer.writeln();
+        startTime = line.start;
+        lineContent = line.content;
       } else if (line is SyncLyricLine) {
-        // KRC/QRC歌词行：转换为LRC格式，只保留行级时间戳
-        final minutes = line.start.inMinutes;
-        final seconds = line.start.inSeconds % 60;
-        final milliseconds = line.start.inMilliseconds % 1000;
-
-        buffer.write('[');
-        buffer.write(minutes.toString().padLeft(2, '0'));
-        buffer.write(':');
-        buffer.write(seconds.toString().padLeft(2, '0'));
-        buffer.write('.');
-        buffer.write(milliseconds.toString().padLeft(3, '0'));
-        buffer.write(']');
-        buffer.write(line.content);
-        buffer.writeln();
+        startTime = line.start;
+        lineContent = line.content;
+      } else {
+        continue;
       }
+
+      // LRC格式：[mm:ss.ms]歌词文本
+      final minutes = startTime.inMinutes;
+      final seconds = startTime.inSeconds % 60;
+      final milliseconds = startTime.inMilliseconds % 1000;
+
+      // 格式化时间标签：[mm:ss.ms]
+      buffer.write('[');
+      buffer.write(minutes.toString().padLeft(2, '0'));
+      buffer.write(':');
+      buffer.write(seconds.toString().padLeft(2, '0'));
+      buffer.write('.');
+      buffer.write(milliseconds.toString().padLeft(3, '0'));
+      buffer.write(']');
+      buffer.write(lineContent);
+      buffer.writeln();
     }
 
     return buffer.toString();

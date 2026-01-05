@@ -807,7 +807,7 @@ pub fn update_index(index_path: String, sink: StreamSink<IndexActionState>) -> a
 /// 检查文件是否支持歌词写入
 /// 严格只支持MP3格式（.mp3扩展名）
 #[frb]
-pub fn can_write_lyrics_to_file(path: String) -> Result<bool, String> {
+pub fn can_write_lyrics_to_file(path: String) -> bool {
     use std::path::Path;
 
     let path = Path::new(&path);
@@ -817,7 +817,7 @@ pub fn can_write_lyrics_to_file(path: String) -> Result<bool, String> {
         .to_lowercase();
 
     // 严格只支持MP3格式
-    Ok(extension == "mp3")
+    extension == "mp3"
 }
 
 /// 备份音频文件
@@ -829,7 +829,7 @@ fn backup_audio_file(path: &Path) -> Result<PathBuf, String> {
         .map_err(|e| format!("获取时间戳失败: {}", e))?
         .as_millis();
 
-    let backup_path = path.with_extension(format!("mp3.lyricbackup.{}", timestamp));
+    let backup_path = PathBuf::from(format!("{}.lyricbackup.{}", path.to_str().unwrap(), timestamp));
 
     fs::copy(path, &backup_path)
         .map_err(|e| format!("创建备份失败: {}", e))?;
@@ -930,7 +930,7 @@ fn write_lyrics_with_id3(
     // 写入USLT帧（无同步歌词）
     let lyrics = Lyrics {
         lang: lang.clone(),
-        description: String::new(), // USLT描述通常为空
+        description: desc,
         text: lrc_text.to_string(),
     };
 

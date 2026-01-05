@@ -85,12 +85,6 @@ class _SetLyricSourceBtn extends StatelessWidget {
     // 转换歌词数据为LRC格式
     final lrcText = LyricConverter.generateLrcText(lyric);
 
-    // DEBUG: 检查转换结果
-    print('[DEBUG] 歌词类型: ${lyric.runtimeType}');
-    print('[DEBUG] LRC文本长度: ${lrcText.length}');
-    print(
-        '[DEBUG] LRC文本前50字符: ${lrcText.substring(0, lrcText.length > 50 ? 50 : lrcText.length)}');
-
     // 调用Rust API写入歌词（只写入USLT帧）
     try {
       await rust.writeLyricsToFile(
@@ -108,10 +102,11 @@ class _SetLyricSourceBtn extends StatelessWidget {
   /// 显示操作结果提示
   void _showSnackBar(BuildContext context, String message,
       {bool isError = false}) {
+    final scheme = Theme.of(context).colorScheme;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError ? Colors.redAccent : Colors.greenAccent,
+        backgroundColor: isError ? scheme.error : scheme.primary,
         duration: const Duration(seconds: 3),
       ),
     );

@@ -411,8 +411,10 @@ fn wire__crate__api__tag_reader__can_write_lyrics_to_file_impl(
             let api_path = <String>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
-                    let output_ok = crate::api::tag_reader::can_write_lyrics_to_file(api_path)?;
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok = Result::<_, ()>::Ok(
+                        crate::api::tag_reader::can_write_lyrics_to_file(api_path),
+                    )?;
                     Ok(output_ok)
                 })())
             }

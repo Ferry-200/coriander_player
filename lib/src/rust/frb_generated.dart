@@ -374,7 +374,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_bool,
-        decodeErrorData: sse_decode_String,
+        decodeErrorData: null,
       ),
       constMeta: kCrateApiTagReaderCanWriteLyricsToFileConstMeta,
       argValues: [path],
