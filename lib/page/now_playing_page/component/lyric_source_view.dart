@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:coriander_player/lyric/lyric_converter.dart';
 import 'package:coriander_player/src/rust/api/tag_reader.dart' as rust;
+import 'package:coriander_player/utils.dart';
 
 class SetLyricSourceBtn extends StatelessWidget {
   const SetLyricSourceBtn({super.key});
@@ -87,6 +88,9 @@ class _SetLyricSourceBtn extends StatelessWidget {
 
     // 调用Rust API写入歌词（只写入USLT帧）
     try {
+      // 写入前先清理可能残留的备份文件
+      await cleanupFileBackup(nowPlaying.path);
+
       await rust.writeLyricsToFile(
         path: nowPlaying.path,
         lrcText: lrcText,

@@ -51,6 +51,12 @@ Stream<IndexActionState> updateIndex({required String indexPath}) =>
 Future<bool> canWriteLyricsToFile({required String path}) =>
     RustLib.instance.api.crateApiTagReaderCanWriteLyricsToFile(path: path);
 
+/// 清理残留的备份文件
+/// 用于启动时或检测到异常时清理所有.lyricbackup.*文件
+Future<void> cleanupResidualBackupFiles({required String path}) =>
+    RustLib.instance.api
+        .crateApiTagReaderCleanupResidualBackupFiles(path: path);
+
 /// 写入歌词到音频文件
 /// 只写入ID3v2 USLT（无同步歌词）帧
 Future<void> writeLyricsToFile(

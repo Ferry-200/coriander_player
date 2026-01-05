@@ -837,6 +837,55 @@ fn backup_audio_file(path: &Path) -> Result<PathBuf, String> {
     Ok(backup_path)
 }
 
+/// 清理残留的备份文件
+/// 用于启动时或检测到异常时清理所有.lyricbackup.*文件
+#[frb]
+pub fn cleanup_residual_backup_files(path: String) -> Result<(), String> {
+    let path = Path::new(&path);
+
+    let parent_dir = path.parent()
+        .ok_or_else(|| format!("无法获取文件父目录: {}", path.display()))?;
+
+    let file_name = path.file_name()
+        .ok_or_else(|| format!("无法获取文件名: {}", path.display()))?
+        .to_string_lossy();
+
+    // 构建备份文件匹配模式: filename.lyricbackup.*
+    let backup_pattern = format!("{}.lyricbackup.", file_name);
+
+    let mut cleaned_count = 0;
+
+    match fs::read_dir(parent_dir) {
+        Ok(entries) => {
+            for entry in entries {
+                if let Ok(entry) = entry {
+                    let entry_path = entry.path();
+                    if let Some(file_name) = entry_path.file_name() {
+                        let file_name_str = file_name.to_string_lossy();
+                        if file_name_str.starts_with(&backup_pattern) {
+                            // 尝试删除备份文件
+                            if let Err(e) = fs::remove_file(&entry_path) {
+                                log_to_dart(format!("清理备份文件失败 {}: {}", entry_path.display(), e));
+                            } else {
+                                cleaned_count += 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Err(e) => {
+            return Err(format!("读取目录失败: {}", e));
+        }
+    }
+
+    if cleaned_count > 0 {
+        log_to_dart(format!("清理了 {} 个残留备份文件", cleaned_count));
+    }
+
+    Ok(())
+}
+
 /// 恢复音频文件备份
 fn restore_audio_file_backup(original_path: &Path, backup_path: &Path) -> Result<(), String> {
     fs::copy(backup_path, original_path)
@@ -862,6 +911,12 @@ pub fn write_lyrics_to_file(
 
     let path = Path::new(&path);
 
+    // 0. 写入前先清理可能残留的备份文件
+    if let Err(e) = cleanup_residual_backup_files(path.to_string_lossy().to_string()) {
+        log_to_dart(format!("清理残留备份文件时出错: {}", e));
+        // 不中断流程，继续执行
+    }
+
     // 1. 创建备份
     let backup_path = match backup_audio_file(path) {
         Ok(backup) => backup,
@@ -879,11 +934,18 @@ pub fn write_lyrics_to_file(
     // 3. 如果写入失败，恢复备份
     if let Err(e) = result {
         log_to_dart(format!("歌词写入失败: {}", e));
+
+        // 尝试恢复备份
         if let Err(restore_err) = restore_audio_file_backup(path, &backup_path) {
             let error_msg = format!("歌词写入失败: {}，且恢复备份也失败: {}", e, restore_err);
             log_to_dart(error_msg.clone());
+
+            // 即使恢复失败，也要尝试清理备份文件
+            let _ = fs::remove_file(&backup_path);
             return Err(error_msg);
         }
+
+        // 恢复成功，备份文件已在 restore_audio_file_backup 中删除
         let error_msg = format!("歌词写入失败，已恢复备份: {}", e);
         log_to_dart(error_msg.clone());
         return Err(error_msg);
@@ -892,6 +954,7 @@ pub fn write_lyrics_to_file(
     // 4. 写入成功，删除备份
     if let Err(e) = fs::remove_file(&backup_path) {
         log_to_dart(format!("删除备份文件失败: {}，但歌词写入成功", e));
+        // 记录日志但不返回错误，因为写入操作本身已成功
     }
 
     Ok(())
