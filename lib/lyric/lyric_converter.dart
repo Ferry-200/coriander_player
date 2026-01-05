@@ -8,6 +8,7 @@ class LyricConverter {
   /// 从Lyric对象生成LRC格式文本
   ///
   /// 用于writeLyricsToFile的lrcText参数
+  /// 支持翻译：翻译会以独立行的形式追加，使用相同的时间戳
   static String generateLrcText(Lyric? lyric) {
     if (lyric == null) return '';
 
@@ -16,16 +17,22 @@ class LyricConverter {
     for (final line in lyric.lines) {
       final Duration startTime;
       final String lineContent;
+      final String? translation;
 
       if (line is UnsyncLyricLine) {
         startTime = line.start;
         lineContent = line.content;
+        translation = null;
       } else if (line is SyncLyricLine) {
         startTime = line.start;
         lineContent = line.content;
+        translation = line.translation;
       } else {
         continue;
       }
+
+      // 跳过空内容的行
+      if (lineContent.trim().isEmpty) continue;
 
       // LRC格式：[mm:ss.ms]歌词文本
       final minutes = startTime.inMinutes;
@@ -42,6 +49,19 @@ class LyricConverter {
       buffer.write(']');
       buffer.write(lineContent);
       buffer.writeln();
+
+      // 如果有翻译，添加独立的翻译行
+      if (translation != null && translation.trim().isNotEmpty) {
+        buffer.write('[');
+        buffer.write(minutes.toString().padLeft(2, '0'));
+        buffer.write(':');
+        buffer.write(seconds.toString().padLeft(2, '0'));
+        buffer.write('.');
+        buffer.write(milliseconds.toString().padLeft(3, '0'));
+        buffer.write(']');
+        buffer.write(translation);
+        buffer.writeln();
+      }
     }
 
     return buffer.toString();
