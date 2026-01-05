@@ -6,8 +6,10 @@ use std::{
     time::{Duration, UNIX_EPOCH},
 };
 
+use flutter_rust_bridge::frb;
 use image::imageops;
 use lofty::prelude::{Accessor, AudioFile, ItemKey, TaggedFileExt};
+use id3;
 use windows::{
     core::Interface,
     core::HSTRING,
@@ -107,9 +109,9 @@ impl Audio {
         })
     }
 
-    /// 不支持：None  
-    /// Lofty 能获取到信息：read_by_lofty  
-    /// 不能的话：read_by_win_music_properties  
+    /// 不支持：None
+    /// Lofty 能获取到信息：read_by_lofty
+    /// 不能的话：read_by_win_music_properties
     /// 再不能的话：title: filename 代替
     fn read_from_path(path: impl AsRef<Path>) -> Option<Self> {
         let path = path.as_ref();
@@ -480,7 +482,7 @@ fn _get_picture_by_lofty(path: &String) -> Option<Vec<u8>> {
     None
 }
 
-/// for Flutter  
+/// for Flutter
 /// 如果无法通过 Lofty 获取则通过 Windows 获取
 pub fn get_picture_from_path(path: String, width: u32, height: u32) -> Option<Vec<u8>> {
     let pic_option =
@@ -562,7 +564,7 @@ fn _get_lyric_from_lrc_file(path: &String) -> anyhow::Result<String> {
     return Ok(String::from_utf8(lrc_bytes)?);
 }
 
-/// for Flutter   
+/// for Flutter
 /// 只支持读取 ID3V2, VorbisComment, Mp4Ilst 存储的内嵌歌词
 /// 以及相同目录相同文件名的 .lrc 外挂歌词（utf-8 or utf-16）
 pub fn get_lyric_from_path(path: String) -> Option<String> {
@@ -575,7 +577,7 @@ pub fn get_lyric_from_path(path: String) -> Option<String> {
     });
 }
 
-/// for Flutter  
+/// for Flutter
 /// 扫描给定路径下所有子文件夹（包括自己）的音乐文件并把索引保存在 index_path/index.json。
 pub fn build_index_from_folders_recursively(
     folders: Vec<String>,
@@ -648,15 +650,15 @@ fn _update_index_below_1_1_0(
     Ok(())
 }
 
-/// for Flutter   
-/// 读取 index_path/index.json，检查更新。不可能重新读取被修改的文件夹下所有的音乐标签，这样太耗时。  
+/// for Flutter
+/// 读取 index_path/index.json，检查更新。不可能重新读取被修改的文件夹下所有的音乐标签，这样太耗时。
 ///
 /// [LOWEST_VERSION] 指定可以继承的 index 的最低版本。
 /// 如果 index version < [LOWEST_VERSION] 或者是 index 根本没有 version 再或者格式不符合要求，就转到
 /// [_update_index_below_1_1_0] 更新 index；
 /// 如果 index version >= [LOWEST_VERSION] 则进行更新。
 ///
-/// 如果文件夹不存在，删除记录。  
+/// 如果文件夹不存在，删除记录。
 /// 如果文件夹被修改（再次读取到的 modified > 记录的 modified），就更新它。没有则跳过它
 /// 1. 遍历该文件夹索引，判断文件是否存在，不存在则删除记录
 /// 2. 遍历该文件夹索引，如果文件被修改（再次读取到的 modified > 记录的 modified），重新读取标签；没有则跳过它
@@ -794,6 +796,150 @@ pub fn update_index(index_path: String, sink: StreamSink<IndexActionState>) -> a
     }
 
     fs::File::create(index_path)?.write_all(index.to_string().as_bytes())?;
+
+    Ok(())
+}
+
+// =============================================
+// 歌词写入功能实现
+// =============================================
+
+/// 检查文件是否支持歌词写入
+/// 严格只支持MP3格式（.mp3扩展名）
+#[frb]
+pub fn can_write_lyrics_to_file(path: String) -> Result<bool, String> {
+    use std::path::Path;
+
+    let path = Path::new(&path);
+    let extension = path.extension()
+        .and_then(|ext| ext.to_str())
+        .unwrap_or("")
+        .to_lowercase();
+
+    // 严格只支持MP3格式
+    Ok(extension == "mp3")
+}
+
+/// 备份音频文件
+fn backup_audio_file(path: &Path) -> Result<PathBuf, String> {
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    let timestamp = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|e| format!("获取时间戳失败: {}", e))?
+        .as_millis();
+
+    let backup_path = path.with_extension(format!("mp3.lyricbackup.{}", timestamp));
+
+    fs::copy(path, &backup_path)
+        .map_err(|e| format!("创建备份失败: {}", e))?;
+
+    Ok(backup_path)
+}
+
+/// 恢复音频文件备份
+fn restore_audio_file_backup(original_path: &Path, backup_path: &Path) -> Result<(), String> {
+    fs::copy(backup_path, original_path)
+        .map_err(|e| format!("恢复备份失败: {}", e))?;
+
+    // 删除备份文件
+    fs::remove_file(backup_path)
+        .map_err(|e| format!("删除备份文件失败: {}", e))?;
+
+    Ok(())
+}
+
+/// 写入歌词到音频文件
+/// 只写入ID3v2 USLT（无同步歌词）帧
+#[frb]
+pub fn write_lyrics_to_file(
+    path: String,
+    lrc_text: String,          // LRC格式歌词（用于USLT）
+    language: Option<String>,  // ISO 639-2语言代码，默认"zho"
+    description: Option<String>, // 歌词描述
+) -> Result<(), String> {
+    use std::path::Path;
+
+    let path = Path::new(&path);
+
+    // 1. 创建备份
+    let backup_path = match backup_audio_file(path) {
+        Ok(backup) => backup,
+        Err(e) => return Err(format!("备份失败: {}", e)),
+    };
+
+    // 2. 使用id3库写入歌词
+    let result = write_lyrics_with_id3(
+        path,
+        &lrc_text,
+        language.as_deref(),
+        description.as_deref(),
+    );
+
+    // 3. 如果写入失败，恢复备份
+    if let Err(e) = result {
+        log_to_dart(format!("歌词写入失败: {}", e));
+        if let Err(restore_err) = restore_audio_file_backup(path, &backup_path) {
+            let error_msg = format!("歌词写入失败: {}，且恢复备份也失败: {}", e, restore_err);
+            log_to_dart(error_msg.clone());
+            return Err(error_msg);
+        }
+        let error_msg = format!("歌词写入失败，已恢复备份: {}", e);
+        log_to_dart(error_msg.clone());
+        return Err(error_msg);
+    }
+
+    // 4. 写入成功，删除备份
+    if let Err(e) = fs::remove_file(&backup_path) {
+        log_to_dart(format!("删除备份文件失败: {}，但歌词写入成功", e));
+    }
+
+    Ok(())
+}
+
+/// 使用id3库写入歌词
+fn write_lyrics_with_id3(
+    path: &Path,
+    lrc_text: &str,
+    language: Option<&str>,
+    description: Option<&str>,
+) -> Result<(), String> {
+    use id3::{Tag, TagLike, Frame, Version, Content};
+    use id3::frame::{Lyrics};
+
+    // 读取现有标签或创建新标签
+    let mut tag = match Tag::read_from_path(path) {
+        Ok(tag) => tag,
+        Err(id3::Error { kind: id3::ErrorKind::NoTag, .. }) => Tag::new(),
+        Err(e) => return Err(format!("读取标签失败: {}", e)),
+    };
+
+    // 语言代码，默认"zho"（中文）
+    let lang = language.unwrap_or("zho").to_string();
+    // 描述，默认空
+    let desc = description.unwrap_or("").to_string();
+
+    // 移除现有的歌词帧，避免重复
+    tag.remove_all_lyrics();
+
+    // 检查语言代码长度（必须为3个字符）
+    if lang.len() != 3 {
+        return Err(format!("语言代码必须为3个字符，当前为: '{}'", lang));
+    }
+
+    // 写入USLT帧（无同步歌词）
+    let lyrics = Lyrics {
+        lang: lang.clone(),
+        description: String::new(), // USLT描述通常为空
+        text: lrc_text.to_string(),
+    };
+
+    let uslt_frame = Frame::with_content("USLT", Content::Lyrics(lyrics));
+    tag.add_frame(uslt_frame);
+
+    // 写入标签到文件 (使用 ID3v2.3 以获得最佳兼容性)
+    tag.write_to_path(path, Version::Id3v23)
+        .map_err(|e| format!("写入标签失败: {}", e))?;
 
     Ok(())
 }

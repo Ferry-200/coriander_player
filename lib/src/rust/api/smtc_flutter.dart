@@ -6,7 +6,7 @@
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `_create_thumbnail_from_picture_data`, `_init_controls`, `_new`, `_update_display`, `_update_state`, `_update_time_properties`
+// These functions are ignored because they are not marked as `pub`: `_init_controls`, `_new`, `_ras_ref_from_pic_data`, `_update_display`, `_update_state`, `_update_time_properties`
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<SMTCFlutter>>
 abstract class SmtcFlutter implements RustOpaqueInterface {

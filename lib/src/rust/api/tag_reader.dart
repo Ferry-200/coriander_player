@@ -6,7 +6,7 @@
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `_get_lyric_from_lofty`, `_get_lyric_from_lrc_file`, `_get_picture_by_lofty`, `_get_picture_by_windows`, `_update_index_below_1_1_0`, `new_with_path`, `read_by_lofty`, `read_by_win_music_properties`, `read_from_folder_recursively`, `read_from_folder`, `read_from_path`, `to_json_value`, `to_json_value`
+// These functions are ignored because they are not marked as `pub`: `_get_lyric_from_lofty`, `_get_lyric_from_lrc_file`, `_get_picture_by_lofty`, `_get_picture_by_windows`, `_update_index_below_1_1_0`, `backup_audio_file`, `new_with_path`, `read_by_lofty`, `read_by_win_music_properties`, `read_from_folder_recursively`, `read_from_folder`, `read_from_path`, `restore_audio_file_backup`, `to_json_value`, `to_json_value`, `write_lyrics_with_id3`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `AudioFolder`, `Audio`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `fmt`, `fmt`
 
@@ -45,6 +45,24 @@ Stream<IndexActionState> buildIndexFromFoldersRecursively(
 /// 3. 遍历该文件夹，添加新增（读取到的 created > 记录的 latest）的音乐文件
 Stream<IndexActionState> updateIndex({required String indexPath}) =>
     RustLib.instance.api.crateApiTagReaderUpdateIndex(indexPath: indexPath);
+
+/// 检查文件是否支持歌词写入
+/// 严格只支持MP3格式（.mp3扩展名）
+Future<bool> canWriteLyricsToFile({required String path}) =>
+    RustLib.instance.api.crateApiTagReaderCanWriteLyricsToFile(path: path);
+
+/// 写入歌词到音频文件
+/// 只写入ID3v2 USLT（无同步歌词）帧
+Future<void> writeLyricsToFile(
+        {required String path,
+        required String lrcText,
+        String? language,
+        String? description}) =>
+    RustLib.instance.api.crateApiTagReaderWriteLyricsToFile(
+        path: path,
+        lrcText: lrcText,
+        language: language,
+        description: description);
 
 class IndexActionState {
   /// completed / total

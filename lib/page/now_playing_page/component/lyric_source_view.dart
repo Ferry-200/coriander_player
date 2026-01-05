@@ -9,6 +9,8 @@ import 'package:coriander_player/page/now_playing_page/component/vertical_lyric_
 import 'package:coriander_player/play_service/play_service.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:coriander_player/lyric/lyric_converter.dart';
+import 'package:coriander_player/src/rust/api/tag_reader.dart' as rust;
 
 class SetLyricSourceBtn extends StatelessWidget {
   const SetLyricSourceBtn({super.key});
@@ -49,6 +51,72 @@ class _SetLyricSourceBtn extends StatelessWidget {
   final bool? isLocal;
   const _SetLyricSourceBtn({this.isLocal});
 
+  /// 保存当前歌词到音频文件
+  Future<void> _saveLyricToFile(BuildContext context) async {
+    final playbackService = PlayService.instance.playbackService;
+    final lyricService = PlayService.instance.lyricService;
+
+    // 检查是否有正在播放的音频
+    final nowPlaying = playbackService.nowPlaying;
+    if (nowPlaying == null) {
+      _showSnackBar(context, '没有正在播放的音频', isError: true);
+      return;
+    }
+
+    // 检查文件是否支持歌词写入
+    try {
+      final canWrite = await rust.canWriteLyricsToFile(path: nowPlaying.path);
+      if (!canWrite) {
+        _showSnackBar(context, '当前音频文件不支持歌词写入（仅支持MP3格式）', isError: true);
+        return;
+      }
+    } catch (e) {
+      _showSnackBar(context, '检查文件支持时出错: $e', isError: true);
+      return;
+    }
+
+    // 获取当前歌词
+    final lyric = await lyricService.currLyricFuture;
+    if (lyric == null) {
+      _showSnackBar(context, '没有可用的歌词', isError: true);
+      return;
+    }
+
+    // 转换歌词数据为LRC格式
+    final lrcText = LyricConverter.generateLrcText(lyric);
+
+    // DEBUG: 检查转换结果
+    print('[DEBUG] 歌词类型: ${lyric.runtimeType}');
+    print('[DEBUG] LRC文本长度: ${lrcText.length}');
+    print(
+        '[DEBUG] LRC文本前50字符: ${lrcText.substring(0, lrcText.length > 50 ? 50 : lrcText.length)}');
+
+    // 调用Rust API写入歌词（只写入USLT帧）
+    try {
+      await rust.writeLyricsToFile(
+        path: nowPlaying.path,
+        lrcText: lrcText,
+        language: 'zho', // 中文
+        description: 'Coriander Player',
+      );
+      _showSnackBar(context, '歌词保存成功');
+    } catch (e) {
+      _showSnackBar(context, '歌词保存失败: $e', isError: true);
+    }
+  }
+
+  /// 显示操作结果提示
+  void _showSnackBar(BuildContext context, String message,
+      {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.redAccent : Colors.greenAccent,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -80,6 +148,11 @@ class _SetLyricSourceBtn extends StatelessWidget {
           onPressed: lyricService.useLocalLyric,
           leadingIcon: isLocal == true ? const Icon(Symbols.check) : null,
           child: const Text("本地"),
+        ),
+        const Divider(),
+        MenuItemButton(
+          onPressed: () => _saveLyricToFile(context),
+          child: const Text("保存歌词"),
         ),
       ],
       builder: (context, controller, _) => IconButton(
