@@ -7,9 +7,9 @@ use std::{
 };
 
 use flutter_rust_bridge::frb;
+
 use image::imageops;
 use lofty::prelude::{Accessor, AudioFile, ItemKey, TaggedFileExt};
-use id3;
 use windows::{
     core::Interface,
     core::HSTRING,
@@ -228,7 +228,9 @@ impl Audio {
         created: u64,
     ) -> Result<Self, windows::core::Error> {
         let path = path.as_ref();
-        let storage_file = StorageFile::GetFileFromPathAsync(&HSTRING::from(path))?.get()?;
+        let storage_file =
+            StorageFile::GetFileFromPathAsync(&HSTRING::from(path.to_string_lossy().as_ref()))?
+                .get()?;
         let music_properties = storage_file
             .Properties()?
             .GetMusicPropertiesAsync()?
@@ -811,7 +813,8 @@ pub fn can_write_lyrics_to_file(path: String) -> bool {
     use std::path::Path;
 
     let path = Path::new(&path);
-    let extension = path.extension()
+    let extension = path
+        .extension()
         .and_then(|ext| ext.to_str())
         .unwrap_or("")
         .to_lowercase();
@@ -830,15 +833,15 @@ fn backup_audio_file(path: &Path) -> Result<PathBuf, String> {
         .map_err(|e| format!("获取时间戳失败: {}", e))?
         .as_millis();
 
-    let mut backup_filename = path.file_name()
+    let mut backup_filename = path
+        .file_name()
         .ok_or_else(|| "无法获取文件名".to_string())?
         .to_owned();
     backup_filename.push(OsStr::new(&format!(".lyricbackup.{}", timestamp)));
 
     let backup_path = path.with_file_name(backup_filename);
 
-    fs::copy(path, &backup_path)
-        .map_err(|e| format!("创建备份失败: {}", e))?;
+    fs::copy(path, &backup_path).map_err(|e| format!("创建备份失败: {}", e))?;
 
     Ok(backup_path)
 }
@@ -849,10 +852,12 @@ fn backup_audio_file(path: &Path) -> Result<PathBuf, String> {
 pub fn cleanup_residual_backup_files(path: String) -> Result<(), String> {
     let path = Path::new(&path);
 
-    let parent_dir = path.parent()
+    let parent_dir = path
+        .parent()
         .ok_or_else(|| format!("无法获取文件父目录: {}", path.display()))?;
 
-    let file_name = path.file_name()
+    let file_name = path
+        .file_name()
         .ok_or_else(|| format!("无法获取文件名: {}", path.display()))?
         .to_string_lossy();
 
@@ -871,7 +876,11 @@ pub fn cleanup_residual_backup_files(path: String) -> Result<(), String> {
                         if file_name_str.starts_with(&backup_pattern) {
                             // 尝试删除备份文件
                             if let Err(e) = fs::remove_file(&entry_path) {
-                                log_to_dart(format!("清理备份文件失败 {}: {}", entry_path.display(), e));
+                                log_to_dart(format!(
+                                    "清理备份文件失败 {}: {}",
+                                    entry_path.display(),
+                                    e
+                                ));
                             } else {
                                 cleaned_count += 1;
                             }
@@ -894,12 +903,10 @@ pub fn cleanup_residual_backup_files(path: String) -> Result<(), String> {
 
 /// 恢复音频文件备份
 fn restore_audio_file_backup(original_path: &Path, backup_path: &Path) -> Result<(), String> {
-    fs::copy(backup_path, original_path)
-        .map_err(|e| format!("恢复备份失败: {}", e))?;
+    fs::copy(backup_path, original_path).map_err(|e| format!("恢复备份失败: {}", e))?;
 
     // 删除备份文件
-    fs::remove_file(backup_path)
-        .map_err(|e| format!("删除备份文件失败: {}", e))?;
+    fs::remove_file(backup_path).map_err(|e| format!("删除备份文件失败: {}", e))?;
 
     Ok(())
 }
@@ -909,8 +916,8 @@ fn restore_audio_file_backup(original_path: &Path, backup_path: &Path) -> Result
 #[frb]
 pub fn write_lyrics_to_file(
     path: String,
-    lrc_text: String,          // LRC格式歌词（用于USLT）
-    language: Option<String>,  // ISO 639-2语言代码，默认"zho"
+    lrc_text: String,            // LRC格式歌词（用于USLT）
+    language: Option<String>,    // ISO 639-2语言代码，默认"zho"
     description: Option<String>, // 歌词描述
 ) -> Result<(), String> {
     use std::path::Path;
@@ -929,13 +936,9 @@ pub fn write_lyrics_to_file(
         Err(e) => return Err(format!("备份失败: {}", e)),
     };
 
-    // 2. 使用id3库写入歌词
-    let result = write_lyrics_with_id3(
-        path,
-        &lrc_text,
-        language.as_deref(),
-        description.as_deref(),
-    );
+    // 2. 使用lofty库写入歌词
+    let result =
+        write_lyrics_with_lofty(path, &lrc_text, language.as_deref(), description.as_deref());
 
     // 3. 如果写入失败，恢复备份
     if let Err(e) = result {
@@ -966,48 +969,60 @@ pub fn write_lyrics_to_file(
     Ok(())
 }
 
-/// 使用id3库写入歌词
-fn write_lyrics_with_id3(
+/// 使用lofty库写入歌词
+fn write_lyrics_with_lofty(
     path: &Path,
     lrc_text: &str,
     language: Option<&str>,
     description: Option<&str>,
 ) -> Result<(), String> {
-    use id3::{Tag, TagLike, Frame, Version, Content};
-    use id3::frame::{Lyrics};
+    use lofty::tag::items::Lang;
+    use lofty::tag::{ItemValue, Tag, TagExt, TagItem, TagType};
+    use lofty::{config::WriteOptions, read_from_path};
 
     // 读取现有标签或创建新标签
-    let mut tag = match Tag::read_from_path(path) {
-        Ok(tag) => tag,
-        Err(id3::Error { kind: id3::ErrorKind::NoTag, .. }) => Tag::new(),
-        Err(e) => return Err(format!("读取标签失败: {}", e)),
+    let tagged_file = match read_from_path(path) {
+        Ok(file) => file,
+        Err(e) => return Err(format!("读取文件失败: {}", e)),
     };
+
+    // 获取主标签或创建新标签
+    let mut tag = tagged_file
+        .primary_tag()
+        .map(|t| t.to_owned())
+        .or_else(|| tagged_file.first_tag().map(|t| t.to_owned()))
+        .unwrap_or_else(|| Tag::new(TagType::Id3v2));
 
     // 语言代码，默认"zho"（中文）
     let lang = language.unwrap_or("zho").to_string();
     // 描述，默认空
     let desc = description.unwrap_or("").to_string();
 
-    // 移除现有的歌词帧，避免重复
-    tag.remove_all_lyrics();
-
     // 检查语言代码长度（必须为3个字符）
     if lang.len() != 3 {
         return Err(format!("语言代码必须为3个字符，当前为: '{}'", lang));
     }
 
-    // 写入USLT帧（无同步歌词）
-    let lyrics = Lyrics {
-        lang: lang.clone(),
-        description: desc,
-        text: lrc_text.to_string(),
-    };
+    // 移除现有的歌词项
+    tag.remove_key(&ItemKey::Lyrics);
 
-    let uslt_frame = Frame::with_content("USLT", Content::Lyrics(lyrics));
-    tag.add_frame(uslt_frame);
+    // 创建歌词项
+    let mut lyric_item = TagItem::new(ItemKey::Lyrics, ItemValue::Text(lrc_text.to_string()));
+    // 将语言代码转换为3字节数组
+    let lang_bytes: [u8; 3] = lang
+        .as_bytes()
+        .try_into()
+        .map_err(|_| "语言代码必须为ASCII字符".to_string())?;
+    let lang_obj: Lang = lang_bytes.into();
+    lyric_item.set_lang(lang_obj);
+    lyric_item.set_description(desc);
 
-    // 写入标签到文件 (使用 ID3v2.3 以获得最佳兼容性)
-    tag.write_to_path(path, Version::Id3v23)
+    // 插入歌词项
+    tag.insert(lyric_item);
+
+    // 写入标签到文件
+    let write_options = WriteOptions::new();
+    tag.save_to_path(path, write_options)
         .map_err(|e| format!("写入标签失败: {}", e))?;
 
     Ok(())
