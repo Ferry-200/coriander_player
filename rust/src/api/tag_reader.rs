@@ -1012,7 +1012,7 @@ fn write_lyrics_with_lofty(
     let lang_bytes: [u8; 3] = lang
         .as_bytes()
         .try_into()
-        .expect("lang is checked to be 3 ASCII bytes");
+        .map_err(|e| format!("语言代码 '{}' 无法转换为3字节数组: {}", lang, e))?;
     let lang_obj: Lang = lang_bytes.into();
     lyric_item.set_lang(lang_obj);
     lyric_item.set_description(desc.to_string());
