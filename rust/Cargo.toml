@@ -28,5 +28,6 @@ anyhow = "1.0.86"
 ttf-parser = "0.24.1"
 image = "0.25.2"
 
+
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(frb_expand)'] }

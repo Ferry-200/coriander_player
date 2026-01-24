@@ -87,7 +87,7 @@ class Entry extends StatelessWidget {
       indicatorColor: onPrimarySurfaceColor,
       applyElevationOverlayColor: isDark,
       useMaterial3: true,
-      dialogTheme: DialogThemeData(backgroundColor: colorScheme.surface),
+      dialogTheme: DialogTheme(backgroundColor: colorScheme.surface),
     );
   }
 
