@@ -994,13 +994,13 @@ fn write_lyrics_with_lofty(
         .unwrap_or_else(|| Tag::new(TagType::Id3v2));
 
     // 语言代码，默认"zho"（中文）
-    let lang = language.unwrap_or("zho").to_string();
+    let lang = language.unwrap_or("zho");
     // 描述，默认空
-    let desc = description.unwrap_or("").to_string();
+    let desc = description.unwrap_or("");
 
-    // 检查语言代码长度（必须为3个字符）
-    if lang.len() != 3 {
-        return Err(format!("语言代码必须为3个字符，当前为: '{}'", lang));
+    // 检查语言代码是否为3个ASCII字符
+    if !lang.is_ascii() || lang.len() != 3 {
+        return Err(format!("语言代码必须为3个ASCII字符，当前为: '{}'", lang));
     }
 
     // 移除现有的歌词项
@@ -1012,16 +1012,16 @@ fn write_lyrics_with_lofty(
     let lang_bytes: [u8; 3] = lang
         .as_bytes()
         .try_into()
-        .map_err(|_| "语言代码必须为ASCII字符".to_string())?;
+        .expect("lang is checked to be 3 ASCII bytes");
     let lang_obj: Lang = lang_bytes.into();
     lyric_item.set_lang(lang_obj);
-    lyric_item.set_description(desc);
+    lyric_item.set_description(desc.to_string());
 
     // 插入歌词项
     tag.insert(lyric_item);
 
     // 写入标签到文件
-    let write_options = WriteOptions::new();
+    let write_options = WriteOptions::new().use_id3v23(true);
     tag.save_to_path(path, write_options)
         .map_err(|e| format!("写入标签失败: {}", e))?;
 
