@@ -1,11 +1,15 @@
-name: CI
+name: Build
 
-on: workflow_dispatch
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
   build:
     name: Windows CI
     runs-on: windows-latest
+    env:
+      PUB_CACHE: C:\Users\runneradmin\.pub-cache
     
     steps:
     - name: Checkout code
@@ -15,6 +19,8 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.22.0'
+        cache: true
+        pub-cache-path: ${{ env.PUB_CACHE }}
         
     - name: Get dependencies
       run: flutter pub get
