@@ -1,6 +1,8 @@
 import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/hotkeys_helper.dart';
+import 'package:coriander_player/library/playlist.dart';
+import 'package:coriander_player/lyric/lyric_source.dart';
 import 'package:coriander_player/play_service/play_service.dart';
 import 'package:coriander_player/play_service/system_tray_service.dart';
 import 'package:coriander_player/utils.dart';

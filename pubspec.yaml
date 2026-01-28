@@ -54,3 +54,4 @@ flutter:
   uses-material-design: true
   assets:
     - app_icon.ico
+    - app_icon.png

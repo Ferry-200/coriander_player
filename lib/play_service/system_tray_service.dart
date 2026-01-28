@@ -2,9 +2,12 @@ import 'dart:io';
 
 import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/app_settings.dart';
+import 'package:coriander_player/library/playlist.dart';
+import 'package:coriander_player/lyric/lyric_source.dart';
 import 'package:coriander_player/play_service/play_service.dart';
 import 'package:coriander_player/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as path;
 import 'package:system_tray/system_tray.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -73,9 +76,11 @@ class SystemTrayService {
 
       await _systemTray.setContextMenu(_menu);
 
-      // 监听托盘点击事件（双击显示窗口）
+      // 监听托盘点击事件
+      // 在 Windows 上，click 事件在单击时触发，双击时也会触发
+      // 在 macOS/Linux 上，行为可能不同
       _systemTray.registerSystemTrayEventHandler((eventName) {
-        if (eventName == 'click') {
+        if (eventName == 'click' || eventName == 'double-click') {
           windowManager.show();
           windowManager.focus();
         }
@@ -89,21 +94,18 @@ class SystemTrayService {
 
   /// 获取图标路径
   Future<String> _getIconPath() async {
+    final exePath = Platform.resolvedExecutable;
+    final exeDir = path.dirname(exePath);
+
     if (Platform.isWindows) {
       // Windows: 使用 .ico 文件
-      final exePath = Platform.resolvedExecutable;
-      final exeDir = exePath.substring(0, exePath.lastIndexOf('\\'));
-      return '$exeDir\\data\\flutter_assets\\app_icon.ico';
+      return path.join(exeDir, 'data', 'flutter_assets', 'app_icon.ico');
     } else if (Platform.isMacOS) {
       // macOS: 使用 .icns 文件
-      final exePath = Platform.resolvedExecutable;
-      final exeDir = exePath.substring(0, exePath.lastIndexOf('/'));
-      return '$exeDir/../Resources/AppIcon.icns';
+      return path.join(exeDir, '..', 'Resources', 'AppIcon.icns');
     } else {
       // Linux: 使用 .png 文件
-      final exePath = Platform.resolvedExecutable;
-      final exeDir = exePath.substring(0, exePath.lastIndexOf('/'));
-      return '$exeDir/data/flutter_assets/app_icon.ico';
+      return path.join(exeDir, 'data', 'flutter_assets', 'app_icon.png');
     }
   }
 
@@ -127,7 +129,7 @@ class SystemTrayService {
     await AppPreference.instance.save();
 
     await HotkeysHelper.unregisterAll();
-    await windowManager.close();
+    await windowManager.destroy();
   }
 
   /// 销毁系统托盘

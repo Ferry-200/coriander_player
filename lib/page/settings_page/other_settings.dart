@@ -4,6 +4,7 @@ import 'package:coriander_player/component/settings_tile.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/lyric/lyric_source.dart';
+import 'package:coriander_player/play_service/system_tray_service.dart';
 import 'package:filepicker_windows/filepicker_windows.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -61,6 +62,16 @@ class MinimizeToTraySwitch extends StatefulWidget {
 class _MinimizeToTraySwitchState extends State<MinimizeToTraySwitch> {
   final settings = AppSettings.instance;
 
+  Future<void> _updateSystemTrayState(bool enabled) async {
+    if (enabled) {
+      // 启用：初始化系统托盘
+      await SystemTrayService.instance.init();
+    } else {
+      // 禁用：销毁系统托盘
+      await SystemTrayService.instance.dispose();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SettingsTile(
@@ -73,6 +84,7 @@ class _MinimizeToTraySwitchState extends State<MinimizeToTraySwitch> {
             settings.minimizeToTray = value;
           });
           await settings.saveSettings();
+          await _updateSystemTrayState(value);
         },
       ),
     );
