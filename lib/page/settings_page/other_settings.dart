@@ -51,6 +51,34 @@ class _DefaultLyricSourceControlState extends State<DefaultLyricSourceControl> {
   }
 }
 
+class MinimizeToTraySwitch extends StatefulWidget {
+  const MinimizeToTraySwitch({super.key});
+
+  @override
+  State<MinimizeToTraySwitch> createState() => _MinimizeToTraySwitchState();
+}
+
+class _MinimizeToTraySwitchState extends State<MinimizeToTraySwitch> {
+  final settings = AppSettings.instance;
+
+  @override
+  Widget build(BuildContext context) {
+    return SettingsTile(
+      description: "最小化到状态栏",
+      subtitle: "关闭窗口时最小化到状态栏托盘，而不是退出应用",
+      action: Switch(
+        value: settings.minimizeToTray,
+        onChanged: (value) async {
+          setState(() {
+            settings.minimizeToTray = value;
+          });
+          await settings.saveSettings();
+        },
+      ),
+    );
+  }
+}
+
 class AudioLibraryEditor extends StatelessWidget {
   const AudioLibraryEditor({super.key});
 

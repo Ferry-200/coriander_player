@@ -4,10 +4,12 @@ import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/entry.dart';
 import 'package:coriander_player/hotkeys_helper.dart';
+import 'package:coriander_player/play_service/system_tray_service.dart';
 import 'package:coriander_player/src/rust/api/logger.dart';
 import 'package:coriander_player/src/rust/frb_generated.dart';
 import 'package:coriander_player/theme_provider.dart';
 import 'package:coriander_player/utils.dart';
+import 'package:coriander_player/window_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
@@ -73,6 +75,14 @@ Future<void> main() async {
   final welcome = !File("$supportPath\\index.json").existsSync();
 
   await initWindow();
+
+  // Initialize window handler for close event handling
+  WindowHandler.instance.init();
+
+  // Initialize system tray if enabled
+  if (AppSettings.instance.minimizeToTray) {
+    await SystemTrayService.instance.init();
+  }
 
   runApp(Entry(welcome: welcome));
 }
