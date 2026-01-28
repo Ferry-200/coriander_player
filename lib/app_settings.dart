@@ -64,6 +64,9 @@ class AppSettings {
   Size windowSize = const Size(1280, 756);
   bool isWindowMaximized = false;
 
+  /// 最小化到系统托盘
+  bool minimizeToTray = true;
+
   String? fontFamily;
   String? fontPath;
 
@@ -195,6 +198,11 @@ class AppSettings {
         _instance.isWindowMaximized = isMaximized;
       }
 
+      final mtt = settingsMap["MinimizeToTray"];
+      if (mtt != null) {
+        _instance.minimizeToTray = mtt;
+      }
+
       final ff = settingsMap["FontFamily"];
       final fp = settingsMap["FontPath"];
       if (ff != null) {
@@ -220,6 +228,7 @@ class AppSettings {
         "ArtistSeparator": artistSeparator,
         "LocalLyricFirst": localLyricFirst,
         "IsWindowMaximized": isMaximized,
+        "MinimizeToTray": minimizeToTray,
         "FontFamily": fontFamily,
         "FontPath": fontPath,
       };

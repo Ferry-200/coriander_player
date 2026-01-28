@@ -9,9 +9,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  go_router: ^14.0.1 
+  go_router: ^14.0.1
   material_color_utilities: ^0.11.1
   window_manager: ^0.3.8
+  system_tray: ^2.0.3
   provider: ^6.1.1
   # rust_builder:
   #   path: rust_builder
@@ -53,3 +54,4 @@ flutter:
   uses-material-design: true
   assets:
     - app_icon.ico
+    - app_icon.png

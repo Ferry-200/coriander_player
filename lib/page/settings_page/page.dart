@@ -19,6 +19,8 @@ class SettingsPage extends StatelessWidget {
         children: const [
           AudioLibraryEditor(),
           SizedBox(height: 16.0),
+          MinimizeToTraySwitch(),
+          SizedBox(height: 16.0),
           DefaultLyricSourceControl(),
           SizedBox(height: 16.0),
           DynamicThemeSwitch(),

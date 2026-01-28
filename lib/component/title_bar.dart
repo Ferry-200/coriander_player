@@ -1,13 +1,8 @@
 // ignore_for_file: camel_case_types
 
-import 'package:coriander_player/app_preference.dart';
 import 'package:coriander_player/app_settings.dart';
 import 'package:coriander_player/component/horizontal_lyric_view.dart';
 import 'package:coriander_player/component/responsive_builder.dart';
-import 'package:coriander_player/hotkeys_helper.dart';
-import 'package:coriander_player/library/playlist.dart';
-import 'package:coriander_player/lyric/lyric_source.dart';
-import 'package:coriander_player/play_service/play_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -332,17 +327,10 @@ class _WindowControllsState extends State<WindowControlls> with WindowListener {
           ),
         ),
         IconButton(
-          tooltip: "退出",
+          tooltip: AppSettings.instance.minimizeToTray ? "最小化到托盘" : "退出",
           onPressed: () async {
-            PlayService.instance.close();
-
-            await savePlaylists();
-            await saveLyricSources();
-            await AppSettings.instance.saveSettings();
-            await AppPreference.instance.save();
-
-            await HotkeysHelper.unregisterAll();
-            windowManager.close();
+            // 窗口关闭事件由 WindowHandler 统一处理
+            await windowManager.close();
           },
           icon: const Icon(Symbols.close),
         ),

@@ -4,6 +4,7 @@ import 'package:coriander_player/component/settings_tile.dart';
 import 'package:coriander_player/library/audio_library.dart';
 import 'package:coriander_player/library/playlist.dart';
 import 'package:coriander_player/lyric/lyric_source.dart';
+import 'package:coriander_player/play_service/system_tray_service.dart';
 import 'package:filepicker_windows/filepicker_windows.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -45,6 +46,45 @@ class _DefaultLyricSourceControlState extends State<DefaultLyricSourceControl> {
             settings.localLyricFirst = newSelection.first;
           });
           await settings.saveSettings();
+        },
+      ),
+    );
+  }
+}
+
+class MinimizeToTraySwitch extends StatefulWidget {
+  const MinimizeToTraySwitch({super.key});
+
+  @override
+  State<MinimizeToTraySwitch> createState() => _MinimizeToTraySwitchState();
+}
+
+class _MinimizeToTraySwitchState extends State<MinimizeToTraySwitch> {
+  final settings = AppSettings.instance;
+
+  Future<void> _updateSystemTrayState(bool enabled) async {
+    if (enabled) {
+      // 启用：初始化系统托盘
+      await SystemTrayService.instance.init();
+    } else {
+      // 禁用：销毁系统托盘
+      await SystemTrayService.instance.dispose();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SettingsTile(
+      description: "最小化到状态栏",
+      subtitle: "关闭窗口时最小化到状态栏托盘，而不是退出应用",
+      action: Switch(
+        value: settings.minimizeToTray,
+        onChanged: (value) async {
+          setState(() {
+            settings.minimizeToTray = value;
+          });
+          await settings.saveSettings();
+          await _updateSystemTrayState(value);
         },
       ),
     );
